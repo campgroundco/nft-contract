@@ -36,7 +36,7 @@ pub(crate) fn refund_deposit(storage_used: u64) {
 
 impl Contract {
     //add a token to the set of tokens an owner has
-    pub(crate) fn internal_add_token_to_owner(
+    pub(crate) fn internal_add_trail_to_owner(
         &mut self,
         account_id: &AccountId,
         token_id: &TokenId,

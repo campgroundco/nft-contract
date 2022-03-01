@@ -28,7 +28,7 @@ impl Contract {
         self.trail_metadata_by_id.insert(&token_id, &metadata);
 
         //call the internal method for adding the token to the owner
-        self.internal_add_token_to_owner(&token.owner_id, &token_id);
+        self.internal_add_trail_to_owner(&token.owner_id, &token_id);
 
         //calculate the required storage which was the used - initial
         let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;

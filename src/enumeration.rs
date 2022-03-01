@@ -27,7 +27,7 @@ impl Contract {
     }
 
     //Query for all the tokens for an owner
-    pub fn nft_tokens_for_owner(
+    pub fn trail_tickets_for_owner(
         &self,
         account_id: AccountId,
         from_index: Option<U128>,
@@ -53,7 +53,7 @@ impl Contract {
             //take the first "limit" elements in the vector. If we didn't specify a limit, use 50
             .take(limit.unwrap_or(50) as usize) 
             //we'll map the token IDs which are strings into Json Tokens
-            .map(|token_id| self.nft_token(token_id.clone()).unwrap())
+            .map(|token_id| self.trail_ticket(token_id.clone()).unwrap())
             //since we turned the keys into an iterator, we need to turn it back into a vector to return
             .collect()
     }
