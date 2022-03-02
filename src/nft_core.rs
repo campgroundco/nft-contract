@@ -105,12 +105,12 @@ impl NonFungibleTokenCore for Contract {
         //if there is some token ID in the tokens_by_id collection
         if let Some(token) = self.trails_by_id.get(&token_id) {
             //we'll get the metadata for that token
-            let metadata = self.trail_metadata_by_id.get(&token_id).unwrap();
+            let serie = self.trails_series_by_id.get(&token_id).unwrap();
             //we return the JsonToken (wrapped by Some since we return an option)
             Some(JsonTrail {
                 token_id,
                 owner_id: token.owner_id,
-                metadata,
+                serie,
             })
         } else { //if there wasn't a token ID in the tokens_by_id collection, we return None
             None

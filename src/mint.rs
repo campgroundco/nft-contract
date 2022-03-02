@@ -6,7 +6,7 @@ impl Contract {
     pub fn nft_mint(
         &mut self,
         token_id: TokenId,
-        metadata: TrailMetadata,
+        serie: TrailSerieMetadata,
         receiver_id: AccountId,
     ) {
         //measure the initial storage being used on the contract
@@ -25,7 +25,7 @@ impl Contract {
         );
 
         //insert the token ID and metadata
-        self.trail_metadata_by_id.insert(&token_id, &metadata);
+        self.trails_series_by_id.insert(&token_id, &serie);
 
         //call the internal method for adding the token to the owner
         self.internal_add_trail_to_owner(&token.owner_id, &token_id);

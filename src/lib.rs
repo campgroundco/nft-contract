@@ -35,7 +35,7 @@ pub struct Contract {
     pub trails_by_id: LookupMap<TokenId, Token>,
 
     //keeps track of the token metadata for a given token ID
-    pub trail_metadata_by_id: UnorderedMap<TokenId, TrailMetadata>,
+    pub trails_series_by_id: UnorderedMap<TokenId, TrailSerieMetadata>,
 
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
@@ -90,7 +90,7 @@ impl Contract {
             //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
             trails_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
             trails_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
-            trail_metadata_by_id: UnorderedMap::new(
+            trails_series_by_id: UnorderedMap::new(
                 StorageKey::TokenMetadataById.try_to_vec().unwrap(),
             ),
             //set the owner_id field equal to the passed in owner_id. 
