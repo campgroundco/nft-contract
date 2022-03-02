@@ -1,5 +1,6 @@
 use crate::*;
 pub type TrailId = String;
+pub type TrailIdAndCopyNumber = String;
 //defines the payout type we'll be returning as a part of the royalty standards.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]

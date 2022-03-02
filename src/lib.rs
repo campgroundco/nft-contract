@@ -31,10 +31,10 @@ pub struct Contract {
     pub owner_id: AccountId,
 
     //keeps track of all the token IDs for a given account
-    pub trails_per_owner: LookupMap<AccountId, UnorderedSet<TrailId>>,
+    pub trails_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
 
     //keeps track of the token struct for a given token ID
-    pub trails_by_id: LookupMap<TrailId, TrailBusiness>,
+    pub trails_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
     //keeps track of the token metadata for a given token ID
     pub trails_series_by_id: UnorderedMap<TrailId, TrailSeriesMetadata>,
