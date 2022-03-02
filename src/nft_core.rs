@@ -110,7 +110,7 @@ impl NonFungibleTokenCore for Contract {
             Some(JsonTrail {
                 token_id,
                 owner_id: token.owner_id,
-                serie,
+                series: serie,
             })
         } else { //if there wasn't a token ID in the tokens_by_id collection, we return None
             None

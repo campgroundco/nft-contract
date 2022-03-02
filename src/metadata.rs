@@ -31,7 +31,14 @@ pub struct TrailResource {
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
-pub struct TrailSerieMetadata {
+pub struct SeriesSupply {
+    pub supply: u64,
+    pub circulating: u64
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct TrailSeriesMetadata {
     pub is_mintable: bool,
     pub creator_id: AccountId,
     pub title: String,
@@ -43,7 +50,8 @@ pub struct TrailSerieMetadata {
     pub starts_at: Option<u64>, // When token starts being valid, Unix epoch in milliseconds
     pub expires_at: Option<u64>, // When token expires, Unix epoch in milliseconds,
     pub issue_at: u64,
-    pub reference: Option<String> // Url referencing something of this resource,
+    pub reference: Option<String>, // Url referencing something of this resource,
+    pub supply: SeriesSupply
 }
 
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -61,7 +69,7 @@ pub struct JsonTrail {
     //owner of the token
     pub owner_id: AccountId,
     //token metadata
-    pub serie: TrailSerieMetadata,
+    pub series: TrailSeriesMetadata,
 }
 
 pub trait NonFungibleTokenMetadata {

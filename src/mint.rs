@@ -6,7 +6,7 @@ impl Contract {
     pub fn nft_mint(
         &mut self,
         token_id: TokenId,
-        serie: TrailSerieMetadata,
+        serie: TrailSeriesMetadata,
         receiver_id: AccountId,
     ) {
         //measure the initial storage being used on the contract
@@ -21,7 +21,7 @@ impl Contract {
         //insert the token ID and token struct and make sure that the token doesn't exist
         assert!(
             self.trails_by_id.insert(&token_id, &token).is_none(),
-            "Token already exists"
+            "Trail already exists"
         );
 
         //insert the token ID and metadata

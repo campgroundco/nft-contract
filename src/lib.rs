@@ -35,7 +35,7 @@ pub struct Contract {
     pub trails_by_id: LookupMap<TokenId, Token>,
 
     //keeps track of the token metadata for a given token ID
-    pub trails_series_by_id: UnorderedMap<TokenId, TrailSerieMetadata>,
+    pub trails_series_by_id: UnorderedMap<TokenId, TrailSeriesMetadata>,
 
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
