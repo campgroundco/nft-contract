@@ -20,7 +20,9 @@ mod enumeration;
 mod metadata; 
 mod mint; 
 mod nft_core; 
-mod royalty; 
+mod royalty;
+
+pub const TRAIL_DELIMETER: char = ':';
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -29,13 +31,13 @@ pub struct Contract {
     pub owner_id: AccountId,
 
     //keeps track of all the token IDs for a given account
-    pub trails_per_owner: LookupMap<AccountId, UnorderedSet<TokenId>>,
+    pub trails_per_owner: LookupMap<AccountId, UnorderedSet<TrailId>>,
 
     //keeps track of the token struct for a given token ID
-    pub trails_by_id: LookupMap<TokenId, Token>,
+    pub trails_by_id: LookupMap<TrailId, TrailBusiness>,
 
     //keeps track of the token metadata for a given token ID
-    pub trails_series_by_id: UnorderedMap<TokenId, TrailSeriesMetadata>,
+    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeriesMetadata>,
 
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,

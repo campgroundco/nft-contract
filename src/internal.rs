@@ -39,7 +39,7 @@ impl Contract {
     pub(crate) fn internal_add_trail_to_owner(
         &mut self,
         account_id: &AccountId,
-        token_id: &TokenId,
+        token_id: &TrailId,
     ) {
         //get the set of tokens for the given account
         let mut tokens_set = self.trails_per_owner.get(account_id).unwrap_or_else(|| {

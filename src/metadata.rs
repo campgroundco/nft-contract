@@ -1,5 +1,5 @@
 use crate::*;
-pub type TokenId = String;
+pub type TrailId = String;
 //defines the payout type we'll be returning as a part of the royalty standards.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
@@ -32,8 +32,8 @@ pub struct TrailResource {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct SeriesSupply {
-    pub supply: u64,
-    pub circulating: u64
+    pub total: Option<u64>,
+    pub circulating: Option<u64>
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -55,9 +55,10 @@ pub struct TrailSeriesMetadata {
 }
 
 #[derive(BorshDeserialize, BorshSerialize)]
-pub struct Token {
+pub struct TrailBusiness {
     //owner of the token
     pub owner_id: AccountId,
+    pub trail_id_reference: TrailId
 }
 
 //The Json token is what will be returned from view calls. 
@@ -65,7 +66,7 @@ pub struct Token {
 #[serde(crate = "near_sdk::serde")]
 pub struct JsonTrail {
     //token ID
-    pub token_id: TokenId,
+    pub token_id: TrailId,
     //owner of the token
     pub owner_id: AccountId,
     //token metadata

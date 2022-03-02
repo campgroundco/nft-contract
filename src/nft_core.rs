@@ -10,7 +10,7 @@ pub trait NonFungibleTokenCore {
     fn nft_transfer(
         &mut self,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
         memo: Option<String>,
     );
 
@@ -19,13 +19,13 @@ pub trait NonFungibleTokenCore {
     fn nft_transfer_call(
         &mut self,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
         memo: Option<String>,
         msg: String,
     );
 
     //get information about the NFT token passed in
-    fn trail_ticket(&self, token_id: TokenId) -> Option<JsonTrail>;
+    fn trail_ticket(&self, token_id: TrailId) -> Option<JsonTrail>;
 }
 
 #[ext_contract(ext_non_fungible_token_receiver)]
@@ -36,7 +36,7 @@ trait NonFungibleTokenReceiver {
         &mut self,
         sender_id: AccountId,
         previous_owner_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
         msg: String,
     );
 }
@@ -52,7 +52,7 @@ trait NonFungibleTokenResolver {
         &mut self,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
     );
 }
 
@@ -66,7 +66,7 @@ trait NonFungibleTokenResolver {
         &mut self,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
     );
 }
 
@@ -78,7 +78,7 @@ impl NonFungibleTokenCore for Contract {
     fn nft_transfer(
         &mut self,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
         memo: Option<String>,
     ) {
         /*
@@ -91,7 +91,7 @@ impl NonFungibleTokenCore for Contract {
     fn nft_transfer_call(
         &mut self,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
         memo: Option<String>,
         msg: String,
     ) {
@@ -101,7 +101,7 @@ impl NonFungibleTokenCore for Contract {
     }
 
     //get the information for a specific token ID
-    fn trail_ticket(&self, token_id: TokenId) -> Option<JsonTrail> {
+    fn trail_ticket(&self, token_id: TrailId) -> Option<JsonTrail> {
         //if there is some token ID in the tokens_by_id collection
         if let Some(token) = self.trails_by_id.get(&token_id) {
             //we'll get the metadata for that token
@@ -127,7 +127,7 @@ impl NonFungibleTokenResolver for Contract {
         &mut self,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TokenId,
+        token_id: TrailId,
     ) {
         /*
             FILL THIS IN
