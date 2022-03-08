@@ -21,6 +21,8 @@ mod metadata;
 mod mint; 
 mod nft_core; 
 mod royalty;
+mod create_serie;
+mod bridge;
 
 pub const TRAIL_DELIMETER: char = ':';
 
@@ -37,7 +39,7 @@ pub struct Contract {
     pub trails_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
     //keeps track of the token metadata for a given token ID
-    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeriesMetadata>,
+    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeries>,
 
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,

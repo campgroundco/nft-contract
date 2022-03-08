@@ -3,7 +3,7 @@ use crate::*;
 #[near_bindgen]
 impl Contract {
 
-    fn get_trail_by_id(&self, series_id: &TrailId) -> TrailSeriesMetadata {
+    fn get_trail_by_id(&self, series_id: &TrailId) -> TrailSeries {
         let token_series = self
             .trails_series_by_id
             .get(series_id)
