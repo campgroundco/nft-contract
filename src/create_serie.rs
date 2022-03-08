@@ -2,14 +2,14 @@ use crate::*;
 use crate::bridge::SeriesBridge;
 
 pub trait CreateTrailSeries {
-    fn create_trail_series(&mut self, metadata: TrailSeriesMetadata, price: Option<U128>);
+    fn create_trail_series(&mut self, metadata: TrailSeriesMetadata, price: Option<U128>) -> JsonTrail;
 }
 
 #[near_bindgen]
 impl CreateTrailSeries for Contract {
 
     #[payable]
-    fn create_trail_series(&mut self, metadata: TrailSeriesMetadata, price: Option<U128>) {
+    fn create_trail_series(&mut self, metadata: TrailSeriesMetadata, price: Option<U128>) -> JsonTrail {
         let initial_storage_usage = env::storage_usage();
         let creator_id = env::predecessor_account_id();
         let current_block_timestamp = env::block_timestamp();
@@ -44,9 +44,9 @@ impl CreateTrailSeries for Contract {
         let valid_until = metadata.expires_at.unwrap_or_else(|| u64::MAX);
         assert!(valid_until > can_be_traded_at, "Campground: Trail tickets need to be valid in a greater date than the start date");
 
-        self.trails_series_by_id.insert(&token_series_id, &TrailSeries {
+        let trail_series = TrailSeries {
             is_mintable: true,
-            creator_id,
+            creator_id: creator_id.clone(),
             issue_at: current_block_timestamp,
             metadata,
             supply: SeriesSupply {
@@ -54,8 +54,17 @@ impl CreateTrailSeries for Contract {
                 circulating: 0 as u64
             },
             price: price_res.unwrap_or(0)
-        });
+        };
 
+        self.trails_series_by_id.insert(&token_series_id, &trail_series);
+
+        refund_deposit(env::storage_usage() - initial_storage_usage);
+
+        JsonTrail {
+            token_id: token_series_id,
+            owner_id: creator_id,
+            series: trail_series
+        }
 
     }
 
