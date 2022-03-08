@@ -34,6 +34,10 @@ pub(crate) fn refund_deposit(storage_used: u64) {
     }
 }
 
+pub(crate) fn calculate_fee(price: u128, campground_fee: u64) -> u128 {
+    (price as u128 * campground_fee as u128) / 100
+}
+
 impl Contract {
     //add a token to the set of tokens an owner has
     pub(crate) fn internal_add_trail_to_owner(
@@ -60,4 +64,14 @@ impl Contract {
         //we insert that set for the given account ID. 
         self.trails_per_owner.insert(account_id, &tokens_set);
     }
-} 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::internal::calculate_fee;
+
+    #[test]
+    fn calculate_fee_test() {
+        assert_eq!(calculate_fee(100, 5), 5);
+    }
+}

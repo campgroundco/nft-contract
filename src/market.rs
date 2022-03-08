@@ -12,7 +12,7 @@ impl Contract {
         token_series
     }
 
-    fn internal_nft_mint_series(&mut self, series_id: TrailId, receiver_id: AccountId) {
+    fn internal_nft_mint_series(&mut self, series_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
         let mut token_series = self.get_trail_by_id(&series_id);
 
         assert!(
@@ -36,7 +36,7 @@ impl Contract {
 
         self.trails_series_by_id.insert(&series_id, &token_series);
 
-        let ownership_id = format!("{}{}{}", series_id, TRAIL_DELIMETER, circulating_supply);
+        let ownership_id: TrailIdAndCopyNumber = format!("{}{}{}", series_id, TRAIL_DELIMETER, circulating_supply);
 
         let token = TrailBusiness {
             owner_id: receiver_id,
@@ -51,6 +51,34 @@ impl Contract {
 
         //call the internal method for adding the token to the owner
         self.internal_add_trail_to_owner(&token.owner_id, &ownership_id);
+
+        ownership_id
+    }
+
+    #[payable]
+    fn buy_series(&mut self, trail_series_id: TrailId, receiver_id: AccountId) -> TrailId {
+        let initial_storage_usage = env::storage_usage();
+
+        let trail_series = self.trails_series_by_id.get(&trail_series_id).expect("Campground: Trail series does not exist");
+        let price = trail_series.price;
+        let attached_deposit = env::attached_deposit();
+
+        assert!(price >= attached_deposit, "Campground: Attached deposit is less than price");
+
+        let for_treasury = calculate_fee(price, self.campground_fee);
+        let price_deducted = price - for_treasury;
+
+        assert!(price_deducted > 0, "Campground: Buying operation is invalid");
+        assert!(for_treasury > 0, "Campground: a fee needs to be paid");
+
+        let trail_id_with_copy: TrailIdAndCopyNumber = self.internal_nft_mint_series(trail_series_id, receiver_id);
+
+        Promise::new(trail_series.creator_id).transfer(price_deducted);
+        Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury);
+
+        refund_deposit(env::storage_usage() - initial_storage_usage);
+
+        trail_id_with_copy
     }
 
     #[payable]
