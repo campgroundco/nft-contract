@@ -20,8 +20,8 @@ impl Contract {
             "Campground: Trail is not mintable"
         );
 
-        let max_supply = token_series.supply.total.unwrap_or(u64::MAX);
-        let mut circulating_supply = token_series.supply.circulating.unwrap_or(0);
+        let max_supply = token_series.supply.total;
+        let mut circulating_supply = token_series.supply.circulating;
         assert!(
             circulating_supply >= max_supply,
             "Campground: No more minting allowed"
@@ -32,7 +32,7 @@ impl Contract {
             token_series.is_mintable = false;
         }
 
-        token_series.supply.circulating = Some(circulating_supply);
+        token_series.supply.circulating = circulating_supply;
 
         self.trails_series_by_id.insert(&series_id, &token_series);
 

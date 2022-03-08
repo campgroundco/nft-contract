@@ -1,7 +1,7 @@
-use crate::{TrailId, Contract};
+use crate::*;
 
 pub trait SeriesBridge {
-    fn series_exists(&self, series_id: TrailId) -> bool;
+    fn series_exists(&self, series_id: &TrailId) -> bool;
 }
 
 #[near_bindgen]

@@ -33,8 +33,8 @@ pub struct TrailResource {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct SeriesSupply {
-    pub total: Option<u64>,
-    pub circulating: Option<u64>
+    pub total: u64,
+    pub circulating: u64
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -49,8 +49,7 @@ pub struct TrailSeriesMetadata {
     pub starts_at: Option<u64>, // When token starts being valid, Unix epoch in milliseconds
     pub expires_at: Option<u64>, // When token expires, Unix epoch in milliseconds,
     pub reference: Option<String>, // Url referencing something of this resource,
-    pub supply: SeriesSupply,
-    pub price: Option<U128>
+    pub campground_id: String
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -59,7 +58,9 @@ pub struct TrailSeries {
     pub is_mintable: bool,
     pub creator_id: AccountId,
     pub issue_at: u64,
-    pub metadata: TrailSeriesMetadata
+    pub metadata: TrailSeriesMetadata,
+    pub supply: SeriesSupply,
+    pub price: u128
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]

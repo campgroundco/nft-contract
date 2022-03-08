@@ -25,6 +25,7 @@ mod create_serie;
 mod bridge;
 
 pub const TRAIL_DELIMETER: char = ':';
+const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
