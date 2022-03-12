@@ -119,4 +119,17 @@ mod test {
         let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1 * 10u128.pow(24))), Some(1 as u64), Some(vec![]));
     }
 
+    #[test]
+    #[should_panic(expected = "Campground: Trail tickets need to be valid in a greater date than the start date")]
+    fn create_trail_series_invalid_date() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647216000), Some(1647109675), Some(U128::from(1 * 10u128.pow(24))), None, None);
+    }
+
 }
