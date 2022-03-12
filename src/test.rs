@@ -39,20 +39,20 @@ mod test {
         assert_eq!(contract.campground_fee, 5 as u64);
     }
 
-    fn create_series(contract: &mut Contract, title: &str, starts_at: Option<u64>, expires_at: Option<u64>, price: Option<U128>) -> JsonTrail {
+    fn create_series(contract: &mut Contract, title: &str, starts_at: Option<u64>, expires_at: Option<u64>, price: Option<U128>, tickets: Option<u64>, resources: Option<Vec<TrailResource>>) -> JsonTrail {
         let trail = contract.create_trail_series(TrailSeriesMetadata {
             title: String::from(title),
             description: String::new(),
-            tickets_amount: 100,
+            tickets_amount: tickets.unwrap_or(100),
             media: None,
             data: None,
-            resources: vec![TrailResource {
+            resources: resources.unwrap_or(vec![TrailResource {
                 title: Some(format!("{}-{}", title, "resource")),
                 description: None,
                 media: format!("{}.png", title),
                 extra: None,
                 reference: None
-            }],
+            }]),
             starts_at,
             expires_at,
             reference: None,
@@ -71,14 +71,52 @@ mod test {
             .build()
         );
 
-        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1 * 10u128.pow(24))));
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1 * 10u128.pow(24))), None, None);
         let trail_by_id = contract.get_trail_by_id(&String::from("1"));
         assert_eq!(trail_series.series.creator_id, trail_by_id.creator_id);
         assert_eq!(trail_series.series.price, trail_by_id.price);
         assert_eq!(trail_series.series.metadata.expires_at, trail_by_id.metadata.expires_at);
         assert_eq!(trail_series.series.metadata.starts_at, trail_by_id.metadata.starts_at);
         assert_eq!(trail_by_id.metadata.resources.get(0).unwrap().media, "CampgroundTest.png");
+    }
 
+    #[test]
+    #[should_panic(expected = "Campground: price higher than 1000000000000000000000000000000000")]
+    fn create_trail_series_invalid_price() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1_000_000_001 * 10u128.pow(24))), None, None);
+    }
+
+    #[test]
+    #[should_panic(expected = "Campground: At least 1 ticket is required per trail series")]
+    fn create_trail_series_invalid_ticket_amount() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1 * 10u128.pow(24))), Some(0 as u64), None);
+    }
+
+    #[test]
+    #[should_panic(expected = "Campground: At least 1 resource is needed per trail")]
+    fn create_trail_series_invalid_resources_amount() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1 * 10u128.pow(24))), Some(1 as u64), Some(vec![]));
     }
 
 }
