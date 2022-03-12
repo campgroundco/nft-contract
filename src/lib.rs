@@ -23,6 +23,7 @@ mod nft_core;
 mod royalty;
 mod create_serie;
 mod bridge;
+mod test;
 
 pub const TRAIL_DELIMETER: char = ':';
 const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);

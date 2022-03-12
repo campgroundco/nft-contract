@@ -17,3 +17,7 @@ lto = true
 debug = false
 panic = "abort"
 overflow-checks = true
+
+[dev-dependencies]
+near-sdk-sim = "3.1.0"
+serde_json = "1.0.79"

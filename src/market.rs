@@ -1,16 +1,8 @@
 use crate::*;
+use crate::bridge::SeriesBridge;
 
 #[near_bindgen]
 impl Contract {
-
-    fn get_trail_by_id(&self, series_id: &TrailId) -> TrailSeries {
-        let token_series = self
-            .trails_series_by_id
-            .get(series_id)
-            .expect("Campground: Trail does not exist");
-
-        token_series
-    }
 
     fn internal_nft_mint_series(&mut self, series_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
         let mut token_series = self.get_trail_by_id(&series_id);
