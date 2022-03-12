@@ -132,4 +132,27 @@ mod test {
         let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647216000), Some(1647109675), Some(U128::from(1 * 10u128.pow(24))), None, None);
     }
 
+    #[test]
+    #[should_panic(expected = "Campground: Trail is not mintable")]
+    fn test_minting() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1 * 10u128.pow(24))), Some(1), None);
+        let trail_by_id = contract.get_trail_by_id(&String::from("1"));
+        assert_eq!(trail_by_id.is_mintable, true);
+        contract.nft_mint(String::from("1"), accounts(2));
+
+        let track_by_owner = contract.trail_tickets_for_owner(accounts(2), None, None);
+        assert_eq!(track_by_owner.len(), 1);
+        println!("{}", track_by_owner.get(0).unwrap().series.is_mintable);
+
+        // Panics
+        contract.nft_mint(String::from("1"), accounts(2));
+    }
+
 }

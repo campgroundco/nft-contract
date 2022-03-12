@@ -14,8 +14,9 @@ impl Contract {
 
         let max_supply = token_series.supply.total;
         let mut circulating_supply = token_series.supply.circulating;
+        /// 10 (max) > 1 (circulating) = true
         assert!(
-            circulating_supply >= max_supply,
+            max_supply > circulating_supply || max_supply == circulating_supply,
             "Campground: No more minting allowed"
         );
 
