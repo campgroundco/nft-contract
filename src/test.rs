@@ -120,19 +120,6 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected = "Campground: Trail tickets need to be valid in a greater date than the start date")]
-    fn create_trail_series_invalid_date() {
-        let (mut context, mut contract) = setup_contract();
-        testing_env!(context
-            .predecessor_account_id(accounts(1))
-            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
-            .build()
-        );
-
-        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647216000), Some(1647109675), Some(U128::from(1 * 10u128.pow(24))), None, None);
-    }
-
-    #[test]
     #[should_panic(expected = "Campground: Trail is not mintable")]
     fn test_minting() {
         let (mut context, mut contract) = setup_contract();
@@ -153,6 +140,30 @@ mod test {
 
         // Panics
         contract.nft_mint(String::from("1"), accounts(2));
+    }
+
+    #[test]
+    fn test_copies_and_buys() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1000 as u128)), Some(10), None);
+        let nft_mint_1 = contract.nft_mint(String::from("1"), accounts(2));
+        assert_eq!(nft_mint_1, "1:1");
+
+        testing_env!(context
+            .predecessor_account_id(accounts(2))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        // Panics
+        let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+        assert_eq!(nft_mint_2, "1:2");
     }
 
 }

@@ -40,9 +40,9 @@ impl CreateTrailSeries for Contract {
         let resources_len = metadata.resources.len();
         assert!(resources_len > 0, "Campground: At least 1 resource is needed per trail");
 
-        let can_be_traded_at = metadata.starts_at.unwrap_or(current_block_timestamp.clone());
-        let valid_until = metadata.expires_at.unwrap_or_else(|| u64::MAX);
-        assert!(valid_until > can_be_traded_at, "Campground: Trail tickets need to be valid in a greater date than the start date");
+        // let can_be_traded_at = metadata.starts_at.unwrap_or(current_block_timestamp.clone());
+        // let valid_until = metadata.expires_at.unwrap_or_else(|| u64::MAX);
+        // assert!(valid_until > can_be_traded_at, "Campground: Trail tickets need to be valid in a greater date than the start date");
 
         let trail_series = TrailSeries {
             is_mintable: true,

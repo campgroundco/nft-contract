@@ -49,14 +49,14 @@ impl Contract {
     }
 
     #[payable]
-    fn buy_series(&mut self, trail_series_id: TrailId, receiver_id: AccountId) -> TrailId {
+    pub fn buy_series(&mut self, trail_series_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
         let initial_storage_usage = env::storage_usage();
 
         let trail_series = self.trails_series_by_id.get(&trail_series_id).expect("Campground: Trail series does not exist");
         let price = trail_series.price;
         let attached_deposit = env::attached_deposit();
 
-        assert!(price >= attached_deposit, "Campground: Attached deposit is less than price");
+        assert!(attached_deposit >= price, "Campground: Attached deposit is less than price");
 
         let for_treasury = calculate_fee(price, self.campground_fee);
         let price_deducted = price - for_treasury;
@@ -75,7 +75,7 @@ impl Contract {
     }
 
     #[payable]
-    pub fn nft_mint(&mut self, token_id: TrailId, receiver_id: AccountId) {
+    pub fn nft_mint(&mut self, token_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
@@ -83,13 +83,15 @@ impl Contract {
 
         assert_eq!(env::predecessor_account_id(), token_series.creator_id, "Campground: Only Trail creator can directly mint");
 
-        self.internal_nft_mint_series(token_id, receiver_id);
+        let trail_mint_id= self.internal_nft_mint_series(token_id, receiver_id);
 
         //calculate the required storage which was the used - initial
         let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;
 
         //refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
         refund_deposit(required_storage_in_bytes);
+
+        trail_mint_id
     }
 }
 
