@@ -34,8 +34,17 @@ pub(crate) fn refund_deposit(storage_used: u64) {
     }
 }
 
-pub(crate) fn calculate_fee(price: u128, campground_fee: u64) -> u128 {
-    (price as u128 * campground_fee as u128) / 100
+pub(crate) fn calculate_fee(price: u128, campground_fee: u64, min_treasury: u128) -> u128 {
+    let fee = (price as u128 * campground_fee as u128) / 100;
+    if fee < min_treasury {
+        min_treasury
+    } else {
+        fee
+    }
+}
+
+pub(crate) fn calculate_yocto_near(nears: f64) -> Balance {
+    (nears * (ONE_NEAR as f64)) as u128
 }
 
 impl Contract {
@@ -68,10 +77,18 @@ impl Contract {
 
 #[cfg(test)]
 mod tests {
-    use crate::internal::calculate_fee;
+    use crate::internal::{calculate_fee, calculate_yocto_near};
+    use crate::ONE_NEAR;
 
     #[test]
     fn calculate_fee_test() {
-        assert_eq!(calculate_fee(100, 5), 5);
+        assert_eq!(calculate_fee(100, 5, 2), 5);
+        assert_eq!(calculate_fee(10, 1, 2), 2);
+        assert_eq!(calculate_fee(0, 0, 2), 2);
+    }
+
+    #[test]
+    fn calculate_yoctonear_test() {
+        assert!(calculate_yocto_near(0.1) < ONE_NEAR);
     }
 }

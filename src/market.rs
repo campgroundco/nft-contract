@@ -55,18 +55,30 @@ impl Contract {
         let trail_series = self.trails_series_by_id.get(&trail_series_id).expect("Campground: Trail series does not exist");
         let price = trail_series.price;
         let attached_deposit = env::attached_deposit();
+        let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
         assert!(attached_deposit >= price, "Campground: Attached deposit is less than price");
 
-        let for_treasury = calculate_fee(price, self.campground_fee);
-        let price_deducted = price - for_treasury;
+        let mut for_treasury = calculate_fee(price, self.campground_fee, campground_minimum_fee_yocto_near);
 
-        assert!(price_deducted > 0, "Campground: Buying operation is invalid");
+        // If for_treasury <= campground_minimum_fee_yocto_near, the buyer pays the fees
+        // Otherwise, the seller pays the fee (price - for_treasury)
+        let price_deducted = if for_treasury <= campground_minimum_fee_yocto_near {
+            price
+        } else {
+            price - for_treasury
+        };
+
+        // No negative values should be allowed
+        assert!(price_deducted >= 0, "Campground: Buying operation is invalid");
         assert!(for_treasury > 0, "Campground: a fee needs to be paid");
 
         let trail_id_with_copy: TrailIdAndCopyNumber = self.internal_nft_mint_series(trail_series_id, receiver_id);
 
-        Promise::new(trail_series.creator_id).transfer(price_deducted);
+        if price_deducted > 0 {
+            Promise::new(trail_series.creator_id).transfer(price_deducted);
+        }
+
         Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury);
 
         refund_deposit(env::storage_usage() - initial_storage_usage);

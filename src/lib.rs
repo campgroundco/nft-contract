@@ -26,7 +26,8 @@ mod bridge;
 mod test;
 
 pub const TRAIL_DELIMETER: char = ':';
-const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
+pub const ONE_NEAR: Balance = 10000000000000000000000000;
+pub const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -50,7 +51,9 @@ pub struct Contract {
     pub campground_fee: u64,
 
     // Where campground fees will be sent
-    pub campground_treasury_address: AccountId
+    pub campground_treasury_address: AccountId,
+
+    pub campground_minimum_fee_yocto_near: Balance
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -113,7 +116,8 @@ impl Contract {
                 Some(&metadata),
             ),
             campground_fee: 5,
-            campground_treasury_address: treasury_id
+            campground_treasury_address: treasury_id,
+            campground_minimum_fee_yocto_near: calculate_yocto_near(0.1)
         };
 
         //return the Contract object
