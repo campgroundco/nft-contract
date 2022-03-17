@@ -166,4 +166,25 @@ mod test {
         assert_eq!(nft_mint_2, "1:2");
     }
 
+    #[test]
+    #[should_panic(expected = "Campground: Attached deposit is less than price")]
+    fn test_buy_invalid_amount() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(1000 as u128)), Some(10), None);
+        testing_env!(context
+            .predecessor_account_id(accounts(2))
+            .attached_deposit(500 as u128)
+            .build()
+        );
+
+        // Panics
+        let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+    }
+
 }
