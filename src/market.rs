@@ -57,7 +57,9 @@ impl Contract {
         let attached_deposit = env::attached_deposit();
         let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
+        println!("{} >= {}", attached_deposit, price);
         assert!(attached_deposit >= price, "Campground: Attached deposit is less than price");
+        assert!(attached_deposit >= campground_minimum_fee_yocto_near, "Campground: Attached deposit is less than minimum buying fee");
 
         let mut for_treasury = calculate_fee(price, self.campground_fee, campground_minimum_fee_yocto_near);
 

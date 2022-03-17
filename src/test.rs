@@ -1,7 +1,7 @@
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
     use near_sdk_sim::{init_simulator, ContractAccount, deploy};
-    use crate::{Contract as CampgroundContract, Contract, NFTContractMetadata, TrailSeriesMetadata, TrailResource, JsonTrail};
+    use crate::{Contract as CampgroundContract, Contract, NFTContractMetadata, TrailSeriesMetadata, TrailResource, JsonTrail, ONE_NEAR};
     use near_sdk::VMContext;
     use near_sdk::test_utils::{VMContextBuilder, accounts};
     use std::convert::TryInto;
@@ -10,6 +10,7 @@ mod test {
     use near_sdk::{testing_env};
     use crate::create_serie::CreateTrailSeries;
     use near_sdk_sim::types::Balance;
+    use crate::internal::calculate_yocto_near;
 
     const STORAGE_FOR_CREATE_SERIES: Balance = 8540000000000000000000;
 
@@ -185,6 +186,65 @@ mod test {
 
         // Panics
         let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+    }
+
+    #[test]
+    #[should_panic(expected = "Campground: Attached deposit is less than minimum buying fee")]
+    fn test_buy_invalid_fee() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(calculate_yocto_near(0.01))), Some(10), None);
+        testing_env!(context
+            .predecessor_account_id(accounts(2))
+            .attached_deposit(contract.campground_minimum_fee_yocto_near - 1)
+            .build()
+        );
+
+        contract.buy_series(String::from("1"), accounts(3));
+    }
+
+    #[test]
+    fn test_buy_just_enough_fee() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(calculate_yocto_near(0.01))), Some(10), None);
+        testing_env!(context
+            .predecessor_account_id(accounts(2))
+            .attached_deposit(contract.campground_minimum_fee_yocto_near)
+            .build()
+        );
+
+        contract.buy_series(String::from("1"), accounts(3));
+    }
+
+
+    #[test]
+    fn test_buy_one_near() {
+        let (mut context, mut contract) = setup_contract();
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(ONE_NEAR)), Some(10), None);
+        testing_env!(context
+            .predecessor_account_id(accounts(2))
+            .attached_deposit(ONE_NEAR)
+            .build()
+        );
+
+        contract.buy_series(String::from("1"), accounts(3));
     }
 
 }
