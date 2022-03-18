@@ -2,7 +2,7 @@
 mod test {
     use near_sdk_sim::{init_simulator, ContractAccount, deploy};
     use crate::{Contract as CampgroundContract, Contract, NFTContractMetadata, TrailSeriesMetadata, TrailResource, JsonTrail, ONE_NEAR};
-    use near_sdk::VMContext;
+    use near_sdk::{VMContext, AccountId};
     use near_sdk::test_utils::{VMContextBuilder, accounts};
     use std::convert::TryInto;
     use near_sdk::json_types::{ValidAccountId, U128};
@@ -245,6 +245,24 @@ mod test {
         );
 
         contract.buy_series(String::from("1"), accounts(3));
+
+        testing_env!(context
+            .predecessor_account_id(accounts(3))
+            .attached_deposit(ONE_NEAR)
+            .build()
+        );
+
+        contract.buy_series(String::from("1"), accounts(3));
+
+        let get_account_trails = contract.trails_per_owner.get(&accounts(3)).unwrap();
+        let trails_as_vec = get_account_trails.to_vec();
+        assert_eq!(get_account_trails.len(), 2);
+        assert_eq!(trails_as_vec.get(0).unwrap(), &String::from("1:1"));
+        assert_eq!(trails_as_vec.get(1).unwrap(), &String::from("1:2"));
+
+        let trails_by_id = contract.trails_by_id.get(&String::from("1:1")).unwrap();
+        assert_eq!(trails_by_id.owner_id, accounts(3));
+        assert_eq!(trails_by_id.trail_id_reference, "1");
     }
 
 }
