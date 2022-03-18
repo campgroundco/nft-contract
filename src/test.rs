@@ -263,6 +263,21 @@ mod test {
         let trails_by_id = contract.trails_by_id.get(&String::from("1:1")).unwrap();
         assert_eq!(trails_by_id.owner_id, accounts(3));
         assert_eq!(trails_by_id.trail_id_reference, "1");
+
+        assert!(contract.is_owner(&String::from("1"), &accounts(3)));
+        assert!(!(contract.is_owner(&String::from("1"), &accounts(2))));
+        assert!(!(contract.is_owner(&String::from("2"), &accounts(3))));
+
+        let get_trails_by_owner = contract.get_all_trails_by_owner(&accounts(3));
+        assert_eq!(get_trails_by_owner.len(), 1);
+        let data  = get_trails_by_owner.get(0).unwrap();
+        assert_eq!(data.creator_id, accounts(1));
+
+        // Re run test to verify ownership
+        let get_trails_by_owner = contract.get_all_trails_by_owner(&accounts(3));
+        assert_eq!(get_trails_by_owner.len(), 1);
     }
+
+
 
 }
