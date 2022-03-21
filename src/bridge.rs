@@ -7,6 +7,9 @@ pub trait SeriesBridge {
     fn is_owner(&self, series_id: &TrailId, owner_id: &AccountId) -> bool;
     fn get_trail_business(&self, trail_and_copy_id: &TrailIdAndCopyNumber) -> Option<TrailBusiness>;
     fn get_all_trails_by_owner(&self, owner_id: &AccountId) -> Vec<TrailSeries>;
+    fn get_current_fee(&self) -> u128;
+    fn get_fee_percentage(&self) -> u64;
+    fn get_treasury_address(&self) -> AccountId;
 }
 
 #[near_bindgen]
@@ -66,5 +69,17 @@ impl SeriesBridge for Contract {
             vec![]
         }
 
+    }
+
+    fn get_current_fee(&self) -> u128 {
+        self.campground_minimum_fee_yocto_near
+    }
+
+    fn get_fee_percentage(&self) -> u64 {
+        self.campground_fee
+    }
+
+    fn get_treasury_address(&self) -> AccountId {
+        self.campground_treasury_address.clone()
     }
 }

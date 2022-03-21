@@ -1,0 +1,5 @@
+/nearcore
+./nearcore
+node_modules
+**/node_modules/**
+**/nearcore/**
