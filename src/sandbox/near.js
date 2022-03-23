@@ -1,4 +1,4 @@
-const {contractMethods, getConfig} = require("./testCore.js");
+const {contractMethods, getConfig, guidGenerator} = require("./testCore.js");
 const {readFileSync} = require("fs");
 const nearAPI = require("near-api-js");
 const BN = require("bn.js");
@@ -66,19 +66,28 @@ class NearTest {
             new BN(10).pow(new BN(25))
         );
 
+        const andresName = `andres-${guidGenerator()}`;
+        const luisName = `andres-${guidGenerator()}`;
+
         const andresUseContract = await this.createContractUser(
-            "andres",
+            andresName,
             this.config.contractAccount,
             contractMethods
         );
 
         const luisUseContract = await this.createContractUser(
-            "luis",
+            luisName,
             this.config.contractAccount,
             contractMethods
         );
 
-        return [andresUseContract, luisUseContract]
+        return [{
+            instance: andresUseContract,
+            name: andresName
+        }, {
+            instance: luisUseContract,
+            name: luisName
+        }]
     }
 
 }

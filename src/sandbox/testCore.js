@@ -1,3 +1,10 @@
+function guidGenerator() {
+    var S4 = function() {
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
 const getConfig = (env, port) => {
     const usePort = port || 3030;
     switch (env) {
@@ -7,7 +14,7 @@ const getConfig = (env, port) => {
                 networkId: "sandbox",
                 nodeUrl: `http://localhost:${usePort}`,
                 masterAccount: "test.near",
-                contractAccount: "ito.test.near",
+                contractAccount: `ito-${guidGenerator()}.test.near`,
                 keyPath: "/tmp/near-sandbox/validator_key.json",
             };
     }
@@ -20,5 +27,6 @@ const contractMethods = {
 
 module.exports = {
     getConfig,
-    contractMethods
+    contractMethods,
+    guidGenerator
 }

@@ -10,8 +10,8 @@ describe("Campground <> Near Tests", () => {
         near = NearTestInstance();
         await near.initialized;
         const [_andres, _luis] = await near.initTest();
-        andres = _andres;
-        luis = _luis;
+        andres = _andres.instance;
+        luis = _luis.instance;
 
         await andres.new_default_meta({
             args: {
