@@ -39,13 +39,14 @@ class NearTest {
     async createContractUser(
         accountPrefix,
         contractAccountId,
-        contractMethods
+        contractMethods,
+        amount
     ) {
         let accountId = accountPrefix + "." + this.config.masterAccount;
         await this.masterAccount.createAccount(
             accountId,
             this.pubKey,
-            new BN(10).pow(new BN(25))
+            amount || new BN(10).pow(new BN(25))
         );
         this.keyStore.setKey(this.config.networkId, accountId, this.masterKey);
         const account = new nearAPI.Account(this.near.connection, accountId);
@@ -68,6 +69,7 @@ class NearTest {
 
         const andresName = `andres-${guidGenerator()}`;
         const luisName = `andres-${guidGenerator()}`;
+        const campgroundName = `campground-${guidGenerator()}`;
 
         const andresUseContract = await this.createContractUser(
             andresName,
@@ -81,13 +83,23 @@ class NearTest {
             contractMethods
         );
 
+        const campgroundContract = await this.createContractUser(
+            campgroundName,
+            this.config.contractAccount,
+            contractMethods,
+            new BN(0)
+        )
+
         return [{
             instance: andresUseContract,
             name: andresName
         }, {
             instance: luisUseContract,
             name: luisName
-        }]
+        }, {
+                instance: campgroundContract,
+                name: campgroundName
+            }]
     }
 
 }
