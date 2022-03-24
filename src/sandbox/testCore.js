@@ -21,7 +21,7 @@ const getConfig = (env, port) => {
 }
 
 const contractMethods = {
-    viewMethods: ["series_exists", "get_owner", "get_trail_by_id", "is_owner", "get_trail_business", "get_all_trails_by_owner", "get_current_fee", "get_fee_percentage", "get_treasury_address"],
+    viewMethods: ["series_exists", "get_owner", "get_trail_by_id", "is_owner", "get_trail_business", "get_all_trails_by_owner", "get_current_fee", "get_fee_percentage", "get_treasury_address", "is_creator", "get_trail_by_id_optional", "get_all_trails_by_creator"],
     changeMethods: ["create_trail_series", "trail_tickets_for_owner", "buy_series", "nft_mint", "nft_metadata", "trail_ticket", "new_default_meta"],
 };
 

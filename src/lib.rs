@@ -44,6 +44,9 @@ pub struct Contract {
     //keeps track of the token metadata for a given token ID
     pub trails_series_by_id: UnorderedMap<TrailId, TrailSeries>,
 
+    //keeps track of the token created by creator
+    pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
+
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
 
@@ -61,6 +64,7 @@ pub struct Contract {
 pub enum StorageKey {
     TokensPerOwner,
     TokenPerOwnerInner { account_id_hash: CryptoHash },
+    TokenPerCreator,
     TokensById,
     TokenMetadataById,
     NFTContractMetadata,
@@ -117,7 +121,8 @@ impl Contract {
             ),
             campground_fee: 5,
             campground_treasury_address: treasury_id,
-            campground_minimum_fee_yocto_near: calculate_yocto_near(0.1)
+            campground_minimum_fee_yocto_near: calculate_yocto_near(0.1),
+            trails_series_by_creator: LookupMap::new(StorageKey::TokenPerCreator.try_to_vec().unwrap())
         };
 
         //return the Contract object

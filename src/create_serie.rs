@@ -57,6 +57,7 @@ impl CreateTrailSeries for Contract {
         };
 
         self.trails_series_by_id.insert(&token_series_id, &trail_series);
+        self.internal_add_trail_to_creator(&creator_id, &token_series_id);
 
         refund_deposit(env::storage_usage() - initial_storage_usage);
 
