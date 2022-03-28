@@ -68,7 +68,7 @@ class NearTest {
         );
 
         const andresName = `andres-${guidGenerator()}`;
-        const luisName = `andres-${guidGenerator()}`;
+        const luisName = `luis-${guidGenerator()}`;
         const campgroundName = `campground-${guidGenerator()}`;
 
         const andresUseContract = await this.createContractUser(
@@ -87,7 +87,7 @@ class NearTest {
             campgroundName,
             this.config.contractAccount,
             contractMethods,
-            new BN(0)
+            new BN("1000000000000000000000000")
         )
 
         return [{

@@ -8,8 +8,7 @@ describe("Campground <> Near Tests", () => {
     let campgroundAddress;
 
     jest.setTimeout(600000);
-    beforeAll(async () => {
-
+    beforeEach(async () => {
         near = NearTestInstance();
         await near.initialized;
         const [_andres, _luis, _campground] = await near.initTest();
@@ -23,7 +22,7 @@ describe("Campground <> Near Tests", () => {
 
         campgroundAddress = `${campgroundName}.test.near`;
 
-        await andres.new_default_meta({
+        await campground.new_default_meta({
             args: {
                 owner_id: campgroundAddress,
                 treasury_id: campgroundAddress
@@ -65,7 +64,7 @@ describe("Campground <> Near Tests", () => {
         expect(fee_percentage).toBe(5);
     });
 
-    const createTrail = async () => {
+    const createTrail = async (price) => {
         const trailMetadata = {
             title: "My Trail",
             description: "Some description",
@@ -81,7 +80,7 @@ describe("Campground <> Near Tests", () => {
         return await andres.create_trail_series({
             args: {
                 metadata: trailMetadata,
-                price: "10000000000000000000000000" // One Near
+                price: price || "10000000000000000000000000" // One Near
             },
             amount: "5780000000000000000000"
         });
@@ -120,6 +119,19 @@ describe("Campground <> Near Tests", () => {
             console.log(e);
             expect(e.kind.ExecutionError).toContain("Smart contract panicked: panicked at 'Campground: Attached deposit is less than price");
         }
+    });
+
+    test("Buy series", async () => {
+        const createIto = await createTrail("5000000000000000000000000");
+        const balance = await luis.account.getAccountBalance();
+        console.log(balance);
+        await luis.buy_series({
+            args: {
+                trail_series_id: createIto.token_id,
+                receiver_id: `${luisName}.test.near`
+            },
+            amount: "5004660000000000000000000"
+        });
     });
 
 

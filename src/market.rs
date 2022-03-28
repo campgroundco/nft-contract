@@ -83,7 +83,7 @@ impl Contract {
 
         Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury);
 
-        refund_deposit(env::storage_usage() - initial_storage_usage);
+        refund_deposit(env::storage_usage() - initial_storage_usage, price);
 
         trail_id_with_copy
     }
@@ -103,7 +103,7 @@ impl Contract {
         let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;
 
         //refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
-        refund_deposit(required_storage_in_bytes);
+        refund_deposit(required_storage_in_bytes, 0);
 
         trail_mint_id
     }
