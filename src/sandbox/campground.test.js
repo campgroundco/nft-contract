@@ -123,8 +123,10 @@ describe("Campground <> Near Tests", () => {
 
     test("Buy series", async () => {
         const createIto = await createTrail("5000000000000000000000000");
-        const balance = await luis.account.getAccountBalance();
-        console.log(balance);
+        const getCampgroundBalance = async () => await campground.account.getAccountBalance();
+        const getLuisBalance = async () => await luis.account.getAccountBalance();
+        const beforeBuying = await getCampgroundBalance();
+        const luisBeforeBuying = await getLuisBalance();
         await luis.buy_series({
             args: {
                 trail_series_id: createIto.token_id,
@@ -132,6 +134,14 @@ describe("Campground <> Near Tests", () => {
             },
             amount: "5004660000000000000000000"
         });
+        const afterBuying = await getCampgroundBalance();
+        const luisAfterBuying = await getLuisBalance();
+        expect(Number(beforeBuying.total)).toBeLessThan(Number(afterBuying.total));
+        expect(Number(luisBeforeBuying.total)).toBeGreaterThan(Number(luisAfterBuying.total));
+        const approximateCampgroundRevenue = Number(5000000000000000000000000) * 0.1;
+        expect(Number(afterBuying.total)).toBeGreaterThanOrEqual(approximateCampgroundRevenue);
+        expect(Number(luisAfterBuying.total)).toBeGreaterThan(4.98e+24)
+        expect(Number(luisAfterBuying.total)).toBeLessThan(5.0e+24)
     });
 
 
