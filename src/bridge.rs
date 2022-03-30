@@ -13,6 +13,7 @@ pub trait SeriesBridge {
     fn get_current_fee(&self) -> u128;
     fn get_fee_percentage(&self) -> u64;
     fn get_treasury_address(&self) -> AccountId;
+    fn is_caller_contract_owner(&self) -> bool;
 }
 
 #[near_bindgen]
@@ -120,5 +121,10 @@ impl SeriesBridge for Contract {
 
     fn get_treasury_address(&self) -> AccountId {
         self.campground_treasury_address.clone()
+    }
+
+    fn is_caller_contract_owner(&self) -> bool {
+        let caller = env::predecessor_account_id();
+        self.owner_id.eq(&caller)
     }
 }

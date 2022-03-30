@@ -1,7 +1,7 @@
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod test {
     use near_sdk_sim::{init_simulator, ContractAccount, deploy};
-    use crate::{Contract as CampgroundContract, Contract, NFTContractMetadata, TrailSeriesMetadata, TrailResource, JsonTrail, ONE_NEAR};
+    use crate::{Contract as CampgroundContract, Contract, NFTContractMetadata, TrailSeriesMetadata, TrailResource, JsonTrail, ONE_NEAR, BUY_STORAGE};
     use near_sdk::{VMContext, AccountId};
     use near_sdk::test_utils::{VMContextBuilder, accounts};
     use std::convert::TryInto;
@@ -11,6 +11,7 @@ mod test {
     use crate::create_serie::CreateTrailSeries;
     use near_sdk_sim::types::Balance;
     use crate::internal::calculate_yocto_near;
+    use crate::admin::AdminBridge;
 
     const STORAGE_FOR_CREATE_SERIES: Balance = 8540000000000000000000;
 
@@ -158,7 +159,7 @@ mod test {
 
         testing_env!(context
             .predecessor_account_id(accounts(2))
-            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES + calculate_yocto_near(0.1))
             .build()
         );
 
@@ -240,7 +241,7 @@ mod test {
         let trail_series = create_series(&mut contract, "CampgroundTest", Some(1647109675), Some(1647216000), Some(U128::from(ONE_NEAR)), Some(10), None);
         testing_env!(context
             .predecessor_account_id(accounts(2))
-            .attached_deposit(ONE_NEAR)
+            .attached_deposit(ONE_NEAR + BUY_STORAGE)
             .build()
         );
 
@@ -248,7 +249,7 @@ mod test {
 
         testing_env!(context
             .predecessor_account_id(accounts(3))
-            .attached_deposit(ONE_NEAR)
+            .attached_deposit(ONE_NEAR + BUY_STORAGE)
             .build()
         );
 
@@ -277,6 +278,97 @@ mod test {
         let get_trails_by_owner = contract.get_all_trails_by_owner(&accounts(3));
         assert_eq!(get_trails_by_owner.len(), 1);
     }
+
+    #[test]
+    fn test_change_capground_fee_valid() {
+        let (mut context, mut contract) = setup_contract();
+        assert_eq!(contract.campground_fee, 5);
+        testing_env!(context
+            .predecessor_account_id(accounts(0))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        contract.change_campground_fee(10);
+        assert_eq!(contract.campground_fee, 10);
+
+
+    }
+
+    #[test]
+    #[should_panic(expected = "Campground: Only contract owner can execute")]
+    fn test_change_campground_fee_invalid() {
+        let (mut context, mut contract) = setup_contract();
+        assert_eq!(contract.campground_fee, 5);
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        contract.change_campground_fee(10);
+    }
+
+    #[test]
+    fn test_change_campground_treasury_address_valid() {
+        let (mut context, mut contract) = setup_contract();
+        assert_eq!(contract.campground_fee, 5);
+        testing_env!(context
+            .predecessor_account_id(accounts(0))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        contract.change_campground_treasury_address(accounts(5));
+        assert_eq!(contract.campground_treasury_address, accounts(5));
+
+
+    }
+
+    #[test]
+    #[should_panic(expected = "Campground: Only contract owner can execute")]
+    fn test_change_campground_treasury_address_invalid() {
+        let (mut context, mut contract) = setup_contract();
+        assert_eq!(contract.campground_fee, 5);
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        contract.change_campground_treasury_address(accounts(5));
+    }
+
+    #[test]
+    fn test_change_campground_minimum_fee_valid() {
+        let (mut context, mut contract) = setup_contract();
+        assert_eq!(contract.campground_fee, 5);
+        testing_env!(context
+            .predecessor_account_id(accounts(0))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        contract.change_campground_minimum_fee(50000000);
+        assert_eq!(contract.campground_minimum_fee_yocto_near, 50000000);
+
+
+    }
+
+    #[test]
+    #[should_panic(expected = "Campground: Only contract owner can execute")]
+    fn test_change_campground_minimum_fee_invalid() {
+        let (mut context, mut contract) = setup_contract();
+        assert_eq!(contract.campground_fee, 5);
+        testing_env!(context
+            .predecessor_account_id(accounts(1))
+            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .build()
+        );
+
+        contract.change_campground_minimum_fee(50000000);
+    }
+
 
 
 

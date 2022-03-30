@@ -1,6 +1,7 @@
 use crate::*;
 use near_sdk::{CryptoHash};
 use std::mem::size_of;
+use crate::bridge::SeriesBridge;
 
 //used to generate a unique prefix in our storage collections (this is to avoid data collisions)
 pub(crate) fn hash_account_id(account_id: &AccountId) -> CryptoHash {
@@ -86,6 +87,12 @@ impl Contract {
 
         //we insert that set for the given account ID.
         self.trails_series_by_creator.insert(account_id, &trails_set);
+    }
+
+    pub(crate) fn panic_if_not_owner(&self) {
+        if !self.is_caller_contract_owner() {
+            panic!("Campground: Only contract owner can execute")
+        }
     }
 }
 

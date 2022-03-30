@@ -89,7 +89,7 @@ impl Contract {
     }
 
     #[payable]
-    pub fn nft_mint(&mut self, token_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
+    pub(crate) fn nft_mint(&mut self, token_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 

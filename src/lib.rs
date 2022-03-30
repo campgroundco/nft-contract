@@ -24,9 +24,11 @@ mod royalty;
 mod create_serie;
 mod bridge;
 mod test;
+mod admin;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 10000000000000000000000000;
+pub const BUY_STORAGE: Balance = 3740000000000000000000;
 pub const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 
 #[near_bindgen]
