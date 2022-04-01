@@ -9,6 +9,9 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/sandbox
 
     strategy:
       matrix:
@@ -20,7 +23,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: cd src/sandbox
       - run: npm install
       - run: npm install -g jest
       - run: jest
