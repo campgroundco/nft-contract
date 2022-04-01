@@ -12,8 +12,15 @@ describe("Campground <> Near Tests", () => {
 
     let testnetCmd;
     beforeAll(async () => {
-        testnetCmd = spawn("npm", ["run", "clean"], { detached: true });
-        await new Promise((r) => setTimeout(r, 5000));
+        try {
+            testnetCmd = spawn("npm", ["run", "clean"], {detached: true});
+            testnetCmd.on('error', function (err) {
+                console.log(err);
+            });
+            await new Promise((r) => setTimeout(r, 5000));
+        } catch (e) {
+            console.log(e);
+        }
     });
 
     beforeEach(async () => {
