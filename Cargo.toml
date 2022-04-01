@@ -1,7 +1,7 @@
 [package]
-name = "nft_simple"
+name = "ito_contract"
 version = "0.1.0"
-authors = ["Near Inc <hello@nearprotocol.com>"]
+authors = ["Campground <team@campground.co>"]
 edition = "2021"
 
 [lib]

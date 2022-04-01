@@ -1215,6 +1215,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ito_contract"
+version = "0.1.0"
+dependencies = [
+ "near-sdk 4.0.0-pre.4",
+ "near-sdk-sim",
+ "serde_json",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1788,15 +1797,6 @@ dependencies = [
  "wasmer-runtime-near",
  "wasmer-types",
  "wasmtime",
-]
-
-[[package]]
-name = "nft_simple"
-version = "0.1.0"
-dependencies = [
- "near-sdk 4.0.0-pre.4",
- "near-sdk-sim",
- "serde_json",
 ]
 
 [[package]]
