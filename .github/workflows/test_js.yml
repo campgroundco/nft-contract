@@ -20,8 +20,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: cd src/sandbox
-      - run: npm ci
+      - run: cd src/sandbox
       - run: npm install
       - run: jest
