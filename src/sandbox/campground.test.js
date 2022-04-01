@@ -1,4 +1,5 @@
 const {NearTestInstance} = require("./near.js");
+const { spawn } = require('child_process');
 
 describe("Campground <> Near Tests", () => {
     let near;
@@ -8,6 +9,13 @@ describe("Campground <> Near Tests", () => {
     let campgroundAddress;
 
     jest.setTimeout(600000);
+
+    let testnetCmd;
+    beforeAll(async () => {
+        testnetCmd = spawn("npm", ["run", "clean"], { detached: true });
+        await new Promise((r) => setTimeout(r, 5000));
+    });
+
     beforeEach(async () => {
         near = NearTestInstance();
         await near.initialized;
@@ -142,6 +150,10 @@ describe("Campground <> Near Tests", () => {
         expect(Number(afterBuying.total)).toBeGreaterThanOrEqual(approximateCampgroundRevenue);
         expect(Number(luisAfterBuying.total)).toBeGreaterThan(4.98e+24)
         expect(Number(luisAfterBuying.total)).toBeLessThan(5.0e+24)
+    });
+
+    afterAll(() => {
+        process.kill(-testnetCmd.pid);
     });
 
 
