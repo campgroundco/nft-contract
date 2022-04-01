@@ -58,7 +58,7 @@ class NearTest {
     }
 
     async initTest() {
-        const contract = readFileSync("../../target/wasm32-unknown-unknown/release/nft_simple.wasm");
+        const contract = readFileSync("../../target/wasm32-unknown-unknown/release/ito_contract.wasm");
 
         const _contractAccount = await this.masterAccount.createAndDeployContract(
             this.config.contractAccount,
