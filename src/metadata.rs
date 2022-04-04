@@ -33,15 +33,13 @@ pub struct TrailResource {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct SeriesSupply {
-    pub total: Option<u64>,
-    pub circulating: Option<u64>
+    pub total: u64,
+    pub circulating: u64
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailSeriesMetadata {
-    pub is_mintable: bool,
-    pub creator_id: AccountId,
     pub title: String,
     pub description: String,
     pub tickets_amount: u64,
@@ -50,12 +48,23 @@ pub struct TrailSeriesMetadata {
     pub resources: Vec<TrailResource>,
     pub starts_at: Option<u64>, // When token starts being valid, Unix epoch in milliseconds
     pub expires_at: Option<u64>, // When token expires, Unix epoch in milliseconds,
-    pub issue_at: u64,
     pub reference: Option<String>, // Url referencing something of this resource,
-    pub supply: SeriesSupply
+    pub campground_id: String
 }
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct TrailSeries {
+    pub is_mintable: bool,
+    pub creator_id: AccountId,
+    pub issue_at: u64,
+    pub metadata: TrailSeriesMetadata,
+    pub supply: SeriesSupply,
+    pub price: u128
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
 pub struct TrailBusiness {
     //owner of the token
     pub owner_id: AccountId,
@@ -71,7 +80,7 @@ pub struct JsonTrail {
     //owner of the token
     pub owner_id: AccountId,
     //token metadata
-    pub series: TrailSeriesMetadata,
+    pub series: TrailSeries,
 }
 
 pub trait NonFungibleTokenMetadata {

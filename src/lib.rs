@@ -9,7 +9,7 @@ use near_sdk::{
 
 use crate::internal::*;
 pub use crate::metadata::*;
-pub use crate::mint::*;
+pub use crate::market::*;
 pub use crate::nft_core::*;
 pub use crate::approval::*;
 pub use crate::royalty::*;
@@ -18,11 +18,18 @@ mod internal;
 mod approval; 
 mod enumeration; 
 mod metadata; 
-mod mint; 
+mod market;
 mod nft_core; 
 mod royalty;
+mod create_serie;
+mod bridge;
+mod test;
+mod admin;
 
 pub const TRAIL_DELIMETER: char = ':';
+pub const ONE_NEAR: Balance = 10000000000000000000000000;
+pub const BUY_STORAGE: Balance = 3740000000000000000000;
+pub const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -37,10 +44,21 @@ pub struct Contract {
     pub trails_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
     //keeps track of the token metadata for a given token ID
-    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeriesMetadata>,
+    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeries>,
+
+    //keeps track of the token created by creator
+    pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
 
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
+
+    // Fee from 1 to 100, each unit representing %. 5 = 5% of each market sale
+    pub campground_fee: u64,
+
+    // Where campground fees will be sent
+    pub campground_treasury_address: AccountId,
+
+    pub campground_minimum_fee_yocto_near: Balance
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -48,6 +66,7 @@ pub struct Contract {
 pub enum StorageKey {
     TokensPerOwner,
     TokenPerOwnerInner { account_id_hash: CryptoHash },
+    TokenPerCreator,
     TokensById,
     TokenMetadataById,
     NFTContractMetadata,
@@ -64,7 +83,7 @@ impl Contract {
         user doesn't have to manually type metadata.
     */
     #[init]
-    pub fn new_default_meta(owner_id: AccountId) -> Self {
+    pub fn new_default_meta(owner_id: AccountId, treasury_id: AccountId) -> Self {
         //calls the other function "new: with some default metadata and the owner_id passed in 
         Self::new(
             owner_id,
@@ -77,6 +96,7 @@ impl Contract {
                 reference: None,
                 reference_hash: None,
             },
+            treasury_id
         )
     }
 
@@ -86,7 +106,7 @@ impl Contract {
         the owner_id. 
     */
     #[init]
-    pub fn new(owner_id: AccountId, metadata: NFTContractMetadata) -> Self {
+    pub fn new(owner_id: AccountId, metadata: NFTContractMetadata, treasury_id: AccountId) -> Self {
         //create a variable of type Self with all the fields initialized. 
         let this = Self {
             //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
@@ -101,6 +121,10 @@ impl Contract {
                 StorageKey::NFTContractMetadata.try_to_vec().unwrap(),
                 Some(&metadata),
             ),
+            campground_fee: 5,
+            campground_treasury_address: treasury_id,
+            campground_minimum_fee_yocto_near: calculate_yocto_near(0.1),
+            trails_series_by_creator: LookupMap::new(StorageKey::TokenPerCreator.try_to_vec().unwrap())
         };
 
         //return the Contract object
