@@ -52,5 +52,5 @@ jobs:
       - run: cd src/sandbox && npm install
       - run: cd src/sandbox && git clone https://github.com/near/nearcore
       - run: cd src/sandbox/nearcore && make sandbox
-      - run: cd src/sandbox && jest
+      - run: cd src/sandbox && jest -u
 
