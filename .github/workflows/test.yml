@@ -49,7 +49,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: chmod +x ./build.sh && ./build.sh
       - run: npm install -g jest
-      - run: cd src/sandbox && npm install & cd ../../
-      - run: cd src/sandbox/nearcore && make sandbox & cd ../../
+      - run: cd src/sandbox && npm install
+      - run: cd src/sandbox && git clone https://github.com/near/nearcore
+      - run: cd src/sandbox/nearcore && make sandbox
       - run: cd src/sandbox && jest
 
