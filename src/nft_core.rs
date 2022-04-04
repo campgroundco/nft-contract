@@ -25,7 +25,7 @@ pub trait NonFungibleTokenCore {
     );
 
     //get information about the NFT token passed in
-    fn trail_ticket(&self, token_id: TrailId) -> Option<JsonTrail>;
+    fn trail_ticket(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail>;
 }
 
 #[ext_contract(ext_non_fungible_token_receiver)]
