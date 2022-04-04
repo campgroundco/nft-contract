@@ -159,8 +159,9 @@ describe("Campground <> Near Tests", () => {
         expect(Number(luisAfterBuying.total)).toBeLessThan(5.0e+24)
     });
 
-    afterAll(() => {
+    afterAll(async () => {
         process.kill(-testnetCmd.pid);
+        await new Promise(resolve => setTimeout(() => resolve(), 10000));
     });
 
 
