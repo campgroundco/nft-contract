@@ -29,3 +29,26 @@ This represents the ITO (Initial Trail Offering) Smart Contract system created f
 | create_trail_series | Creates a series (trail) inside the smart contract | Struct | 
 | buy_series | Buys a trail series if still available given a price and attached deposit | String |
 | new_default_meta | Initializes the contract | Void |
+
+# Interacting with Contract 
+
+```javascript
+const cmpgContract = new Contract(walletAccount, "campgroundv1.testnet", {
+    viewMethods: ["get_all_trails_by_creator"],
+    changeMethods: ["create_trail_series"]
+});
+
+// Change method
+await cmpgContract.create_trail_series({
+    args: {
+        ...
+    },
+    amount: '10000000000000000000000000' // One near in yocto near (attached deposit)
+});
+
+
+// View Method
+await cmpgContract.get_trail_by_id({
+    creator_id: "address.testnet"
+});
+```
