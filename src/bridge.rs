@@ -7,7 +7,8 @@ pub trait SeriesBridge {
     fn get_trail_by_id_optional(&self, series_id: &TrailId) -> Option<TrailSeries>;
     fn is_owner(&self, series_id: &TrailId, owner_id: &AccountId) -> bool;
     fn is_creator(&self, series_id: &TrailId, owner_id: &AccountId) -> bool;
-    fn get_trail_business(&self, trail_and_copy_id: &TrailIdAndCopyNumber) -> Option<TrailBusiness>;
+    fn get_trail_business(&self, trail_and_copy_id: &TrailIdAndCopyNumber)
+        -> Option<TrailBusiness>;
     fn get_all_trails_by_owner(&self, owner_id: &AccountId) -> Vec<TrailSeries>;
     fn get_all_trails_by_creator(&self, creator_id: &AccountId) -> Vec<TrailSeries>;
     fn get_current_fee(&self) -> u128;
@@ -27,9 +28,7 @@ impl SeriesBridge for Contract {
     }
 
     fn get_trail_by_id_optional(&self, series_id: &TrailId) -> Option<TrailSeries> {
-        let token_series = self
-            .trails_series_by_id
-            .get(series_id);
+        let token_series = self.trails_series_by_id.get(series_id);
 
         token_series
     }
@@ -64,7 +63,10 @@ impl SeriesBridge for Contract {
         }
     }
 
-    fn get_trail_business(&self, trail_and_copy_id: &TrailIdAndCopyNumber) -> Option<TrailBusiness> {
+    fn get_trail_business(
+        &self,
+        trail_and_copy_id: &TrailIdAndCopyNumber,
+    ) -> Option<TrailBusiness> {
         self.trails_by_id.get(trail_and_copy_id)
     }
 
@@ -82,13 +84,12 @@ impl SeriesBridge for Contract {
                 }
             });
 
-            ids.iter().map(|id| {
-                self.get_trail_by_id(id)
-            }).collect::<Vec<TrailSeries>>()
+            ids.iter()
+                .map(|id| self.get_trail_by_id(id))
+                .collect::<Vec<TrailSeries>>()
         } else {
             vec![]
         }
-
     }
 
     fn get_all_trails_by_creator(&self, creator_id: &AccountId) -> Vec<TrailSeries> {
@@ -102,13 +103,12 @@ impl SeriesBridge for Contract {
                 }
             });
 
-            ids.iter().map(|id| {
-                self.get_trail_by_id(id)
-            }).collect::<Vec<TrailSeries>>()
+            ids.iter()
+                .map(|id| self.get_trail_by_id(id))
+                .collect::<Vec<TrailSeries>>()
         } else {
             vec![]
         }
-
     }
 
     fn get_current_fee(&self) -> u128 {

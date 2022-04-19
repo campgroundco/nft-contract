@@ -1,15 +1,22 @@
-use crate::*;
 use crate::bridge::SeriesBridge;
+use crate::*;
 
 pub trait CreateTrailSeries {
-    fn create_trail_series(&mut self, metadata: TrailSeriesMetadata, price: Option<U128>) -> JsonTrail;
+    fn create_trail_series(
+        &mut self,
+        metadata: TrailSeriesMetadata,
+        price: Option<U128>,
+    ) -> JsonTrail;
 }
 
 #[near_bindgen]
 impl CreateTrailSeries for Contract {
-
     #[payable]
-    fn create_trail_series(&mut self, metadata: TrailSeriesMetadata, price: Option<U128>) -> JsonTrail {
+    fn create_trail_series(
+        &mut self,
+        metadata: TrailSeriesMetadata,
+        price: Option<U128>,
+    ) -> JsonTrail {
         let initial_storage_usage = env::storage_usage();
         let creator_id = env::predecessor_account_id();
         let current_block_timestamp = env::block_timestamp();
@@ -35,10 +42,16 @@ impl CreateTrailSeries for Contract {
         };
 
         let quantity = metadata.tickets_amount;
-        assert!(quantity > 0, "Campground: At least 1 ticket is required per trail series");
+        assert!(
+            quantity > 0,
+            "Campground: At least 1 ticket is required per trail series"
+        );
 
         let resources_len = metadata.resources.len();
-        assert!(resources_len > 0, "Campground: At least 1 resource is needed per trail");
+        assert!(
+            resources_len > 0,
+            "Campground: At least 1 resource is needed per trail"
+        );
 
         // let can_be_traded_at = metadata.starts_at.unwrap_or(current_block_timestamp.clone());
         // let valid_until = metadata.expires_at.unwrap_or_else(|| u64::MAX);
@@ -51,12 +64,13 @@ impl CreateTrailSeries for Contract {
             metadata,
             supply: SeriesSupply {
                 total: quantity,
-                circulating: 0 as u64
+                circulating: 0 as u64,
             },
-            price: price_res.unwrap_or(0)
+            price: price_res.unwrap_or(0),
         };
 
-        self.trails_series_by_id.insert(&token_series_id, &trail_series);
+        self.trails_series_by_id
+            .insert(&token_series_id, &trail_series);
         self.internal_add_trail_to_creator(&creator_id, &token_series_id);
 
         refund_deposit(env::storage_usage() - initial_storage_usage, 0);
@@ -64,9 +78,7 @@ impl CreateTrailSeries for Contract {
         JsonTrail {
             token_id: token_series_id,
             owner_id: creator_id,
-            series: trail_series
+            series: trail_series,
         }
-
     }
-
 }

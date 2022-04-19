@@ -17,10 +17,7 @@ impl Contract {
     }
 
     //get the total supply of NFTs for a given owner
-    pub fn nft_supply_for_owner(
-        &self,
-        account_id: AccountId,
-    ) {
+    pub fn nft_supply_for_owner(&self, account_id: AccountId) {
         /*
             FILL THIS IN
         */
@@ -39,7 +36,7 @@ impl Contract {
         let tokens = if let Some(tokens_for_owner_set) = tokens_for_owner_set {
             tokens_for_owner_set
         } else {
-            //if there is no set of tokens, we'll simply return an empty vector. 
+            //if there is no set of tokens, we'll simply return an empty vector.
             return vec![];
         };
 
@@ -47,11 +44,12 @@ impl Contract {
         let start = u128::from(from_index.unwrap_or(U128(0)));
 
         //iterate through the keys vector
-        tokens.iter()
+        tokens
+            .iter()
             //skip to the index we specified in the start variable
-            .skip(start as usize) 
+            .skip(start as usize)
             //take the first "limit" elements in the vector. If we didn't specify a limit, use 50
-            .take(limit.unwrap_or(50) as usize) 
+            .take(limit.unwrap_or(50) as usize)
             //we'll map the token IDs which are strings into Json Tokens
             .map(|token_id| self.trail_ticket(token_id.clone()).unwrap())
             //since we turned the keys into an iterator, we need to turn it back into a vector to return
