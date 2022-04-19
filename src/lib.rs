@@ -58,7 +58,7 @@ pub struct Contract {
     // Where campground fees will be sent
     pub campground_treasury_address: AccountId,
 
-    pub campground_minimum_fee_yocto_near: Balance
+    pub campground_minimum_fee_yocto_near: Balance,
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -84,7 +84,7 @@ impl Contract {
     */
     #[init]
     pub fn new_default_meta(owner_id: AccountId, treasury_id: AccountId) -> Self {
-        //calls the other function "new: with some default metadata and the owner_id passed in 
+        //calls the other function "new: with some default metadata and the owner_id passed in
         Self::new(
             owner_id,
             NFTContractMetadata {
@@ -96,18 +96,18 @@ impl Contract {
                 reference: None,
                 reference_hash: None,
             },
-            treasury_id
+            treasury_id,
         )
     }
 
     /*
         initialization function (can only be called once).
         this initializes the contract with metadata that was passed in and
-        the owner_id. 
+        the owner_id.
     */
     #[init]
     pub fn new(owner_id: AccountId, metadata: NFTContractMetadata, treasury_id: AccountId) -> Self {
-        //create a variable of type Self with all the fields initialized. 
+        //create a variable of type Self with all the fields initialized.
         let this = Self {
             //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
             trails_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
@@ -115,7 +115,7 @@ impl Contract {
             trails_series_by_id: UnorderedMap::new(
                 StorageKey::TokenMetadataById.try_to_vec().unwrap(),
             ),
-            //set the owner_id field equal to the passed in owner_id. 
+            //set the owner_id field equal to the passed in owner_id.
             owner_id,
             metadata: LazyOption::new(
                 StorageKey::NFTContractMetadata.try_to_vec().unwrap(),
@@ -124,7 +124,9 @@ impl Contract {
             campground_fee: 5,
             campground_treasury_address: treasury_id,
             campground_minimum_fee_yocto_near: calculate_yocto_near(0.1),
-            trails_series_by_creator: LookupMap::new(StorageKey::TokenPerCreator.try_to_vec().unwrap())
+            trails_series_by_creator: LookupMap::new(
+                StorageKey::TokenPerCreator.try_to_vec().unwrap(),
+            ),
         };
 
         //return the Contract object
