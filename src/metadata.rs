@@ -6,7 +6,7 @@ pub type TrailIdAndCopyNumber = String;
 #[serde(crate = "near_sdk::serde")]
 pub struct Payout {
     pub payout: HashMap<AccountId, U128>,
-} 
+}
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
@@ -27,14 +27,14 @@ pub struct TrailResource {
     pub description: Option<String>, // free-form description
     pub media: String, // URL to associated media, preferably to decentralized, content-addressed storage
     pub extra: Option<String>, // anything extra the NFT wants to store on-chain. Can be stringified JSON.
-    pub reference: Option<String> // Url referencing something of this resource
+    pub reference: Option<String>, // Url referencing something of this resource
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct SeriesSupply {
     pub total: u64,
-    pub circulating: u64
+    pub circulating: u64,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -49,7 +49,7 @@ pub struct TrailSeriesMetadata {
     pub starts_at: Option<u64>, // When token starts being valid, Unix epoch in milliseconds
     pub expires_at: Option<u64>, // When token expires, Unix epoch in milliseconds,
     pub reference: Option<String>, // Url referencing something of this resource,
-    pub campground_id: String
+    pub campground_id: String,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -60,7 +60,7 @@ pub struct TrailSeries {
     pub issue_at: u64,
     pub metadata: TrailSeriesMetadata,
     pub supply: SeriesSupply,
-    pub price: u128
+    pub price: u128,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -68,10 +68,10 @@ pub struct TrailSeries {
 pub struct TrailBusiness {
     //owner of the token
     pub owner_id: AccountId,
-    pub trail_id_reference: TrailId
+    pub trail_id_reference: TrailId,
 }
 
-//The Json token is what will be returned from view calls. 
+//The Json token is what will be returned from view calls.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct JsonTrail {

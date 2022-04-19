@@ -1,7 +1,7 @@
-use crate::*;
-use near_sdk::{CryptoHash};
-use std::mem::size_of;
 use crate::bridge::SeriesBridge;
+use crate::*;
+use near_sdk::CryptoHash;
+use std::mem::size_of;
 
 //used to generate a unique prefix in our storage collections (this is to avoid data collisions)
 pub(crate) fn hash_account_id(account_id: &AccountId) -> CryptoHash {
@@ -65,7 +65,7 @@ impl Contract {
         //we insert the token ID into the set
         tokens_set.insert(token_id);
 
-        //we insert that set for the given account ID. 
+        //we insert that set for the given account ID.
         self.trails_per_owner.insert(account_id, &tokens_set);
     }
 
@@ -75,18 +75,20 @@ impl Contract {
         trail_id: &TrailId,
     ) {
         //get the set of tokens for the given account
-        let mut trails_set = self.trails_series_by_creator.get(account_id).unwrap_or_else(|| {
-            //if the account doesn't have any tokens, we create a new unordered set
-            UnorderedSet::new(
-                StorageKey::TokenPerCreator.try_to_vec().unwrap(),
-            )
-        });
+        let mut trails_set = self
+            .trails_series_by_creator
+            .get(account_id)
+            .unwrap_or_else(|| {
+                //if the account doesn't have any tokens, we create a new unordered set
+                UnorderedSet::new(StorageKey::TokenPerCreator.try_to_vec().unwrap())
+            });
 
         //we insert the token ID into the set
         trails_set.insert(trail_id);
 
         //we insert that set for the given account ID.
-        self.trails_series_by_creator.insert(account_id, &trails_set);
+        self.trails_series_by_creator
+            .insert(account_id, &trails_set);
     }
 
     pub(crate) fn panic_if_not_owner(&self) {
