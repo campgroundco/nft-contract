@@ -7,12 +7,7 @@ const NO_DEPOSIT: Balance = 0;
 
 pub trait NonFungibleTokenCore {
     //transfers an NFT to a receiver ID
-    fn nft_transfer(
-        &mut self,
-        receiver_id: AccountId,
-        token_id: TrailId,
-        memo: Option<String>,
-    );
+    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailId, memo: Option<String>);
 
     //transfers an NFT to a receiver and calls a function on the receiver ID's contract
     /// Returns `true` if the token was transferred from the sender's account.
@@ -72,15 +67,9 @@ trait NonFungibleTokenResolver {
 
 #[near_bindgen]
 impl NonFungibleTokenCore for Contract {
-
-    //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver. 
+    //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver.
     #[payable]
-    fn nft_transfer(
-        &mut self,
-        receiver_id: AccountId,
-        token_id: TrailId,
-        memo: Option<String>,
-    ) {
+    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailId, memo: Option<String>) {
         /*
             FILL THIS IN
         */
@@ -105,14 +94,18 @@ impl NonFungibleTokenCore for Contract {
         //if there is some token ID in the tokens_by_id collection
         if let Some(token) = self.trails_by_id.get(&token_id) {
             //we'll get the metadata for that token
-            let serie = self.trails_series_by_id.get(&token.trail_id_reference).unwrap();
+            let serie = self
+                .trails_series_by_id
+                .get(&token.trail_id_reference)
+                .unwrap();
             //we return the JsonToken (wrapped by Some since we return an option)
             Some(JsonTrail {
                 token_id,
                 owner_id: token.owner_id,
                 series: serie,
             })
-        } else { //if there wasn't a token ID in the tokens_by_id collection, we return None
+        } else {
+            //if there wasn't a token ID in the tokens_by_id collection, we return None
             None
         }
     }
