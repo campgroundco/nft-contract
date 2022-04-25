@@ -20,7 +20,7 @@ pub trait NonFungibleTokenCore {
     );
 
     //get information about the NFT token passed in
-    fn trail_ticket(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail>;
+    fn nft_token(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail>;
 }
 
 #[ext_contract(ext_non_fungible_token_receiver)]
@@ -90,7 +90,7 @@ impl NonFungibleTokenCore for Contract {
     }
 
     //get the information for a specific token ID
-    fn trail_ticket(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail> {
+    fn nft_token(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail> {
         //if there is some token ID in the tokens_by_id collection
         if let Some(token) = self.tokens_by_id.get(&token_id) {
             //we'll get the metadata for that token
