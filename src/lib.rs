@@ -25,6 +25,7 @@ mod create_serie;
 mod bridge;
 mod test;
 mod admin;
+mod compatability;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 10000000000000000000000000;

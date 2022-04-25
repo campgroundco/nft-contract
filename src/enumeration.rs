@@ -55,4 +55,11 @@ impl Contract {
             //since we turned the keys into an iterator, we need to turn it back into a vector to return
             .collect()
     }
+
+    pub fn nft_tokens_for_owner(&self,
+                                account_id: AccountId,
+                                from_index: Option<U128>,
+                                limit: Option<u64>) -> Vec<JsonTrail> {
+        self.trail_tickets_for_owner(account_id, from_index, limit)
+    }
 }
