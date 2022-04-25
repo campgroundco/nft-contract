@@ -40,6 +40,8 @@ pub struct SeriesSupply {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailSeriesMetadata {
+    pub title: String,
+    pub description: String,
     pub tickets_amount: u64,
     pub media: Option<String>,
     pub data: Option<String>,
@@ -61,12 +63,21 @@ pub struct TrailSeries {
     pub price: u128,
 }
 
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
+#[serde(crate = "near_sdk::serde")]
+pub struct TrailPartialMetadata {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub media: Option<String>,
+}
+
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailBusiness {
     //owner of the token
     pub owner_id: AccountId,
     pub token_id: TrailId,
+    pub partial_metadata: TrailPartialMetadata,
 }
 
 //The Json token is what will be returned from view calls.
@@ -79,6 +90,8 @@ pub struct JsonTrail {
     pub owner_id: AccountId,
     //token metadata
     pub series: TrailSeries,
+    //NEAR metadata
+    pub metadata: TrailPartialMetadata
 }
 
 pub trait NonFungibleTokenMetadata {

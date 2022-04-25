@@ -38,6 +38,7 @@ impl Contract {
         let token = TrailBusiness {
             owner_id: receiver_id,
             token_id: series_id,
+            partial_metadata: partial_metadata_from_trail_series(&token_series)
         };
 
         //insert the token ID and token struct and make sure that the token doesn't exist

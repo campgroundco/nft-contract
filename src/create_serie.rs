@@ -78,6 +78,7 @@ impl CreateTrailSeries for Contract {
         JsonTrail {
             token_id: token_series_id,
             owner_id: creator_id,
+            metadata: partial_metadata_from_trail_series(&trail_series),
             series: trail_series,
         }
     }

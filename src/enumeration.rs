@@ -56,10 +56,12 @@ impl Contract {
             .collect()
     }
 
-    pub fn nft_tokens_for_owner(&self,
-                                account_id: AccountId,
-                                from_index: Option<U128>,
-                                limit: Option<u64>) -> Vec<JsonTrail> {
+    pub fn nft_tokens_for_owner(
+        &self,
+        account_id: AccountId,
+        from_index: Option<U128>,
+        limit: Option<u64>,
+    ) -> Vec<JsonTrail> {
         self.trail_tickets_for_owner(account_id, from_index, limit)
     }
 }

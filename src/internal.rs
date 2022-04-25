@@ -42,6 +42,14 @@ pub(crate) fn calculate_yocto_near(nears: f64) -> Balance {
     (nears * (ONE_NEAR as f64)) as u128
 }
 
+pub(crate) fn partial_metadata_from_trail_series(trail_series: &TrailSeries) -> TrailPartialMetadata {
+    TrailPartialMetadata {
+        title: Some(trail_series.metadata.title.to_owned()),
+        description: Some(trail_series.metadata.description.to_owned()),
+        media: trail_series.metadata.media.to_owned().map(|v| v.to_owned()).or(Some(String::from("https://assets.website-files.com/6183638541c07be9ecbe4559/6221296e8a95113bac90ffdd_transparent%20background.png")))
+    }
+}
+
 impl Contract {
     //add a token to the set of tokens an owner has
     pub(crate) fn internal_add_trail_to_owner(
