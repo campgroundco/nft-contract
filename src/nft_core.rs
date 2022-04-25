@@ -92,11 +92,11 @@ impl NonFungibleTokenCore for Contract {
     //get the information for a specific token ID
     fn trail_ticket(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail> {
         //if there is some token ID in the tokens_by_id collection
-        if let Some(token) = self.trails_by_id.get(&token_id) {
+        if let Some(token) = self.tokens_by_id.get(&token_id) {
             //we'll get the metadata for that token
             let serie = self
-                .trails_series_by_id
-                .get(&token.trail_id_reference)
+                .token_metadata_by_id
+                .get(&token.token_id)
                 .unwrap();
             //we return the JsonToken (wrapped by Some since we return an option)
             Some(JsonTrail {

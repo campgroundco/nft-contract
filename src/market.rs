@@ -30,19 +30,19 @@ impl Contract {
 
         token_series.supply.circulating = circulating_supply;
 
-        self.trails_series_by_id.insert(&series_id, &token_series);
+        self.token_metadata_by_id.insert(&series_id, &token_series);
 
         let ownership_id: TrailIdAndCopyNumber =
             format!("{}{}{}", series_id, TRAIL_DELIMETER, circulating_supply);
 
         let token = TrailBusiness {
             owner_id: receiver_id,
-            trail_id_reference: series_id,
+            token_id: series_id,
         };
 
         //insert the token ID and token struct and make sure that the token doesn't exist
         assert!(
-            self.trails_by_id.insert(&ownership_id, &token).is_none(),
+            self.tokens_by_id.insert(&ownership_id, &token).is_none(),
             "Trail copy already exists"
         );
 
@@ -61,7 +61,7 @@ impl Contract {
         let initial_storage_usage = env::storage_usage();
 
         let trail_series = self
-            .trails_series_by_id
+            .token_metadata_by_id
             .get(&trail_series_id)
             .expect("Campground: Trail series does not exist");
         let price = trail_series.price;

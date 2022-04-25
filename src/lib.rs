@@ -38,13 +38,13 @@ pub struct Contract {
     pub owner_id: AccountId,
 
     //keeps track of all the token IDs for a given account
-    pub trails_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
+    pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
 
     //keeps track of the token struct for a given token ID
-    pub trails_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
+    pub tokens_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
     //keeps track of the token metadata for a given token ID
-    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeries>,
+    pub token_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
 
     //keeps track of the token created by creator
     pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
@@ -110,9 +110,9 @@ impl Contract {
         //create a variable of type Self with all the fields initialized.
         let this = Self {
             //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
-            trails_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
-            trails_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
-            trails_series_by_id: UnorderedMap::new(
+            tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
+            tokens_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
+            token_metadata_by_id: UnorderedMap::new(
                 StorageKey::TokenMetadataById.try_to_vec().unwrap(),
             ),
             //set the owner_id field equal to the passed in owner_id.

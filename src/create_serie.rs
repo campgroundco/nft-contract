@@ -20,7 +20,7 @@ impl CreateTrailSeries for Contract {
         let initial_storage_usage = env::storage_usage();
         let creator_id = env::predecessor_account_id();
         let current_block_timestamp = env::block_timestamp();
-        let token_series_id = format!("{}", (self.trails_series_by_id.len() + 1));
+        let token_series_id = format!("{}", (self.token_metadata_by_id.len() + 1));
 
         assert!(
             !(self.series_exists(&token_series_id)),
@@ -69,7 +69,7 @@ impl CreateTrailSeries for Contract {
             price: price_res.unwrap_or(0),
         };
 
-        self.trails_series_by_id
+        self.token_metadata_by_id
             .insert(&token_series_id, &trail_series);
         self.internal_add_trail_to_creator(&creator_id, &token_series_id);
 

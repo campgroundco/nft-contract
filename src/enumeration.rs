@@ -31,7 +31,7 @@ impl Contract {
         limit: Option<u64>,
     ) -> Vec<JsonTrail> {
         //get the set of tokens for the passed in owner
-        let tokens_for_owner_set = self.trails_per_owner.get(&account_id);
+        let tokens_for_owner_set = self.tokens_per_owner.get(&account_id);
         //if there is some set of tokens, we'll set the tokens variable equal to that set
         let tokens = if let Some(tokens_for_owner_set) = tokens_for_owner_set {
             tokens_for_owner_set

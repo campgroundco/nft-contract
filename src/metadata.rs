@@ -40,8 +40,6 @@ pub struct SeriesSupply {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailSeriesMetadata {
-    pub title: String,
-    pub description: String,
     pub tickets_amount: u64,
     pub media: Option<String>,
     pub data: Option<String>,
@@ -68,7 +66,7 @@ pub struct TrailSeries {
 pub struct TrailBusiness {
     //owner of the token
     pub owner_id: AccountId,
-    pub trail_id_reference: TrailId,
+    pub token_id: TrailId,
 }
 
 //The Json token is what will be returned from view calls.

@@ -20,7 +20,7 @@ pub trait SeriesBridge {
 #[near_bindgen]
 impl SeriesBridge for Contract {
     fn series_exists(&self, series_id: &TrailId) -> bool {
-        self.trails_series_by_id.get(series_id).is_some()
+        self.token_metadata_by_id.get(series_id).is_some()
     }
 
     fn get_owner(&self) -> &AccountId {
@@ -28,14 +28,14 @@ impl SeriesBridge for Contract {
     }
 
     fn get_trail_by_id_optional(&self, series_id: &TrailId) -> Option<TrailSeries> {
-        let token_series = self.trails_series_by_id.get(series_id);
+        let token_series = self.token_metadata_by_id.get(series_id);
 
         token_series
     }
 
     fn get_trail_by_id(&self, series_id: &TrailId) -> TrailSeries {
         let token_series = self
-            .trails_series_by_id
+            .token_metadata_by_id
             .get(series_id)
             .expect("Campground: Trail does not exist");
 
@@ -43,7 +43,7 @@ impl SeriesBridge for Contract {
     }
 
     fn is_owner(&self, series_id: &TrailIdAndCopyNumber, owner_id: &AccountId) -> bool {
-        let maybe_trails_owner = self.trails_per_owner.get(owner_id);
+        let maybe_trails_owner = self.tokens_per_owner.get(owner_id);
         if let Some(trails_owner) = maybe_trails_owner {
             trails_owner.iter().any(|trail_id_and_copy_id| {
                 let id_and_copy: Vec<&str> = trail_id_and_copy_id.split(TRAIL_DELIMETER).collect();
@@ -67,11 +67,11 @@ impl SeriesBridge for Contract {
         &self,
         trail_and_copy_id: &TrailIdAndCopyNumber,
     ) -> Option<TrailBusiness> {
-        self.trails_by_id.get(trail_and_copy_id)
+        self.tokens_by_id.get(trail_and_copy_id)
     }
 
     fn get_all_trails_by_owner(&self, owner_id: &AccountId) -> Vec<TrailSeries> {
-        let maybe_trails_owner = self.trails_per_owner.get(owner_id);
+        let maybe_trails_owner = self.tokens_per_owner.get(owner_id);
 
         if let Some(trails_owner) = maybe_trails_owner {
             let mut ids: Vec<String> = vec![];
