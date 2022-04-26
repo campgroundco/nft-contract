@@ -230,6 +230,9 @@ mod test {
         // Panics
         let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
         assert_eq!(nft_mint_2, "1:2");
+
+        assert_eq!(contract.token_metadata_by_id.get(&String::from("1:1")).unwrap(), String::from("1"));
+        assert_eq!(contract.token_metadata_by_id.get(&String::from("1:2")).unwrap(), String::from("1"));
     }
 
     #[test]

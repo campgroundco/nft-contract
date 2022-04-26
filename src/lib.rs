@@ -7,24 +7,23 @@ use near_sdk::{
 };
 use std::collections::HashMap;
 
-pub use crate::approval::*;
 use crate::internal::*;
-pub use crate::market::*;
 pub use crate::metadata::*;
+pub use crate::market::*;
 pub use crate::nft_core::*;
+pub use crate::approval::*;
 pub use crate::royalty::*;
-
-mod admin;
-mod approval;
-mod bridge;
-mod create_serie;
-mod enumeration;
 mod internal;
-mod market;
+mod approval;
+mod enumeration;
 mod metadata;
+mod market;
 mod nft_core;
 mod royalty;
+mod create_serie;
+mod bridge;
 mod test;
+mod admin;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 10000000000000000000000000;
