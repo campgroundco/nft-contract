@@ -202,8 +202,7 @@ mod test {
         contract.nft_mint(String::from("1"), accounts(2));
     }
 
-    #[test]
-    fn test_copies_and_buys() {
+    fn test_copies_and_buys_internal() -> Contract {
         let (mut context, mut contract) = setup_contract();
         testing_env!(context
             .predecessor_account_id(accounts(1))
@@ -233,6 +232,29 @@ mod test {
 
         assert_eq!(contract.token_metadata_by_id.get(&String::from("1:1")).unwrap(), String::from("1"));
         assert_eq!(contract.token_metadata_by_id.get(&String::from("1:2")).unwrap(), String::from("1"));
+
+        contract
+    }
+
+    #[test]
+    fn test_copies_and_buys() {
+        test_copies_and_buys_internal();
+    }
+
+    #[test]
+    fn test_nft_tokens_total() {
+        let contract = test_copies_and_buys_internal();
+        assert_eq!(contract.nft_total_supply(), U128::from(2));
+    }
+
+    #[test]
+    fn test_nft_tokens_enumeration() {
+        let contract = test_copies_and_buys_internal();
+        let enumeration = contract.nft_tokens(None, None);
+        let enumeration_unwrap = enumeration.get(0).unwrap();
+        assert_eq!(enumeration_unwrap.token_id, String::from("1:1"));
+        assert_eq!(enumeration_unwrap.owner_id, accounts(2));
+        assert_eq!(enumeration_unwrap.series.creator_id, accounts(1));
     }
 
     #[test]
