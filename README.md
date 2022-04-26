@@ -27,7 +27,7 @@ This represents the ITO (Initial Trail Offering) Smart Contract system created f
 | Method | Description | Return |
 | ------ | ----------- | ---- |
 | create_trail_series | Creates a series (trail) inside the smart contract | Struct | 
-| buy_series | Buys a trail series if still available given a price and attached deposit | String |
+| nft_buy_series | Buys a trail series if still available given a price and attached deposit | String |
 | new_default_meta | Initializes the contract | Void |
 | change_campground_fee | Change Campground percentage fee | Void |
 | change_campground_treasury_address | Change treasury address | Void |
