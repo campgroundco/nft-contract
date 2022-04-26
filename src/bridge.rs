@@ -20,7 +20,7 @@ pub trait SeriesBridge {
 #[near_bindgen]
 impl SeriesBridge for Contract {
     fn series_exists(&self, series_id: &TrailId) -> bool {
-        self.token_metadata_by_id.get(series_id).is_some()
+        self.trails_metadata_by_id.get(series_id).is_some()
     }
 
     fn get_owner(&self) -> &AccountId {
@@ -28,14 +28,14 @@ impl SeriesBridge for Contract {
     }
 
     fn get_trail_by_id_optional(&self, series_id: &TrailId) -> Option<TrailSeries> {
-        let token_series = self.token_metadata_by_id.get(series_id);
+        let token_series = self.trails_metadata_by_id.get(series_id);
 
         token_series
     }
 
     fn get_trail_by_id(&self, series_id: &TrailId) -> TrailSeries {
         let token_series = self
-            .token_metadata_by_id
+            .trails_metadata_by_id
             .get(series_id)
             .expect("Campground: Trail does not exist");
 

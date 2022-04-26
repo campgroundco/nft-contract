@@ -100,7 +100,7 @@ pub struct JsonTrail {
     //token metadata
     pub series: TrailSeries,
     //NEAR metadata
-    pub metadata: TokenMetadata
+    pub metadata: TokenMetadata,
 }
 
 pub trait NonFungibleTokenMetadata {

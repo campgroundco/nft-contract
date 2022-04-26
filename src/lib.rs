@@ -7,24 +7,24 @@ use near_sdk::{
 };
 use std::collections::HashMap;
 
-use crate::internal::*;
-pub use crate::metadata::*;
-pub use crate::market::*;
-pub use crate::nft_core::*;
 pub use crate::approval::*;
+use crate::internal::*;
+pub use crate::market::*;
+pub use crate::metadata::*;
+pub use crate::nft_core::*;
 pub use crate::royalty::*;
 
-mod internal;
-mod approval; 
-mod enumeration; 
-mod metadata; 
-mod market;
-mod nft_core; 
-mod royalty;
-mod create_serie;
-mod bridge;
-mod test;
 mod admin;
+mod approval;
+mod bridge;
+mod create_serie;
+mod enumeration;
+mod internal;
+mod market;
+mod metadata;
+mod nft_core;
+mod royalty;
+mod test;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 10000000000000000000000000;
@@ -43,8 +43,10 @@ pub struct Contract {
     //keeps track of the token struct for a given token ID
     pub tokens_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
-    //keeps track of the token metadata for a given token ID
-    pub token_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
+    //keeps track of the token metadata ID for a given token ID with copy number
+    pub token_metadata_by_id: UnorderedMap<TrailIdAndCopyNumber, TrailId>,
+
+    pub trails_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
 
     //keeps track of the token created by creator
     pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
@@ -69,6 +71,7 @@ pub enum StorageKey {
     TokenPerCreator,
     TokensById,
     TokenMetadataById,
+    TrailsMetadataById,
     NFTContractMetadata,
     TokensPerType,
     TokensPerTypeInner { token_type_hash: CryptoHash },
@@ -114,6 +117,9 @@ impl Contract {
             tokens_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
             token_metadata_by_id: UnorderedMap::new(
                 StorageKey::TokenMetadataById.try_to_vec().unwrap(),
+            ),
+            trails_metadata_by_id: UnorderedMap::new(
+                StorageKey::TrailsMetadataById.try_to_vec().unwrap(),
             ),
             //set the owner_id field equal to the passed in owner_id.
             owner_id,
