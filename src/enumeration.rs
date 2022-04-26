@@ -27,10 +27,20 @@ impl Contract {
     }
 
     //get the total supply of NFTs for a given owner
-    pub fn nft_supply_for_owner(&self, account_id: AccountId) {
-        /*
-            FILL THIS IN
-        */
+    pub fn nft_supply_for_owner(
+        &self,
+        account_id: AccountId,
+    ) -> U128 {
+        //get the set of tokens for the passed in owner
+        let tokens_for_owner_set = self.tokens_per_owner.get(&account_id);
+
+        //if there is some set of tokens, we'll return the length as a U128
+        if let Some(tokens_for_owner_set) = tokens_for_owner_set {
+            U128(tokens_for_owner_set.len() as u128)
+        } else {
+            //if there isn't a set of tokens for the passed in account ID, we'll return 0
+            U128(0)
+        }
     }
 
     //Query for all the tokens for an owner
