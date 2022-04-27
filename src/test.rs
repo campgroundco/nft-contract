@@ -227,7 +227,7 @@ mod test {
             .build());
 
         // Panics
-        let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+        let nft_mint_2 = contract.nft_buy_series(String::from("1"), accounts(3));
         assert_eq!(nft_mint_2, "1:2");
 
         assert_eq!(contract.token_metadata_by_id.get(&String::from("1:1")).unwrap(), String::from("1"));
@@ -281,7 +281,7 @@ mod test {
             .build());
 
         // Panics
-        let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+        let nft_mint_2 = contract.nft_buy_series(String::from("1"), accounts(3));
     }
 
     #[test]
@@ -307,7 +307,7 @@ mod test {
             .attached_deposit(contract.campground_minimum_fee_yocto_near - 1)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
     }
 
     #[test]
@@ -332,7 +332,7 @@ mod test {
             .attached_deposit(contract.campground_minimum_fee_yocto_near)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
     }
 
     #[test]
@@ -357,14 +357,14 @@ mod test {
             .attached_deposit(ONE_NEAR + BUY_STORAGE)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
 
         testing_env!(context
             .predecessor_account_id(accounts(3))
             .attached_deposit(ONE_NEAR + BUY_STORAGE)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
 
         let get_account_trails = contract.tokens_per_owner.get(&accounts(3)).unwrap();
         let trails_as_vec = get_account_trails.to_vec();
