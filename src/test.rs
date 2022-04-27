@@ -16,7 +16,7 @@ mod test {
     use near_sdk_sim::{deploy, init_simulator, ContractAccount};
     use std::convert::TryInto;
 
-    const STORAGE_FOR_CREATE_SERIES: Balance = 8540000000000000000000;
+    const STORAGE_FOR_CREATE_SERIES: Balance = 6960000000000000000000;
 
     fn get_context(predecessor_account_id: ValidAccountId) -> VMContextBuilder {
         let mut builder = VMContextBuilder::new();
@@ -340,7 +340,7 @@ mod test {
         let (mut context, mut contract) = setup_contract();
         testing_env!(context
             .predecessor_account_id(accounts(1))
-            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .attached_deposit(6920000000000000000000)
             .build());
 
         let trail_series = create_series(
