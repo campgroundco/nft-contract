@@ -3,7 +3,7 @@ use crate::*;
 
 #[near_bindgen]
 impl Contract {
-    fn nft_internal_mint_series(
+    pub(crate) fn nft_internal_mint_series(
         &mut self,
         series_id: TrailId,
         receiver_id: AccountId,
