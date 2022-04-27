@@ -3,7 +3,7 @@ use crate::*;
 
 #[near_bindgen]
 impl Contract {
-    fn internal_nft_mint_series(
+    pub(crate) fn nft_internal_mint_series(
         &mut self,
         series_id: TrailId,
         receiver_id: AccountId,
@@ -30,20 +30,28 @@ impl Contract {
 
         token_series.supply.circulating = circulating_supply;
 
-        self.trails_series_by_id.insert(&series_id, &token_series);
+        self.trails_metadata_by_id.insert(&series_id, &token_series);
 
         let ownership_id: TrailIdAndCopyNumber =
             format!("{}{}{}", series_id, TRAIL_DELIMETER, circulating_supply);
 
         let token = TrailBusiness {
             owner_id: receiver_id,
-            trail_id_reference: series_id,
+            token_id: series_id.to_owned(),
+            partial_metadata: partial_metadata_from_trail_series(&token_series),
         };
 
         //insert the token ID and token struct and make sure that the token doesn't exist
         assert!(
-            self.trails_by_id.insert(&ownership_id, &token).is_none(),
+            self.tokens_by_id.insert(&ownership_id, &token).is_none(),
             "Trail copy already exists"
+        );
+
+        assert!(
+            self.token_metadata_by_id
+                .insert(&ownership_id, &series_id)
+                .is_none(),
+            "Trail copy might already exist"
         );
 
         //call the internal method for adding the token to the owner
@@ -53,7 +61,7 @@ impl Contract {
     }
 
     #[payable]
-    pub fn buy_series(
+    pub fn nft_buy_series(
         &mut self,
         trail_series_id: TrailId,
         receiver_id: AccountId,
@@ -61,7 +69,7 @@ impl Contract {
         let initial_storage_usage = env::storage_usage();
 
         let trail_series = self
-            .trails_series_by_id
+            .trails_metadata_by_id
             .get(&trail_series_id)
             .expect("Campground: Trail series does not exist");
         let price = trail_series.price;
@@ -100,7 +108,7 @@ impl Contract {
         assert!(for_treasury > 0, "Campground: a fee needs to be paid");
 
         let trail_id_with_copy: TrailIdAndCopyNumber =
-            self.internal_nft_mint_series(trail_series_id, receiver_id);
+            self.nft_internal_mint_series(trail_series_id, receiver_id);
 
         if price_deducted > 0 {
             Promise::new(trail_series.creator_id).transfer(price_deducted);
@@ -130,7 +138,7 @@ impl Contract {
             "Campground: Only Trail creator can directly mint"
         );
 
-        let trail_mint_id = self.internal_nft_mint_series(token_id, receiver_id);
+        let trail_mint_id = self.nft_internal_mint_series(token_id, receiver_id);
 
         //calculate the required storage which was the used - initial
         let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;

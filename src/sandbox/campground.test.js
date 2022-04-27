@@ -122,7 +122,7 @@ describe("Campground <> Near Tests", () => {
     test("Buy series Less than Price", async () => {
         const createIto = await createTrail();
         try {
-            await luis.buy_series({
+            await luis.nft_buy_series({
                 args: {
                     trail_series_id: createIto.token_id,
                     receiver_id: `${luisName}.test.near`
@@ -142,12 +142,12 @@ describe("Campground <> Near Tests", () => {
         const getLuisBalance = async () => await luis.account.getAccountBalance();
         const beforeBuying = await getCampgroundBalance();
         const luisBeforeBuying = await getLuisBalance();
-        await luis.buy_series({
+        await luis.nft_buy_series({
             args: {
                 trail_series_id: createIto.token_id,
                 receiver_id: `${luisName}.test.near`
             },
-            amount: "5004660000000000000000000"
+            amount: "5007940000000001000000000"
         });
         const afterBuying = await getCampgroundBalance();
         const luisAfterBuying = await getLuisBalance();

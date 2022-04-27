@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::{Base64VecU8, U128};
@@ -6,6 +5,7 @@ use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
     env, near_bindgen, AccountId, Balance, CryptoHash, PanicOnDefault, Promise, PromiseOrValue,
 };
+use std::collections::HashMap;
 
 use crate::internal::*;
 pub use crate::metadata::*;
@@ -13,13 +13,12 @@ pub use crate::market::*;
 pub use crate::nft_core::*;
 pub use crate::approval::*;
 pub use crate::royalty::*;
-
 mod internal;
-mod approval; 
-mod enumeration; 
-mod metadata; 
+mod approval;
+mod enumeration;
+mod metadata;
 mod market;
-mod nft_core; 
+mod nft_core;
 mod royalty;
 mod create_serie;
 mod bridge;
@@ -28,7 +27,7 @@ mod admin;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 10000000000000000000000000;
-pub const BUY_STORAGE: Balance = 3740000000000000000000;
+pub const BUY_STORAGE: Balance = 6920000000000000000000;
 pub const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 
 #[near_bindgen]
@@ -38,13 +37,15 @@ pub struct Contract {
     pub owner_id: AccountId,
 
     //keeps track of all the token IDs for a given account
-    pub trails_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
+    pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
 
     //keeps track of the token struct for a given token ID
-    pub trails_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
+    pub tokens_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
-    //keeps track of the token metadata for a given token ID
-    pub trails_series_by_id: UnorderedMap<TrailId, TrailSeries>,
+    //keeps track of the token metadata ID for a given token ID with copy number
+    pub token_metadata_by_id: UnorderedMap<TrailIdAndCopyNumber, TrailId>,
+
+    pub trails_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
 
     //keeps track of the token created by creator
     pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
@@ -69,6 +70,7 @@ pub enum StorageKey {
     TokenPerCreator,
     TokensById,
     TokenMetadataById,
+    TrailsMetadataById,
     NFTContractMetadata,
     TokensPerType,
     TokensPerTypeInner { token_type_hash: CryptoHash },
@@ -110,10 +112,13 @@ impl Contract {
         //create a variable of type Self with all the fields initialized.
         let this = Self {
             //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
-            trails_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
-            trails_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
-            trails_series_by_id: UnorderedMap::new(
+            tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
+            tokens_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
+            token_metadata_by_id: UnorderedMap::new(
                 StorageKey::TokenMetadataById.try_to_vec().unwrap(),
+            ),
+            trails_metadata_by_id: UnorderedMap::new(
+                StorageKey::TrailsMetadataById.try_to_vec().unwrap(),
             ),
             //set the owner_id field equal to the passed in owner_id.
             owner_id,

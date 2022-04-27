@@ -16,7 +16,7 @@ mod test {
     use near_sdk_sim::{deploy, init_simulator, ContractAccount};
     use std::convert::TryInto;
 
-    const STORAGE_FOR_CREATE_SERIES: Balance = 8540000000000000000000;
+    const STORAGE_FOR_CREATE_SERIES: Balance = 6960000000000000000000;
 
     fn get_context(predecessor_account_id: ValidAccountId) -> VMContextBuilder {
         let mut builder = VMContextBuilder::new();
@@ -202,8 +202,7 @@ mod test {
         contract.nft_mint(String::from("1"), accounts(2));
     }
 
-    #[test]
-    fn test_copies_and_buys() {
+    fn test_copies_and_buys_internal() -> Contract {
         let (mut context, mut contract) = setup_contract();
         testing_env!(context
             .predecessor_account_id(accounts(1))
@@ -228,8 +227,34 @@ mod test {
             .build());
 
         // Panics
-        let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+        let nft_mint_2 = contract.nft_buy_series(String::from("1"), accounts(3));
         assert_eq!(nft_mint_2, "1:2");
+
+        assert_eq!(contract.token_metadata_by_id.get(&String::from("1:1")).unwrap(), String::from("1"));
+        assert_eq!(contract.token_metadata_by_id.get(&String::from("1:2")).unwrap(), String::from("1"));
+
+        contract
+    }
+
+    #[test]
+    fn test_copies_and_buys() {
+        test_copies_and_buys_internal();
+    }
+
+    #[test]
+    fn test_nft_tokens_total() {
+        let contract = test_copies_and_buys_internal();
+        assert_eq!(contract.nft_total_supply(), U128::from(2));
+    }
+
+    #[test]
+    fn test_nft_tokens_enumeration() {
+        let contract = test_copies_and_buys_internal();
+        let enumeration = contract.nft_tokens(None, None);
+        let enumeration_unwrap = enumeration.get(0).unwrap();
+        assert_eq!(enumeration_unwrap.token_id, String::from("1:1"));
+        assert_eq!(enumeration_unwrap.owner_id, accounts(2));
+        assert_eq!(enumeration_unwrap.series.creator_id, accounts(1));
     }
 
     #[test]
@@ -256,7 +281,7 @@ mod test {
             .build());
 
         // Panics
-        let nft_mint_2 = contract.buy_series(String::from("1"), accounts(3));
+        let nft_mint_2 = contract.nft_buy_series(String::from("1"), accounts(3));
     }
 
     #[test]
@@ -282,7 +307,7 @@ mod test {
             .attached_deposit(contract.campground_minimum_fee_yocto_near - 1)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
     }
 
     #[test]
@@ -307,7 +332,7 @@ mod test {
             .attached_deposit(contract.campground_minimum_fee_yocto_near)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
     }
 
     #[test]
@@ -315,7 +340,7 @@ mod test {
         let (mut context, mut contract) = setup_contract();
         testing_env!(context
             .predecessor_account_id(accounts(1))
-            .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+            .attached_deposit(6920000000000000000000)
             .build());
 
         let trail_series = create_series(
@@ -332,24 +357,24 @@ mod test {
             .attached_deposit(ONE_NEAR + BUY_STORAGE)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
 
         testing_env!(context
             .predecessor_account_id(accounts(3))
             .attached_deposit(ONE_NEAR + BUY_STORAGE)
             .build());
 
-        contract.buy_series(String::from("1"), accounts(3));
+        contract.nft_buy_series(String::from("1"), accounts(3));
 
-        let get_account_trails = contract.trails_per_owner.get(&accounts(3)).unwrap();
+        let get_account_trails = contract.tokens_per_owner.get(&accounts(3)).unwrap();
         let trails_as_vec = get_account_trails.to_vec();
         assert_eq!(get_account_trails.len(), 2);
         assert_eq!(trails_as_vec.get(0).unwrap(), &String::from("1:1"));
         assert_eq!(trails_as_vec.get(1).unwrap(), &String::from("1:2"));
 
-        let trails_by_id = contract.trails_by_id.get(&String::from("1:1")).unwrap();
+        let trails_by_id = contract.tokens_by_id.get(&String::from("1:1")).unwrap();
         assert_eq!(trails_by_id.owner_id, accounts(3));
-        assert_eq!(trails_by_id.trail_id_reference, "1");
+        assert_eq!(trails_by_id.token_id, "1");
 
         assert!(contract.is_owner(&String::from("1"), &accounts(3)));
         assert!(!(contract.is_owner(&String::from("1"), &accounts(2))));
