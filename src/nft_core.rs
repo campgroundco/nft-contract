@@ -3,6 +3,7 @@ use near_sdk::{ext_contract, log, Gas, PromiseResult};
 
 const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(10_000_000_000_000);
 const GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER.0);
+const MIN_GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(100_000_000_000_000);
 const NO_DEPOSIT: Balance = 0;
 
 pub trait NonFungibleTokenCore {
@@ -17,7 +18,7 @@ pub trait NonFungibleTokenCore {
         token_id: TrailIdAndCopyNumber,
         memo: Option<String>,
         msg: String,
-    );
+    ) -> PromiseOrValue<bool>;
 
     //get information about the NFT token passed in
     fn nft_token(&self, token_id: TrailIdAndCopyNumber) -> Option<JsonTrail>;
@@ -45,10 +46,16 @@ trait NonFungibleTokenResolver {
     */
     fn nft_resolve_transfer(
         &mut self,
+        //we introduce an authorized ID for logging the transfer event
+        authorized_id: Option<String>,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TrailIdAndCopyNumber,
-    );
+        token_id: TokenId,
+        //we introduce the approval map so we can keep track of what the approvals were before the transfer
+        approved_account_ids: HashMap<AccountId, u64>,
+        //we introduce a memo for logging the transfer event
+        memo: Option<String>,
+    ) -> bool;
 }
 
 /*
@@ -59,10 +66,16 @@ trait NonFungibleTokenResolver {
 trait NonFungibleTokenResolver {
     fn nft_resolve_transfer(
         &mut self,
+        //we introduce an authorized ID for logging the transfer event
+        authorized_id: Option<String>,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TrailIdAndCopyNumber,
-    );
+        token_id: TokenId,
+        //we introduce the approval map so we can keep track of what the approvals were before the transfer
+        approved_account_ids: HashMap<AccountId, u64>,
+        //we introduce a memo for logging the transfer event
+        memo: Option<String>,
+    ) -> bool;
 }
 
 #[near_bindgen]
@@ -92,10 +105,64 @@ impl NonFungibleTokenCore for Contract {
         token_id: TrailId,
         memo: Option<String>,
         msg: String,
-    ) {
+    ) -> PromiseOrValue<bool> {
+
+        //get the GAS attached to the call
+        let attached_gas = env::prepaid_gas();
+
         /*
-            FILL THIS IN
+            make sure that the attached gas is greater than the minimum GAS for NFT transfer call.
+            This is to ensure that the cross contract call to nft_on_transfer won't cause a prepaid GAS error.
+            If this happens, the event will be logged in internal_transfer but the actual transfer logic will be
+            reverted due to the panic. This will result in the databases thinking the NFT belongs to the wrong person.
         */
+        assert!(
+            attached_gas >= MIN_GAS_FOR_NFT_TRANSFER_CALL,
+            "You cannot attach less than {:?} Gas to nft_transfer_call",
+            MIN_GAS_FOR_NFT_TRANSFER_CALL
+        );
+
+        //get the sender ID
+        let sender_id = env::predecessor_account_id();
+
+        //transfer the token and get the previous token object
+        let (new_token, previous_token) = self.internal_transfer(
+            &sender_id,
+            &receiver_id,
+            &token_id,
+            approval_id,
+            memo.clone(),
+        );
+
+        //default the authorized_id to none
+        let mut authorized_id = None;
+        //if the sender isn't the owner of the token, we set the authorized ID equal to the sender.
+        if sender_id != previous_token.owner_id {
+            authorized_id = Some(sender_id.to_string());
+        }
+
+        // Initiating receiver's call and the callback
+        ext_non_fungible_token_receiver::nft_on_transfer(
+            sender_id,
+            previous_token.owner_id.clone(),
+            token_id.clone(),
+            msg,
+            receiver_id.clone(), //contract account to make the call to
+            NO_DEPOSIT, //attached deposit
+            env::prepaid_gas() - GAS_FOR_NFT_TRANSFER_CALL, //attached GAS
+        )
+            //we then resolve the promise and call nft_resolve_transfer on our own contract
+            .then(ext_self::nft_resolve_transfer(
+                authorized_id, // we introduce an authorized ID so that we can log the transfer
+                previous_token.owner_id,
+                receiver_id,
+                token_id,
+                HashMap::new(),
+                memo, // we introduce a memo for logging in the events standard
+                env::current_account_id(), //contract account to make the call to
+                NO_DEPOSIT, //attached deposit
+                GAS_FOR_RESOLVE_TRANSFER, //GAS attached to the call
+            )).into()
     }
 
     //get the information for a specific token ID
@@ -125,10 +192,16 @@ impl NonFungibleTokenResolver for Contract {
     #[private]
     fn nft_resolve_transfer(
         &mut self,
+        //we introduce an authorized ID for logging the transfer event
+        authorized_id: Option<String>,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TrailId,
-    ) {
+        token_id: TokenId,
+        //we introduce the approval map so we can keep track of what the approvals were before the transfer
+        approved_account_ids: HashMap<AccountId, u64>,
+        //we introduce a memo for logging the transfer event
+        memo: Option<String>,
+    ) -> bool {
         /*
             FILL THIS IN
         */
