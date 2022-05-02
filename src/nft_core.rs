@@ -7,14 +7,14 @@ const NO_DEPOSIT: Balance = 0;
 
 pub trait NonFungibleTokenCore {
     //transfers an NFT to a receiver ID
-    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailId, memo: Option<String>);
+    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailIdAndCopyNumber, memo: Option<String>);
 
     //transfers an NFT to a receiver and calls a function on the receiver ID's contract
     /// Returns `true` if the token was transferred from the sender's account.
     fn nft_transfer_call(
         &mut self,
         receiver_id: AccountId,
-        token_id: TrailId,
+        token_id: TrailIdAndCopyNumber,
         memo: Option<String>,
         msg: String,
     );
@@ -31,7 +31,7 @@ trait NonFungibleTokenReceiver {
         &mut self,
         sender_id: AccountId,
         previous_owner_id: AccountId,
-        token_id: TrailId,
+        token_id: TrailIdAndCopyNumber,
         msg: String,
     );
 }
@@ -47,7 +47,7 @@ trait NonFungibleTokenResolver {
         &mut self,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TrailId,
+        token_id: TrailIdAndCopyNumber,
     );
 }
 
@@ -61,7 +61,7 @@ trait NonFungibleTokenResolver {
         &mut self,
         owner_id: AccountId,
         receiver_id: AccountId,
-        token_id: TrailId,
+        token_id: TrailIdAndCopyNumber,
     );
 }
 
@@ -69,10 +69,19 @@ trait NonFungibleTokenResolver {
 impl NonFungibleTokenCore for Contract {
     //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver.
     #[payable]
-    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailId, memo: Option<String>) {
-        /*
-            FILL THIS IN
-        */
+    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailIdAndCopyNumber, memo: Option<String>) {
+        let initial_storage_usage = env::storage_usage();
+        let sender_id = env::predecessor_account_id();
+
+        let (new_token, previous_token) = self.internal_transfer(
+            &sender_id,
+            &receiver_id,
+            &token_id,
+            None,
+            memo,
+        );
+
+        refund_deposit(env::storage_usage() - initial_storage_usage, 0);
     }
 
     //implementation of the transfer call method. This will transfer the NFT and call a method on the reciver_id contract

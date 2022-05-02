@@ -42,6 +42,35 @@ pub(crate) fn calculate_yocto_near(nears: f64) -> Balance {
     (nears * (ONE_NEAR as f64)) as u128
 }
 
+//calculate how many bytes the account ID is taking up
+pub(crate) fn bytes_for_approved_account_id(account_id: &AccountId) -> u64 {
+    // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
+    account_id.as_str().len() as u64 + 4 + size_of::<u64>() as u64
+}
+
+//refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID.
+pub(crate) fn refund_approved_account_ids_iter<'a, I>(
+    account_id: AccountId,
+    approved_account_ids: I, //the approved account IDs must be passed in as an iterator
+) -> Promise
+    where
+        I: Iterator<Item = &'a AccountId>,
+{
+    //get the storage total by going through and summing all the bytes for each approved account IDs
+    let storage_released: u64 = approved_account_ids.map(bytes_for_approved_account_id).sum();
+    //transfer the account the storage that is released
+    Promise::new(account_id).transfer(Balance::from(storage_released) * env::storage_byte_cost())
+}
+
+//refund a map of approved account IDs and send the funds to the passed in account ID
+pub(crate) fn refund_approved_account_ids(
+    account_id: AccountId,
+    approved_account_ids: &HashMap<AccountId, u64>,
+) -> Promise {
+    //call the refund_approved_account_ids_iter with the approved account IDs as keys
+    refund_approved_account_ids_iter(account_id, approved_account_ids.keys())
+}
+
 pub(crate) fn partial_metadata_from_trail_series(trail_series: &TrailSeries) -> TokenMetadata {
     TokenMetadata {
         title: Some(trail_series.metadata.title.to_owned()),
@@ -141,7 +170,7 @@ impl Contract {
         //we introduce an approval ID so that people with that approval ID can transfer the token
         approval_id: Option<u64>,
         memo: Option<String>,
-    ) -> TrailBusiness {
+    ) -> (TrailBusiness, TrailBusiness) {
         let trail = self.tokens_by_id.get(trail_id).expect("Trail does not exist");
 
         assert_eq!(sender_id, &trail.owner_id, "Only owner can transfer trail");
@@ -155,7 +184,7 @@ impl Contract {
 
         self.tokens_by_id.insert(trail_id, &new_trail_business);
 
-        new_trail_business
+        (new_trail_business, trail)
     }
 
     pub(crate) fn panic_if_not_owner(&self) {
