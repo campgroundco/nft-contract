@@ -30,33 +30,36 @@ pub const ONE_NEAR: Balance = 10000000000000000000000000;
 pub const BUY_STORAGE: Balance = 6920000000000000000000;
 pub const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 
+/// Holds the state for the ITO (Initial Trail Offering) Smart Contract.
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
-    //contract owner
+
+    /// Represents the owner of the contract.
     pub owner_id: AccountId,
 
-    //keeps track of all the token IDs for a given account
+    /// Keeps track of all the token IDs for a given account.
     pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
 
-    //keeps track of the token struct for a given token ID
+    /// Keeps track of the token struct for a given token ID.
     pub tokens_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
 
-    //keeps track of the token metadata ID for a given token ID with copy number
+    /// Keeps track of the token metadata ID for a given token ID with copy number.
     pub token_metadata_by_id: UnorderedMap<TrailIdAndCopyNumber, TrailId>,
 
+    /// Keeps track of the trail series by `TrailId`.
     pub trails_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
 
-    //keeps track of the token created by creator
+    /// Keeps track of the token created by creator, represented by `AccountId`.
     pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
 
-    //keeps track of the metadata for the contract
+    /// Represents the metadata for the contract.
     pub metadata: LazyOption<NFTContractMetadata>,
 
-    // Fee from 1 to 100, each unit representing %. 5 = 5% of each market sale
+    /// Fee from 1 to 100, each unit representing %. 5 = 5% of each market sale
     pub campground_fee: u64,
 
-    // Where campground fees will be sent
+    /// Where campground fees will be sent.
     pub campground_treasury_address: AccountId,
 
     pub campground_minimum_fee_yocto_near: Balance,
@@ -79,11 +82,10 @@ pub enum StorageKey {
 
 #[near_bindgen]
 impl Contract {
-    /*
-        initialization function (can only be called once).
-        this initializes the contract with default metadata so the
-        user doesn't have to manually type metadata.
-    */
+
+    /// Initialization function (can only be called once).
+    /// This initializes the contract with default metadata so the
+    /// user doesn't have to manually type metadata.
     #[init]
     pub fn new_default_meta(owner_id: AccountId, treasury_id: AccountId) -> Self {
         //calls the other function "new: with some default metadata and the owner_id passed in
@@ -102,11 +104,9 @@ impl Contract {
         )
     }
 
-    /*
-        initialization function (can only be called once).
-        this initializes the contract with metadata that was passed in and
-        the owner_id.
-    */
+    /// Initialization function (can only be called once).
+    /// This initializes the contract with metadata that was passed in and
+    /// the `owner_id`.
     #[init]
     pub fn new(owner_id: AccountId, metadata: NFTContractMetadata, treasury_id: AccountId) -> Self {
         //create a variable of type Self with all the fields initialized.
