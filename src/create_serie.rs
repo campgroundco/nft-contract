@@ -66,7 +66,7 @@ impl CreateTrailSeries for Contract {
                 total: quantity,
                 circulating: 0 as u64,
             },
-            price: price_res.unwrap_or(0),
+            price: price_res.unwrap_or(0).into(),
         };
 
         self.trails_metadata_by_id

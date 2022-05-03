@@ -72,7 +72,7 @@ impl Contract {
             .trails_metadata_by_id
             .get(&trail_series_id)
             .expect("Campground: Trail series does not exist");
-        let price = trail_series.price;
+        let price = trail_series.price.into();
         let attached_deposit = env::attached_deposit();
         let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
