@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "ts": "near-syn ts src/*.rs > ito.ts",
+        "md": "near-syn md src/*.rs > ITO.md"
+    }
+}
