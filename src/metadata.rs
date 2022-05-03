@@ -80,7 +80,7 @@ pub struct TrailSeries {
     pub price: u128,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailBusiness {
     //owner of the token

@@ -42,6 +42,35 @@ pub(crate) fn calculate_yocto_near(nears: f64) -> Balance {
     (nears * (ONE_NEAR as f64)) as u128
 }
 
+//calculate how many bytes the account ID is taking up
+pub(crate) fn bytes_for_approved_account_id(account_id: &AccountId) -> u64 {
+    // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
+    account_id.as_str().len() as u64 + 4 + size_of::<u64>() as u64
+}
+
+//refund the storage taken up by passed in approved account IDs and send the funds to the passed in account ID.
+pub(crate) fn refund_approved_account_ids_iter<'a, I>(
+    account_id: AccountId,
+    approved_account_ids: I, //the approved account IDs must be passed in as an iterator
+) -> Promise
+    where
+        I: Iterator<Item = &'a AccountId>,
+{
+    //get the storage total by going through and summing all the bytes for each approved account IDs
+    let storage_released: u64 = approved_account_ids.map(bytes_for_approved_account_id).sum();
+    //transfer the account the storage that is released
+    Promise::new(account_id).transfer(Balance::from(storage_released) * env::storage_byte_cost())
+}
+
+//refund a map of approved account IDs and send the funds to the passed in account ID
+pub(crate) fn refund_approved_account_ids(
+    account_id: AccountId,
+    approved_account_ids: &HashMap<AccountId, u64>,
+) -> Promise {
+    //call the refund_approved_account_ids_iter with the approved account IDs as keys
+    refund_approved_account_ids_iter(account_id, approved_account_ids.keys())
+}
+
 pub(crate) fn partial_metadata_from_trail_series(trail_series: &TrailSeries) -> TokenMetadata {
     TokenMetadata {
         title: Some(trail_series.metadata.title.to_owned()),
@@ -106,6 +135,56 @@ impl Contract {
         //we insert that set for the given account ID.
         self.trails_series_by_creator
             .insert(account_id, &trails_set);
+    }
+
+    //remove a token from an owner (internal method and can't be called directly via CLI).
+    pub(crate) fn internal_remove_trail_from_owner(
+        &mut self,
+        account_id: &AccountId,
+        trail_id: &TrailIdAndCopyNumber,
+    ) {
+        //we get the set of tokens that the owner has
+        let mut tokens_set = self
+            .tokens_per_owner
+            .get(account_id)
+            //if there is no set of tokens for the owner, we panic with the following message:
+            .expect("Account does not own any tokens");
+
+        //we remove the the token_id from the set of tokens
+        tokens_set.remove(trail_id);
+
+        //if the token set is now empty, we remove the owner from the tokens_per_owner collection
+        if tokens_set.is_empty() {
+            self.tokens_per_owner.remove(account_id);
+        } else {
+            //if the token set is not empty, we simply insert it back for the account ID.
+            self.tokens_per_owner.insert(account_id, &tokens_set);
+        }
+    }
+
+    pub(crate) fn internal_transfer(
+        &mut self,
+        sender_id: &AccountId,
+        receiver_id: &AccountId,
+        trail_id: &TrailIdAndCopyNumber,
+        //we introduce an approval ID so that people with that approval ID can transfer the token
+        approval_id: Option<u64>,
+        memo: Option<String>,
+    ) -> (TrailBusiness, TrailBusiness) {
+        let trail = self.tokens_by_id.get(trail_id).expect("Trail does not exist");
+
+        assert_eq!(sender_id, &trail.owner_id, "Only owner can transfer trail");
+        assert_ne!(receiver_id, &trail.owner_id, "The trail owner and receiver must be different");
+
+        self.internal_remove_trail_from_owner(&trail.owner_id, trail_id);
+        self.internal_add_trail_to_owner(receiver_id, trail_id);
+
+        let mut new_trail_business = trail.clone();
+        new_trail_business.owner_id = receiver_id.clone();
+
+        self.tokens_by_id.insert(trail_id, &new_trail_business);
+
+        (new_trail_business, trail)
     }
 
     pub(crate) fn panic_if_not_owner(&self) {
