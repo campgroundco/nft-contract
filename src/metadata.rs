@@ -77,7 +77,7 @@ pub struct TrailSeries {
     pub issue_at: u64,
     pub metadata: TrailSeriesMetadata,
     pub supply: SeriesSupply,
-    pub price: u128,
+    pub price: U128,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
