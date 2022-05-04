@@ -55,3 +55,21 @@ await cmpgContract.get_trail_by_id({
     creator_id: "address.testnet"
 });
 ```
+
+## Generate TypeScript bindings and Markdown documentation
+
+Install `near-syn` and `near-md`
+
+[`near-syn`](https://github.com/acuarica/near-syn) is a utility to generate TypeScript bindings and Markdown documentation from a contract written in Rust for the NEAR protocol.
+Install it with
+
+```sh
+cargo install near-syn
+```
+
+Then
+
+```sh
+yarn ts
+yarn md
+```
