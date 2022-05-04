@@ -1,7 +1,9 @@
 use crate::bridge::SeriesBridge;
 use crate::*;
 
+/// Provides operations to deal with trail series.
 pub trait CreateTrailSeries {
+    /// Creates a series (trail) inside the smart contract.
     fn create_trail_series(
         &mut self,
         metadata: TrailSeriesMetadata,

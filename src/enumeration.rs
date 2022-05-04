@@ -1,14 +1,17 @@
 use crate::*;
 
+/// NEP-181 interface definition.
+///
+/// See https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration.
 #[near_bindgen]
 impl Contract {
-    //Query for the total supply of NFTs on the contract
+    /// Query for the total supply of NFTs on the contract.
     pub fn nft_total_supply(&self) -> U128 {
         //return the length of the token metadata by ID
         U128(self.token_metadata_by_id.len() as u128)
     }
 
-    //Query for nft tokens on the contract regardless of the owner using pagination
+    /// Query for nft tokens on the contract regardless of the owner using pagination.
     pub fn nft_tokens(&self, from_index: Option<U128>, limit: Option<u64>) -> Vec<JsonTrail> {
         //where to start pagination - if we have a from_index, we'll use that - otherwise start from 0 index
         let start = u128::from(from_index.unwrap_or(U128(0)));
@@ -26,11 +29,8 @@ impl Contract {
             .collect()
     }
 
-    //get the total supply of NFTs for a given owner
-    pub fn nft_supply_for_owner(
-        &self,
-        account_id: AccountId,
-    ) -> U128 {
+    /// Get the total supply of NFTs for a given owner.
+    pub fn nft_supply_for_owner(&self, account_id: AccountId) -> U128 {
         //get the set of tokens for the passed in owner
         let tokens_for_owner_set = self.tokens_per_owner.get(&account_id);
 
@@ -43,7 +43,8 @@ impl Contract {
         }
     }
 
-    //Query for all the tokens for an owner
+    /// Query all tokens of an owner.
+    /// Similar to get_all_trails_by_owner with pagination.
     pub fn trail_tickets_for_owner(
         &self,
         account_id: AccountId,
@@ -76,6 +77,7 @@ impl Contract {
             .collect()
     }
 
+    /// Get list of all tokens owned by a given account
     pub fn nft_tokens_for_owner(
         &self,
         account_id: AccountId,

@@ -60,6 +60,7 @@ impl Contract {
         ownership_id
     }
 
+    /// Buys a trail series if still available given a price and attached deposit.
     #[payable]
     pub fn nft_buy_series(
         &mut self,
