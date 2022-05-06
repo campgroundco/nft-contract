@@ -8,7 +8,12 @@ const NO_DEPOSIT: Balance = 0;
 
 pub trait NonFungibleTokenCore {
     //transfers an NFT to a receiver ID
-    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailIdAndCopyNumber, memo: Option<String>);
+    fn nft_transfer(
+        &mut self,
+        receiver_id: AccountId,
+        token_id: TrailIdAndCopyNumber,
+        memo: Option<String>,
+    );
 
     //transfers an NFT to a receiver and calls a function on the receiver ID's contract
     /// Returns `true` if the token was transferred from the sender's account.
@@ -82,16 +87,16 @@ trait NonFungibleTokenResolver {
 impl NonFungibleTokenCore for Contract {
     //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver.
     #[payable]
-    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TrailIdAndCopyNumber, memo: Option<String>) {
+    fn nft_transfer(
+        &mut self,
+        receiver_id: AccountId,
+        token_id: TrailIdAndCopyNumber,
+        memo: Option<String>,
+    ) {
         let sender_id = env::predecessor_account_id();
 
-        let (new_token, previous_token) = self.internal_transfer(
-            &sender_id,
-            &receiver_id,
-            &token_id,
-            None,
-            memo,
-        );
+        let (new_token, previous_token) =
+            self.internal_transfer(&sender_id, &receiver_id, &token_id, None, memo);
     }
 
     //implementation of the transfer call method. This will transfer the NFT and call a method on the reciver_id contract
@@ -103,7 +108,6 @@ impl NonFungibleTokenCore for Contract {
         memo: Option<String>,
         msg: String,
     ) -> PromiseOrValue<bool> {
-
         //get the GAS attached to the call
         let attached_gas = env::prepaid_gas();
 
@@ -123,13 +127,8 @@ impl NonFungibleTokenCore for Contract {
         let sender_id = env::predecessor_account_id();
 
         //transfer the token and get the previous token object
-        let (new_token, previous_token) = self.internal_transfer(
-            &sender_id,
-            &receiver_id,
-            &token_id,
-            None,
-            memo.clone(),
-        );
+        let (new_token, previous_token) =
+            self.internal_transfer(&sender_id, &receiver_id, &token_id, None, memo.clone());
 
         //default the authorized_id to none
         let mut authorized_id = None;
@@ -145,21 +144,22 @@ impl NonFungibleTokenCore for Contract {
             token_id.clone(),
             msg,
             receiver_id.clone(), //contract account to make the call to
-            NO_DEPOSIT, //attached deposit
+            NO_DEPOSIT,          //attached deposit
             env::prepaid_gas() - GAS_FOR_NFT_TRANSFER_CALL, //attached GAS
         )
-            //we then resolve the promise and call nft_resolve_transfer on our own contract
-            .then(ext_self::nft_resolve_transfer(
-                authorized_id, // we introduce an authorized ID so that we can log the transfer
-                previous_token.owner_id,
-                receiver_id,
-                token_id,
-                HashMap::new(),
-                memo, // we introduce a memo for logging in the events standard
-                env::current_account_id(), //contract account to make the call to
-                NO_DEPOSIT, //attached deposit
-                GAS_FOR_RESOLVE_TRANSFER, //GAS attached to the call
-            )).into()
+        //we then resolve the promise and call nft_resolve_transfer on our own contract
+        .then(ext_self::nft_resolve_transfer(
+            authorized_id, // we introduce an authorized ID so that we can log the transfer
+            previous_token.owner_id,
+            receiver_id,
+            token_id,
+            HashMap::new(),
+            memo,                      // we introduce a memo for logging in the events standard
+            env::current_account_id(), //contract account to make the call to
+            NO_DEPOSIT,                //attached deposit
+            GAS_FOR_RESOLVE_TRANSFER,  //GAS attached to the call
+        ))
+        .into()
     }
 
     //get the information for a specific token ID
@@ -169,12 +169,19 @@ impl NonFungibleTokenCore for Contract {
             //we'll get the metadata for that token
             let serie = self.trails_metadata_by_id.get(&token.token_id).unwrap();
             //we return the JsonToken (wrapped by Some since we return an option)
-            Some(JsonTrail {
+
+            // We get the metadata
+            // Which we will modify adding the NFT (Trail) numeration
+            // We don't want to modify the real metadata
+            let metadata = token.partial_metadata.to_owned();
+
+            Some(format_json_trail(
                 token_id,
-                owner_id: token.owner_id,
-                series: serie,
-                metadata: token.partial_metadata.to_owned(),
-            })
+                token.owner_id,
+                serie,
+                metadata,
+                true,
+            ))
         } else {
             //if there wasn't a token ID in the tokens_by_id collection, we return None
             None

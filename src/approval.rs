@@ -5,7 +5,7 @@ const GAS_FOR_NFT_APPROVE: Gas = Gas(10_000_000_000_000);
 const NO_DEPOSIT: Balance = 0;
 
 /// NEP-178 interface definition.
-/// 
+///
 /// See https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement.
 pub trait NonFungibleTokenCore {
     /// Approve an account ID to transfer a token on your behalf.

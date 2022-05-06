@@ -53,11 +53,13 @@ pub(crate) fn refund_approved_account_ids_iter<'a, I>(
     account_id: AccountId,
     approved_account_ids: I, //the approved account IDs must be passed in as an iterator
 ) -> Promise
-    where
-        I: Iterator<Item = &'a AccountId>,
+where
+    I: Iterator<Item = &'a AccountId>,
 {
     //get the storage total by going through and summing all the bytes for each approved account IDs
-    let storage_released: u64 = approved_account_ids.map(bytes_for_approved_account_id).sum();
+    let storage_released: u64 = approved_account_ids
+        .map(bytes_for_approved_account_id)
+        .sum();
     //transfer the account the storage that is released
     Promise::new(account_id).transfer(Balance::from(storage_released) * env::storage_byte_cost())
 }
@@ -69,6 +71,49 @@ pub(crate) fn refund_approved_account_ids(
 ) -> Promise {
     //call the refund_approved_account_ids_iter with the approved account IDs as keys
     refund_approved_account_ids_iter(account_id, approved_account_ids.keys())
+}
+
+// Gets the id and copy of a trail based on TrailIdAndCopyNumber & TRAIL_DELIMETER
+pub(crate) fn get_id_and_copy(trail_id: TrailIdAndCopyNumber) -> (String, String) {
+    let id_and_copy: Vec<&str> = trail_id.split(TRAIL_DELIMETER).collect();
+    let id = id_and_copy
+        .get(0)
+        .expect("Id is not present")
+        .clone()
+        .to_string();
+    let copy_number = id_and_copy
+        .get(1)
+        .expect("Copy number is not present")
+        .clone()
+        .to_string();
+    (id, copy_number)
+}
+
+// Creates a JsonTrail Struct
+pub(crate) fn format_json_trail(
+    token_id: TrailIdAndCopyNumber,
+    owner_id: AccountId,
+    series: TrailSeries,
+    metadata: TokenMetadata,
+    include_copy_number: bool,
+) -> JsonTrail {
+    let mut metadata_copy = metadata.to_owned();
+
+    if include_copy_number {
+        let (id, copy_number) = get_id_and_copy(token_id.clone());
+        metadata_copy.title = Some(format!(
+            "{} #{}",
+            metadata_copy.title.unwrap_or(String::from("Undefined")),
+            copy_number
+        ));
+    }
+
+    JsonTrail {
+        token_id,
+        owner_id,
+        series,
+        metadata: metadata_copy,
+    }
 }
 
 pub(crate) fn partial_metadata_from_trail_series(trail_series: &TrailSeries) -> TokenMetadata {
@@ -171,10 +216,16 @@ impl Contract {
         approval_id: Option<u64>,
         memo: Option<String>,
     ) -> (TrailBusiness, TrailBusiness) {
-        let trail = self.tokens_by_id.get(trail_id).expect("Trail does not exist");
+        let trail = self
+            .tokens_by_id
+            .get(trail_id)
+            .expect("Trail does not exist");
 
         assert_eq!(sender_id, &trail.owner_id, "Only owner can transfer trail");
-        assert_ne!(receiver_id, &trail.owner_id, "The trail owner and receiver must be different");
+        assert_ne!(
+            receiver_id, &trail.owner_id,
+            "The trail owner and receiver must be different"
+        );
 
         self.internal_remove_trail_from_owner(&trail.owner_id, trail_id);
         self.internal_add_trail_to_owner(receiver_id, trail_id);
