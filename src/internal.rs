@@ -71,6 +71,13 @@ pub(crate) fn refund_approved_account_ids(
     refund_approved_account_ids_iter(account_id, approved_account_ids.keys())
 }
 
+pub(crate) fn get_id_and_copy(trail_id: TrailIdAndCopyNumber) -> (String, String) {
+    let id_and_copy: Vec<&str> = trail_id.split(TRAIL_DELIMETER).collect();
+    let id = id_and_copy.get(0).expect("Id is not present").clone().to_string();
+    let copy_number = id_and_copy.get(1).expect("Copy number is not present").clone().to_string();
+    (id, copy_number)
+}
+
 pub(crate) fn partial_metadata_from_trail_series(trail_series: &TrailSeries) -> TokenMetadata {
     TokenMetadata {
         title: Some(trail_series.metadata.title.to_owned()),

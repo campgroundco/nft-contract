@@ -169,11 +169,21 @@ impl NonFungibleTokenCore for Contract {
             //we'll get the metadata for that token
             let serie = self.trails_metadata_by_id.get(&token.token_id).unwrap();
             //we return the JsonToken (wrapped by Some since we return an option)
+
+            // We get the metadata
+            // Which we will modify adding the NFT (Trail) numeration
+            // We don't want to modify the real metadata
+            let mut metadata = token.partial_metadata.to_owned();
+
+            let (id, copy_number) = get_id_and_copy(token_id.clone());
+
+            metadata.title = Some(format!("{} #{}", metadata.title.unwrap_or(String::from("Undefined")), copy_number));
+
             Some(JsonTrail {
                 token_id,
                 owner_id: token.owner_id,
                 series: serie,
-                metadata: token.partial_metadata.to_owned(),
+                metadata,
             })
         } else {
             //if there wasn't a token ID in the tokens_by_id collection, we return None

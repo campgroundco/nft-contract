@@ -253,6 +253,7 @@ mod test {
         let enumeration = contract.nft_tokens(None, None);
         let enumeration_unwrap = enumeration.get(0).unwrap();
         assert_eq!(enumeration_unwrap.token_id, String::from("1:1"));
+        assert_eq!(enumeration_unwrap.metadata.title.to_owned().unwrap(), String::from("CampgroundTest #1"));
         assert_eq!(enumeration_unwrap.owner_id, accounts(2));
         assert_eq!(enumeration_unwrap.series.creator_id, accounts(1));
     }
