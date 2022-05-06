@@ -77,11 +77,12 @@ impl CreateTrailSeries for Contract {
 
         refund_deposit(env::storage_usage() - initial_storage_usage, 0);
 
-        JsonTrail {
-            token_id: token_series_id,
-            owner_id: creator_id,
-            metadata: partial_metadata_from_trail_series(&trail_series),
-            series: trail_series,
-        }
+        format_json_trail(
+            token_series_id,
+            creator_id,
+            trail_series,
+            partial_metadata_from_trail_series(&trail_series),
+            false,
+        )
     }
 }

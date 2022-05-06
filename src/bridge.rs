@@ -1,7 +1,6 @@
 use crate::*;
 
 pub trait SeriesBridge {
-
     /// Returns whether a trail is available in the smart contract.
     fn series_exists(&self, series_id: &TrailId) -> bool;
 

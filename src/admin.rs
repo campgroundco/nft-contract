@@ -2,7 +2,7 @@ use crate::*;
 
 /// Provides admin operations to change different configurations of
 /// the contract.
-/// 
+///
 /// The contract owner is the only account allowed to perform these operations.
 pub trait AdminBridge {
     /// Changes Campground percentage `fee`.
