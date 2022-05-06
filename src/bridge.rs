@@ -31,7 +31,7 @@ pub trait SeriesBridge {
     fn get_all_trails_by_creator(&self, creator_id: &AccountId) -> Vec<TrailSeries>;
 
     /// Returns the current minimum fee in YoctoNEAR by campground.
-    fn get_current_fee(&self) -> u128;
+    fn get_current_fee(&self) -> U128;
 
     /// Returns the percentage amount Campground takes from each buy order if higher than minimum fee.
     fn get_fee_percentage(&self) -> u64;
@@ -137,8 +137,8 @@ impl SeriesBridge for Contract {
         }
     }
 
-    fn get_current_fee(&self) -> u128 {
-        self.campground_minimum_fee_yocto_near
+    fn get_current_fee(&self) -> U128 {
+        U128(self.campground_minimum_fee_yocto_near)
     }
 
     fn get_fee_percentage(&self) -> u64 {
