@@ -27,7 +27,7 @@ pub struct NFTContractMetadata {
     pub reference_hash: Option<Base64VecU8>,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailResource {
     /// ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
@@ -42,14 +42,14 @@ pub struct TrailResource {
     pub reference: Option<String>,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct SeriesSupply {
     pub total: u64,
     pub circulating: u64,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailSeriesMetadata {
     pub title: String,
@@ -97,7 +97,7 @@ pub struct TokenMetadata {
     pub reference_hash: Option<Base64VecU8>,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TrailSeries {
     pub is_mintable: bool,

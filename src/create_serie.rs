@@ -80,7 +80,7 @@ impl CreateTrailSeries for Contract {
         format_json_trail(
             token_series_id,
             creator_id,
-            trail_series,
+            trail_series.clone(),
             partial_metadata_from_trail_series(&trail_series),
             false,
         )
