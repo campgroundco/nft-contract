@@ -1,19 +1,45 @@
 use crate::*;
 
 pub trait SeriesBridge {
+
+    /// Returns whether a trail is available in the smart contract.
     fn series_exists(&self, series_id: &TrailId) -> bool;
+
+    /// Returns the owner of the smart contract
     fn get_owner(&self) -> &AccountId;
+
+    /// Returns a trail if found or panics if not.
     fn get_trail_by_id(&self, series_id: &TrailId) -> TrailSeries;
+
+    /// Returns a trail by trail ID if any, `null` otherwise.
     fn get_trail_by_id_optional(&self, series_id: &TrailId) -> Option<TrailSeries>;
+
+    /// Verifies whether a given user, `AccountId` owns the copy of a trail.
     fn is_owner(&self, series_id: &TrailId, owner_id: &AccountId) -> bool;
+
+    /// Verifies whether a given user, `AccountId` is the creator of a given trail.
     fn is_creator(&self, series_id: &TrailId, owner_id: &AccountId) -> bool;
+
+    /// Returns the business information of a trail, `null` otherwise.
     fn get_trail_business(&self, trail_and_copy_id: &TrailIdAndCopyNumber)
         -> Option<TrailBusiness>;
+
+    /// Returns all the trail copies owned by a given user, `AccountId`.
     fn get_all_trails_by_owner(&self, owner_id: &AccountId) -> Vec<TrailSeries>;
+
+    /// Returns all the trails created by a given user (AccountId).
     fn get_all_trails_by_creator(&self, creator_id: &AccountId) -> Vec<TrailSeries>;
-    fn get_current_fee(&self) -> u128;
+
+    /// Returns the current minimum fee in YoctoNEAR by campground.
+    fn get_current_fee(&self) -> U128;
+
+    /// Returns the percentage amount Campground takes from each buy order if higher than minimum fee.
     fn get_fee_percentage(&self) -> u64;
+
+    /// Returns the address where treasury funds are transferred to.
     fn get_treasury_address(&self) -> AccountId;
+
+    /// Whether caller is the owner of the contract.
     fn is_caller_contract_owner(&self) -> bool;
 }
 
@@ -111,8 +137,8 @@ impl SeriesBridge for Contract {
         }
     }
 
-    fn get_current_fee(&self) -> u128 {
-        self.campground_minimum_fee_yocto_near
+    fn get_current_fee(&self) -> U128 {
+        U128(self.campground_minimum_fee_yocto_near)
     }
 
     fn get_fee_percentage(&self) -> u64 {
