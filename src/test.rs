@@ -11,9 +11,8 @@ mod test {
     use near_sdk::json_types::{ValidAccountId, U128};
     use near_sdk::test_utils::{accounts, VMContextBuilder};
     use near_sdk::testing_env;
+    use near_sdk::Balance;
     use near_sdk::{AccountId, VMContext};
-    use near_sdk_sim::types::Balance;
-    use near_sdk_sim::{deploy, init_simulator, ContractAccount};
     use std::convert::TryInto;
 
     const STORAGE_FOR_CREATE_SERIES: Balance = 6960000000000000000000;
