@@ -7,7 +7,7 @@ use context::setup_contract;
 use ito_contract::{bridge::SeriesBridge, nft_core::NonFungibleTokenCore, BUY_STORAGE, ONE_NEAR};
 use near_sdk::testing_env;
 
-use context::{alice, carol, create_series};
+use context::{alice, bob, carol, create_series};
 
 #[test]
 fn it_should_get_nft_token_info() {
@@ -62,12 +62,13 @@ fn it_should_transfer_nft_to_receiver() {
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
-    let token_id = contract.nft_buy_series(trail.token_id.clone(), carol());
+    let token_id = contract.nft_buy_series(trail.token_id.clone(), bob());
+    assert!(contract.is_owner(&trail.token_id, &bob()));
 
     testing_env!(context
-        .predecessor_account_id(carol())
+        .predecessor_account_id(bob())
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
-    contract.nft_transfer(alice(), token_id, None);
-    assert!(contract.is_owner(&trail.token_id, &alice()));
+    contract.nft_transfer(carol(), token_id, None);
+    assert!(contract.is_owner(&trail.token_id, &carol()));
 }
