@@ -1,22 +1,38 @@
 use ito_contract::{
     create_serie::CreateTrailSeries, Contract, JsonTrail, TrailResource, TrailSeriesMetadata,
 };
-use near_sdk::{
-    json_types::U128,
-    test_utils::{accounts, VMContextBuilder},
-    testing_env, AccountId, Balance,
-};
+use near_sdk::{json_types::U128, test_utils::VMContextBuilder, testing_env, AccountId, Balance};
 
 pub const STORAGE_FOR_CREATE_SERIES: Balance = 6960000000000000000000;
 
 pub fn owner() -> AccountId {
-    accounts(0)
+    AccountId::new_unchecked("campground_owner.near".into())
+}
+
+pub fn alice() -> AccountId {
+    AccountId::new_unchecked("alice".into())
+}
+
+pub fn bob() -> AccountId {
+    AccountId::new_unchecked("bob".into())
+}
+
+pub fn carol() -> AccountId {
+    AccountId::new_unchecked("carol".into())
+}
+
+pub fn treasury() -> AccountId {
+    AccountId::new_unchecked("campground_treasury.near".into())
+}
+
+pub fn new_treasury() -> AccountId {
+    AccountId::new_unchecked("campground_new_treasury.near".into())
 }
 
 pub fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
     let mut builder = VMContextBuilder::new();
     builder
-        .current_account_id(accounts(0))
+        .current_account_id(owner())
         .signer_account_id(predecessor_account_id.clone())
         .predecessor_account_id(predecessor_account_id);
     builder
@@ -24,8 +40,8 @@ pub fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
 
 pub fn setup_contract() -> (VMContextBuilder, Contract) {
     let mut context = VMContextBuilder::new();
-    testing_env!(context.predecessor_account_id(accounts(0)).build());
-    let contract = Contract::new_default_meta(accounts(0), accounts(4));
+    testing_env!(context.predecessor_account_id(owner()).build());
+    let contract = Contract::new_default_meta(owner(), treasury());
     (context, contract)
 }
 

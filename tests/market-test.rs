@@ -3,16 +3,16 @@ pub mod context;
 use ito_contract::{
     admin::AdminBridge, bridge::SeriesBridge, internal::calculate_yocto_near, BUY_STORAGE, ONE_NEAR,
 };
-use near_sdk::{json_types::U128, test_utils::accounts, testing_env};
+use near_sdk::{json_types::U128, testing_env};
 
-use crate::context::{create_series, owner, setup_contract, STORAGE_FOR_CREATE_SERIES};
+use context::{alice, bob, carol, create_series, owner, setup_contract, STORAGE_FOR_CREATE_SERIES};
 
 #[test]
 #[should_panic(expected = "Campground: Attached deposit is less than price")]
 fn test_buy_invalid_amount() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
-        .predecessor_account_id(accounts(1))
+        .predecessor_account_id(alice())
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
@@ -26,12 +26,12 @@ fn test_buy_invalid_amount() {
         None,
     );
     testing_env!(context
-        .predecessor_account_id(accounts(2))
+        .predecessor_account_id(bob())
         .attached_deposit(500 as u128)
         .build());
 
     // Panics
-    contract.nft_buy_series("1".to_string(), accounts(3));
+    contract.nft_buy_series("1".to_string(), carol());
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn test_buy_invalid_amount() {
 fn test_buy_invalid_fee() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
-        .predecessor_account_id(accounts(1))
+        .predecessor_account_id(alice())
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
@@ -53,18 +53,18 @@ fn test_buy_invalid_fee() {
         None,
     );
     testing_env!(context
-        .predecessor_account_id(accounts(2))
+        .predecessor_account_id(bob())
         .attached_deposit(contract.campground_minimum_fee_yocto_near - 1)
         .build());
 
-    contract.nft_buy_series("1".to_string(), accounts(3));
+    contract.nft_buy_series("1".to_string(), carol());
 }
 
 #[test]
 fn test_buy_just_enough_fee() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
-        .predecessor_account_id(accounts(1))
+        .predecessor_account_id(alice())
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
@@ -78,18 +78,18 @@ fn test_buy_just_enough_fee() {
         None,
     );
     testing_env!(context
-        .predecessor_account_id(accounts(2))
+        .predecessor_account_id(bob())
         .attached_deposit(contract.campground_minimum_fee_yocto_near)
         .build());
 
-    contract.nft_buy_series(String::from("1"), accounts(3));
+    contract.nft_buy_series(String::from("1"), carol());
 }
 
 #[test]
 fn test_buy_one_near() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
-        .predecessor_account_id(accounts(1))
+        .predecessor_account_id(alice())
         .attached_deposit(6920000000000000000000)
         .build());
 
@@ -103,40 +103,40 @@ fn test_buy_one_near() {
         None,
     );
     testing_env!(context
-        .predecessor_account_id(accounts(2))
+        .predecessor_account_id(bob())
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
-    contract.nft_buy_series(String::from("1"), accounts(3));
+    contract.nft_buy_series(String::from("1"), carol());
 
     testing_env!(context
-        .predecessor_account_id(accounts(3))
+        .predecessor_account_id(carol())
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
-    contract.nft_buy_series(String::from("1"), accounts(3));
+    contract.nft_buy_series(String::from("1"), carol());
 
-    let get_account_trails = contract.tokens_per_owner.get(&accounts(3)).unwrap();
+    let get_account_trails = contract.tokens_per_owner.get(&carol()).unwrap();
     let trails_as_vec = get_account_trails.to_vec();
     assert_eq!(get_account_trails.len(), 2);
     assert_eq!(trails_as_vec.get(0).unwrap(), &String::from("1:1"));
     assert_eq!(trails_as_vec.get(1).unwrap(), &String::from("1:2"));
 
     let trails_by_id = contract.tokens_by_id.get(&String::from("1:1")).unwrap();
-    assert_eq!(trails_by_id.owner_id, accounts(3));
+    assert_eq!(trails_by_id.owner_id, carol());
     assert_eq!(trails_by_id.token_id, "1");
 
-    assert!(contract.is_owner(&String::from("1"), &accounts(3)));
-    assert!(!(contract.is_owner(&String::from("1"), &accounts(2))));
-    assert!(!(contract.is_owner(&String::from("2"), &accounts(3))));
+    assert!(contract.is_owner(&String::from("1"), &carol()));
+    assert!(!(contract.is_owner(&String::from("1"), &bob())));
+    assert!(!(contract.is_owner(&String::from("2"), &carol())));
 
-    let get_trails_by_owner = contract.get_all_trails_by_owner(&accounts(3));
+    let get_trails_by_owner = contract.get_all_trails_by_owner(&carol());
     assert_eq!(get_trails_by_owner.len(), 1);
     let data = get_trails_by_owner.get(0).unwrap();
-    assert_eq!(data.creator_id, accounts(1));
+    assert_eq!(data.creator_id, alice());
 
     // Re run test to verify ownership
-    let get_trails_by_owner = contract.get_all_trails_by_owner(&accounts(3));
+    let get_trails_by_owner = contract.get_all_trails_by_owner(&carol());
     assert_eq!(get_trails_by_owner.len(), 1);
 }
 
@@ -153,7 +153,7 @@ fn it_should() {
     contract.change_campground_fee(120);
 
     testing_env!(context
-        .predecessor_account_id(accounts(1))
+        .predecessor_account_id(alice())
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
@@ -167,10 +167,10 @@ fn it_should() {
         None,
     );
     testing_env!(context
-        .predecessor_account_id(accounts(2))
+        .predecessor_account_id(bob())
         // .attached_deposit(1000)
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
-    contract.nft_buy_series("1".to_string(), accounts(3));
+    contract.nft_buy_series("1".to_string(), carol());
 }
