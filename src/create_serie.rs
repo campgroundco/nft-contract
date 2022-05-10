@@ -64,7 +64,7 @@ impl CreateTrailSeries for Contract {
         // assert!(valid_until > can_be_traded_at, "Campground: Trail tickets need to be valid in a greater date than the start date");
 
         let price = price_res.unwrap_or(0);
-        let campground_fee = calculate_fee(price, self.campground_fee, self.campground_minimum_fee_yocto_near);
+        let campground_fee_near = U128(calculate_fee(price, self.campground_fee, self.campground_minimum_fee_yocto_near));
 
         let trail_series = TrailSeries {
             is_mintable: true,
@@ -76,7 +76,7 @@ impl CreateTrailSeries for Contract {
                 circulating: 0 as u64,
             },
             price: price.into(),
-            campground_fee,
+            campground_fee_near,
             creator_royalty_near: creator_royalty
         };
 

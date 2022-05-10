@@ -106,7 +106,7 @@ pub struct TrailSeries {
     pub metadata: TrailSeriesMetadata,
     pub supply: SeriesSupply,
     pub price: U128,
-    pub campground_fee: U128,
+    pub campground_fee_near: U128,
     pub creator_royalty_near: Option<U128>
 }
 
