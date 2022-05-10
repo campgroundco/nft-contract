@@ -1,6 +1,3 @@
-#![deny(warnings)]
-#![warn(missing_docs)]
-
 use ito_contract::{
     create_serie::CreateTrailSeries, Contract, JsonTrail, TrailResource, TrailSeriesMetadata,
 };
@@ -41,7 +38,7 @@ pub fn create_series(
     tickets: Option<u64>,
     resources: Option<Vec<TrailResource>>,
 ) -> JsonTrail {
-    let trail = contract.create_trail_series(
+    contract.create_trail_series(
         TrailSeriesMetadata {
             title: String::from(title),
             description: String::new(),
@@ -61,7 +58,5 @@ pub fn create_series(
             campground_id: String::from("CMPGR123"),
         },
         price,
-    );
-
-    trail
+    )
 }
