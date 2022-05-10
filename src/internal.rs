@@ -38,7 +38,7 @@ pub(crate) fn calculate_fee(price: u128, campground_fee: u64, min_treasury: u128
     }
 }
 
-pub(crate) fn calculate_yocto_near(nears: f64) -> Balance {
+pub fn calculate_yocto_near(nears: f64) -> Balance {
     (nears * (ONE_NEAR as f64)) as u128
 }
 
