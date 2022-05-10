@@ -74,5 +74,7 @@ pub fn create_series(
             campground_id: String::from("CMPGR123"),
         },
         price,
+        None,
+        None,
     )
 }
