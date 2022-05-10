@@ -87,7 +87,7 @@ impl Contract {
             "Campground: Attached deposit is less than minimum buying fee"
         );
 
-        let mut for_treasury: u128 = trail_series.campground_fee.into();
+        let mut for_treasury: u128 = trail_series.campground_fee_near.into();
 
         // If for_treasury <= campground_minimum_fee_yocto_near, the buyer pays the fees
         // Otherwise, the seller pays the fee (price - for_treasury)
