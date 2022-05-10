@@ -62,5 +62,6 @@ jobs:
           ~/.cargo/registry/index
           target
         key: ${{ runner.os }}-cargo-coverage-test-${{ hashFiles('Cargo.lock') }}
+    - run: rustup component add llvm-tools-preview
     - run: cargo install cargo-llvm-cov
     - run: cargo llvm-cov
