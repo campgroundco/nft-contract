@@ -29,13 +29,13 @@ pub(crate) fn refund_deposit(storage_used: u64, extra_spend: Balance) {
     }
 }
 
-pub(crate) fn calculate_fee(price: u128, campground_fee: u64, min_treasury: u128) -> u128 {
+pub(crate) fn calculate_fee(price: u128, campground_fee: u64, min_treasury: u128) -> U128 {
     let fee = (price as u128 * campground_fee as u128) / 100;
-    if fee < min_treasury {
+    U128(if fee < min_treasury {
         min_treasury
     } else {
         fee
-    }
+    })
 }
 
 pub(crate) fn calculate_yocto_near(nears: f64) -> Balance {

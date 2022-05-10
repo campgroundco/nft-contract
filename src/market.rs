@@ -87,11 +87,7 @@ impl Contract {
             "Campground: Attached deposit is less than minimum buying fee"
         );
 
-        let mut for_treasury = calculate_fee(
-            price,
-            self.campground_fee,
-            campground_minimum_fee_yocto_near,
-        );
+        let mut for_treasury: u128 = trail_series.campground_fee.into();
 
         // If for_treasury <= campground_minimum_fee_yocto_near, the buyer pays the fees
         // Otherwise, the seller pays the fee (price - for_treasury)
@@ -115,7 +111,7 @@ impl Contract {
             Promise::new(trail_series.creator_id).transfer(price_deducted);
         }
 
-        Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury);
+        Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury.into());
 
         refund_deposit(env::storage_usage() - initial_storage_usage, price);
 

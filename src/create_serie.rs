@@ -8,6 +8,8 @@ pub trait CreateTrailSeries {
         &mut self,
         metadata: TrailSeriesMetadata,
         price: Option<U128>,
+        creator: Option<AccountId>,
+        creator_royalty: Option<U128>
     ) -> JsonTrail;
 }
 
@@ -18,9 +20,11 @@ impl CreateTrailSeries for Contract {
         &mut self,
         metadata: TrailSeriesMetadata,
         price: Option<U128>,
+        creator_id: Option<AccountId>,
+        creator_royalty: Option<U128>
     ) -> JsonTrail {
         let initial_storage_usage = env::storage_usage();
-        let creator_id = env::predecessor_account_id();
+        let creator_id = creator_id.unwrap_or(env::predecessor_account_id());
         let current_block_timestamp = env::block_timestamp();
         let token_series_id = format!("{}", (self.trails_metadata_by_id.len() + 1));
 
@@ -59,6 +63,9 @@ impl CreateTrailSeries for Contract {
         // let valid_until = metadata.expires_at.unwrap_or_else(|| u64::MAX);
         // assert!(valid_until > can_be_traded_at, "Campground: Trail tickets need to be valid in a greater date than the start date");
 
+        let price = price_res.unwrap_or(0);
+        let campground_fee = calculate_fee(price, self.campground_fee, self.campground_minimum_fee_yocto_near);
+
         let trail_series = TrailSeries {
             is_mintable: true,
             creator_id: creator_id.clone(),
@@ -68,7 +75,9 @@ impl CreateTrailSeries for Contract {
                 total: quantity,
                 circulating: 0 as u64,
             },
-            price: price_res.unwrap_or(0).into(),
+            price: price.into(),
+            campground_fee,
+            creator_royalty_near: creator_royalty
         };
 
         self.trails_metadata_by_id
