@@ -2,10 +2,10 @@ import test from 'ava';
 import BN from 'bn.js';
 import { Account, connect, Contract, KeyPair, keyStores, Near } from 'near-api-js';
 import { formatNearAmount, parseNearAmount } from 'near-api-js/lib/utils/format';
-import { getConfig } from './config';
-import { deployContract, initContract } from './deploy';
+import { getConfig } from './lib/config';
+import { deployContract, initContract } from './lib/deploy';
 import * as ITO from '../ito';
-import { createFSKeyStore, getAccount } from './store';
+import { createFSKeyStore, getAccount } from './lib/store';
 
 // function NEAR(amount: string) {
 //     return new BN(parseNearAmount(amount)!);
