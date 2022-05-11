@@ -39,7 +39,7 @@ trait NonFungibleTokenApprovalsReceiver {
 impl NonFungibleTokenCore for Contract {
     //allow a specific account ID to approve a token on your behalf
     #[payable]
-    fn nft_approve(&mut self, _token_id: TrailId, _account_id: AccountId, _msg: Option<String>) {
+    fn nft_approve(&mut self, token_id: TrailId, account_id: AccountId, msg: Option<String>) {
         /*
             FILL THIS IN
         */
@@ -48,9 +48,9 @@ impl NonFungibleTokenCore for Contract {
     //check if the passed in account has access to approve the token ID
     fn nft_is_approved(
         &self,
-        _token_id: TrailId,
-        _approved_account_id: AccountId,
-        _approval_id: Option<u64>,
+        token_id: TrailId,
+        approved_account_id: AccountId,
+        approval_id: Option<u64>,
     ) {
         /*
             FILL THIS IN
@@ -59,7 +59,7 @@ impl NonFungibleTokenCore for Contract {
 
     //revoke a specific account from transferring the token on your behalf
     #[payable]
-    fn nft_revoke(&mut self, _token_id: TrailId, _account_id: AccountId) {
+    fn nft_revoke(&mut self, token_id: TrailId, account_id: AccountId) {
         /*
             FILL THIS IN
         */
@@ -67,7 +67,7 @@ impl NonFungibleTokenCore for Contract {
 
     //revoke all accounts from transferring the token on your behalf
     #[payable]
-    fn nft_revoke_all(&mut self, _token_id: TrailId) {
+    fn nft_revoke_all(&mut self, token_id: TrailId) {
         /*
             FILL THIS IN
         */
