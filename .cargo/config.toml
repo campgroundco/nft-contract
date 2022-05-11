@@ -1,0 +1,8 @@
+# Quote from `man ld` on macos
+#
+#      -s      Completely strip the output, including removing the symbol table.  This file format variant is no longer supported.  This option is obsolete.
+#
+# It makes the wasm output considerably smaller.
+# This is important to save deployment costs on NEAR.
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "link-arg=-s"]
