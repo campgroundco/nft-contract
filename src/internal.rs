@@ -38,9 +38,9 @@ pub(crate) fn calculate_fee(price: u128, campground_fee: u64, min_treasury: u128
     }
 }
 
-pub fn calculate_yocto_near(nears: f64) -> Balance {
-    (nears * (ONE_NEAR as f64)) as u128
-}
+// pub fn calculate_yocto_near(nears: u64) -> Balance {
+//     (nears * (ONE_NEAR as f64)) / 100_000 as u128
+// }
 
 //calculate how many bytes the account ID is taking up
 pub(crate) fn bytes_for_approved_account_id(account_id: &AccountId) -> u64 {
@@ -65,7 +65,8 @@ where
 }
 
 //refund a map of approved account IDs and send the funds to the passed in account ID
-pub(crate) fn refund_approved_account_ids(
+/// TODO: Check whether we will need this function. If not, remove it.
+pub fn refund_approved_account_ids(
     account_id: AccountId,
     approved_account_ids: &HashMap<AccountId, u64>,
 ) -> Promise {
@@ -100,7 +101,7 @@ pub(crate) fn format_json_trail(
     let mut metadata_copy = metadata.to_owned();
 
     if include_copy_number {
-        let (id, copy_number) = get_id_and_copy(token_id.clone());
+        let (_id, copy_number) = get_id_and_copy(token_id.clone());
         metadata_copy.title = Some(format!(
             "{} #{}",
             metadata_copy.title.unwrap_or(String::from("Undefined")),
@@ -247,18 +248,12 @@ impl Contract {
 
 #[cfg(test)]
 mod tests {
-    use crate::internal::{calculate_fee, calculate_yocto_near};
-    use crate::ONE_NEAR;
+    use super::internal::calculate_fee;
 
     #[test]
     fn calculate_fee_test() {
         assert_eq!(calculate_fee(100, 5, 2), 5);
         assert_eq!(calculate_fee(10, 1, 2), 2);
         assert_eq!(calculate_fee(0, 0, 2), 2);
-    }
-
-    #[test]
-    fn calculate_yoctonear_test() {
-        assert!(calculate_yocto_near(0.1) < ONE_NEAR);
     }
 }
