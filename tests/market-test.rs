@@ -1,15 +1,13 @@
 pub mod context;
 
-use ito_contract::{
-    admin::AdminBridge, bridge::SeriesBridge, internal::calculate_yocto_near, BUY_STORAGE, ONE_NEAR,
-};
-use near_sdk::{json_types::U128, testing_env};
+use ito_contract::{admin::AdminBridge, bridge::SeriesBridge, BUY_STORAGE, ONE_NEAR};
+use near_sdk::testing_env;
 
 use context::{alice, bob, carol, create_series, owner, setup_contract, STORAGE_FOR_CREATE_SERIES};
 
 #[test]
 #[should_panic(expected = "Campground: Attached deposit is less than price")]
-fn test_buy_invalid_amount() {
+fn contract_should_reject_buying_with_invalid_amount() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
         .predecessor_account_id(alice())
@@ -21,13 +19,13 @@ fn test_buy_invalid_amount() {
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some(U128::from(1000 as u128)),
+        Some(1000.into()),
         Some(10),
         None,
     );
     testing_env!(context
         .predecessor_account_id(bob())
-        .attached_deposit(500 as u128)
+        .attached_deposit(500)
         .build());
 
     // Panics
@@ -36,7 +34,7 @@ fn test_buy_invalid_amount() {
 
 #[test]
 #[should_panic(expected = "Campground: Attached deposit is less than minimum buying fee")]
-fn test_buy_invalid_fee() {
+fn contract_should_reject_when_buying_with_invalid_fee() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
         .predecessor_account_id(alice())
@@ -48,7 +46,7 @@ fn test_buy_invalid_fee() {
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some(U128::from(calculate_yocto_near(0.01))),
+        Some((ONE_NEAR / 100).into()),
         Some(10),
         None,
     );
@@ -61,7 +59,7 @@ fn test_buy_invalid_fee() {
 }
 
 #[test]
-fn test_buy_just_enough_fee() {
+fn contract_should_allow_account_to_buy_with_just_enough_fee() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
         .predecessor_account_id(alice())
@@ -73,7 +71,7 @@ fn test_buy_just_enough_fee() {
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some(U128::from(calculate_yocto_near(0.01))),
+        Some((ONE_NEAR / 100).into()),
         Some(10),
         None,
     );
@@ -86,7 +84,7 @@ fn test_buy_just_enough_fee() {
 }
 
 #[test]
-fn test_buy_one_near() {
+fn contract_should_allow_account_to_buy_with_one_near() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
         .predecessor_account_id(alice())
@@ -98,7 +96,7 @@ fn test_buy_one_near() {
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some(U128::from(ONE_NEAR)),
+        Some(ONE_NEAR.into()),
         Some(10),
         None,
     );
@@ -107,28 +105,28 @@ fn test_buy_one_near() {
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
-    contract.nft_buy_series(String::from("1"), carol());
+    contract.nft_buy_series("1".into(), carol());
 
     testing_env!(context
         .predecessor_account_id(carol())
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
-    contract.nft_buy_series(String::from("1"), carol());
+    contract.nft_buy_series("1".into(), carol());
 
     let get_account_trails = contract.tokens_per_owner.get(&carol()).unwrap();
     let trails_as_vec = get_account_trails.to_vec();
     assert_eq!(get_account_trails.len(), 2);
-    assert_eq!(trails_as_vec.get(0).unwrap(), &String::from("1:1"));
-    assert_eq!(trails_as_vec.get(1).unwrap(), &String::from("1:2"));
+    assert_eq!(trails_as_vec.get(0).unwrap(), &"1:1".clone());
+    assert_eq!(trails_as_vec.get(1).unwrap(), &"1:2".clone());
 
-    let trails_by_id = contract.tokens_by_id.get(&String::from("1:1")).unwrap();
+    let trails_by_id = contract.tokens_by_id.get(&"1:1".into()).unwrap();
     assert_eq!(trails_by_id.owner_id, carol());
     assert_eq!(trails_by_id.token_id, "1");
 
-    assert!(contract.is_owner(&String::from("1"), &carol()));
-    assert!(!(contract.is_owner(&String::from("1"), &bob())));
-    assert!(!(contract.is_owner(&String::from("2"), &carol())));
+    assert!(contract.is_owner(&"1".into(), &carol()));
+    assert!(!(contract.is_owner(&"1".into(), &bob())));
+    assert!(!(contract.is_owner(&"2".into(), &carol())));
 
     let get_trails_by_owner = contract.get_all_trails_by_owner(&carol());
     assert_eq!(get_trails_by_owner.len(), 1);
@@ -141,8 +139,8 @@ fn test_buy_one_near() {
 }
 
 #[test]
-#[ignore = "reason"]
-fn it_should() {
+#[should_panic(expected = "Campground: Buying operation is invalid")]
+fn contract_should_reject_when_buying_with_campground_fee_greater_than_100() {
     let (mut context, mut contract) = setup_contract();
 
     testing_env!(context
@@ -168,7 +166,6 @@ fn it_should() {
     );
     testing_env!(context
         .predecessor_account_id(bob())
-        // .attached_deposit(1000)
         .attached_deposit(ONE_NEAR + BUY_STORAGE)
         .build());
 
