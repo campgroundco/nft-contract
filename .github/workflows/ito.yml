@@ -60,9 +60,8 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: |
-          ~/.cargo/bin
-          ~/.cargo/registry/cache
-          ~/.cargo/registry/index
+          ~/.cargo
+          !~/.cargo/registry/src
           target
         key: ${{ runner.os }}-cargo-unit-nextest-${{ hashFiles('Cargo.lock') }}
     - run: cargo install cargo-nextest
@@ -76,9 +75,8 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: |
-          ~/.cargo/bin
-          ~/.cargo/registry/cache
-          ~/.cargo/registry/index
+          ~/.cargo
+          !~/.cargo/registry/src
           target
         key: ${{ runner.os }}-cargo-coverage-test-${{ hashFiles('Cargo.lock') }}
     - run: rustup component add llvm-tools-preview
