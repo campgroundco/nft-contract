@@ -20,8 +20,8 @@ env:
   # Enables color display for `cargo`
   CARGO_TERM_COLOR: always
 
-  # Enables color display for js cli app (based on `chalk`)
-  # FORCE_COLOR: 1
+  # Enables color display for JS cli apps
+  FORCE_COLOR: 1
 
 jobs:
 
@@ -54,6 +54,7 @@ jobs:
 
   unit-nextest:
     runs-on: ubuntu-latest
+    needs: unit-test
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
@@ -69,6 +70,7 @@ jobs:
 
   coverage-test:
     runs-on: ubuntu-latest
+    needs: unit-test
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
@@ -85,11 +87,14 @@ jobs:
 
   e2e-sandbox-test:
     runs-on: ubuntu-latest
+    needs: build-wasm
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
         path: |
+          ~/.cargo/bin
+          ~/.cargo/git
           ~/.cargo/registry/cache
           ~/.cargo/registry/index
           target/
@@ -108,6 +113,7 @@ jobs:
 
   e2e-testnet-test:
     runs-on: ubuntu-latest
+    needs: build-wasm
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
