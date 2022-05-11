@@ -4,6 +4,8 @@ import { deployContract, initContract } from "./deploy";
 import { createFSKeyStore, getAccount } from "./store";
 import * as ITO from '../../ito';
 
+export type ITOContract = Contract & ITO.Contract;
+
 const env = process.argv[2];
 
 export async function setup(): Promise<[Account, ...(Contract & ITO.Contract)[]]> {
@@ -19,7 +21,7 @@ export async function setup(): Promise<[Account, ...(Contract & ITO.Contract)[]]
         return new Contract(account, ito.accountId, ITO.ContractMethods) as any;
     }
 
-    const accounts = await Promise.all(['owner', 'alice', 'bob', 'charlie'].map(name => contract(name)));
+    const accounts = await Promise.all(['owner', 'alice', 'bob', 'carol'].map(name => contract(name)));
     const owner = accounts[0];
 
     await initContract<ITO.Contract, keyof ITO.Contract>(owner,
