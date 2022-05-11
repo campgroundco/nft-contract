@@ -91,10 +91,8 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: |
-          ~/.cargo/bin
-          ~/.cargo/git
-          ~/.cargo/registry/cache
-          ~/.cargo/registry/index
+          ~/.cargo
+          !~/.cargo/registry/src
           target/
           nearcore/
         key: ${{ runner.os }}-cargo-e2e-sandbox-test-${{ hashFiles('Cargo.lock') }}
