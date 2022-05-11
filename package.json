@@ -1,12 +1,16 @@
 {
     "private": true,
     "scripts": {
+        "build": "cargo build --target wasm32-unknown-unknown --release",
         "test": "ava",
         "ts": "near-syn ts src/*.rs > ito.ts",
         "md": "near-syn md src/*.rs > ITO.md"
     },
     "devDependencies": {
+        "@types/bn.js": "^5.1.0",
         "ava": "^4.2.0",
+        "bn.js": "^5.2.0",
+        "bs58": "^5.0.0",
         "near-api-js": "^0.44.2",
         "ts-node": "^10.7.0",
         "typescript": "^4.6.4"
