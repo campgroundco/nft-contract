@@ -1,18 +1,20 @@
 import test from 'ava';
 import { Account, Contract } from 'near-api-js';
+import { ServerError } from 'near-api-js/lib/utils/rpc_errors';
 import * as ITO from '../ito';
-import { setup } from './lib/setup';
+import { ITOContract, setup } from './lib/setup';
 
 let ito: Account;
-let owner: Contract & ITO.Contract;
-let alice: Contract & ITO.Contract;
-let bob: Contract & ITO.Contract;
+let owner: ITOContract;
+let alice: ITOContract;
+let bob: ITOContract;
+let carol: ITOContract;
 
 test.before(async _t => {
-    [ito, owner, alice, bob] = await setup();
+    [ito, owner, alice, bob, carol] = await setup();
 });
 
-const createTrail = async (price?: any) => {
+const createTrail = async (account: ITOContract, price?: any) => {
     const trailMetadata = {
         title: "My Trail",
         description: "Some description",
@@ -25,7 +27,7 @@ const createTrail = async (price?: any) => {
         campground_id: "123"
     };
 
-    return await alice.create_trail_series({
+    return await account.create_trail_series({
         args: {
             metadata: trailMetadata,
             price: price || "10000000000000000000000000" // One Near
@@ -34,9 +36,10 @@ const createTrail = async (price?: any) => {
     } as any);
 }
 
-test("contract should create trail serie", async t => {
-    const createIto = await createTrail();
+test.only("contract should create trail serie", async t => {
+    const createIto = await createTrail(alice);
     const address = alice.account.accountId;
+    console.log(alice.account.accountId);
     t.is(createIto.owner_id, address);
     t.assert(await alice.is_creator({
         series_id: createIto.token_id,
@@ -51,22 +54,18 @@ test("contract should create trail serie", async t => {
     t.is(trails_by_creator[0].metadata.title, "My Trail");
 });
 
-// test("Buy series Less than Price", async () => {
-//     const createIto = await createTrail();
-//     try {
-//         await luis.nft_buy_series({
-//             args: {
-//                 trail_series_id: createIto.token_id,
-//                 receiver_id: `${luisName}.test.near`
-//             },
-//             amount: "1000000000000000000000000"
-//         });
-//         expect(true).toBeFalsy();
-//     } catch (e) {
-//         console.log(e);
-//         expect(e.kind.ExecutionError).toContain("Smart contract panicked: panicked at 'Campground: Attached deposit is less than price");
-//     }
-// });
+test("contract should panic when buying series with less than price", async t => {
+    const createIto = await createTrail(carol);
+    const err = await t.throwsAsync(
+        bob.nft_buy_series({
+            args: {
+                trail_series_id: createIto.token_id,
+                receiver_id: bob.account.accountId,
+            },
+            amount: "1000000000000000000000000"
+        } as any));
+    t.regex((err as any)?.kind?.ExecutionError, /Smart contract panicked: panicked at 'Campground: Attached deposit is less than price/);
+});
 
 // test("Buy series", async () => {
 //     const createIto = await createTrail("5000000000000000000000000");
