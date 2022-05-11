@@ -10,7 +10,7 @@ use near_sdk::testing_env;
 use context::{alice, bob, carol, create_series};
 
 #[test]
-fn it_should_get_nft_token_info() {
+fn contract_should_return_nft_token_info() {
     let (mut context, mut contract) = setup_contract();
 
     testing_env!(context
@@ -40,7 +40,7 @@ fn it_should_get_nft_token_info() {
 }
 
 #[test]
-fn it_should_transfer_nft_to_receiver() {
+fn contract_should_transfer_nft_to_receiver() {
     let (mut context, mut contract) = setup_contract();
 
     testing_env!(context
