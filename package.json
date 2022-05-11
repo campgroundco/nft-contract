@@ -2,6 +2,10 @@
     "private": true,
     "scripts": {
         "build": "cargo build --target wasm32-unknown-unknown --release",
+        "sandbox:clone": "git clone https://github.com/near/nearcore",
+        "sandbox:make": "cd nearcore && make sandbox",
+        "sandbox:init": "nearcore/target/debug/neard-sandbox --home /tmp/near-sandbox init",
+        "sandbox:run": "nearcore/target/debug/neard-sandbox --home /tmp/near-sandbox run",
         "test:sandbox": "ava -- sandbox",
         "test:testnet": "ava -- testnet",
         "clean": "rm -r .neardev/",
