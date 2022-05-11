@@ -56,12 +56,102 @@ await cmpgContract.get_trail_by_id({
 });
 ```
 
+## Prerequisites
+
+To be able to compile using the `wasm` target,
+you need to add it using `rustup`
+
+```sh
+rustup target add wasm32-unknown-unknown 
+```
+
+## Building
+
+To build the ITO Smart Contract to `wasm` to be deployed into NEAR, run
+
+```sh
+cargo build --target wasm32-unknown-unknown --release
+```
+
+The `yarn build` is a shortcut for this command.
+Check [`.cargo/config.toml`](.cargo/config.toml) to review compiler options for this target.
+
+## Testing
+
+To run unit tests using the host target, run
+
+```sh
+cargo test
+```
+
+## End-to-End Testing
+
+### On `sandbox`
+
+To run the e2e tests on a local sandbox, first you need to download it and compile it.
+
+```sh
+yarn sandbox:clone
+yarn sandbox:make
+```
+
+The command `yarn sandbox:make` may take several minutes, so be patient.
+This creates the `nearcore/target/debug/neard-sandbox` binary that you can execute to start a local instance of NEAR.
+In one terminal, start the sandbox node, note the `&` to start a background process.
+
+```sh
+yarn sandbox:init
+yarn sandbox:run &
+```
+
+Then, in another terminal, you are ready to run the end-to-end tests against the sandbox node
+
+Finally,
+
+```sh
+yarn test:sandbox
+```
+
+Alternatively, if you want to cache last used test accounts
+
+```sh
+STORE=1 yarn test:sandbox
+```
+
+For more details on Sandbox and End-to-End testing,
+see <https://docs.near.org/docs/develop/contracts/sandbox#start-and-stop-sandbox-node>.
+
+### On `testnet`
+
+To run the same e2e tests mentioned above on but NEAR testnet, just run
+
+```sh
+yarn test:testnet
+```
+
+Alternatively, if you want to cache last used test accounts
+
+```sh
+STORE=1 yarn test:testnet
+```
+
+This script should work out-of-the-box.
+No configuration required.
+
+### Cleaning Account Cache
+
+The e2e tests writes account information in the `.neardev/` folder.
+If you need to start from scratch, you can just remove this folder
+
+```sh
+yarn clean
+```
+
 ## Generate TypeScript bindings and Markdown documentation
 
-Install `near-syn` and `near-md`
-
 [`near-syn`](https://github.com/acuarica/near-syn) is a utility to generate TypeScript bindings and Markdown documentation from a contract written in Rust for the NEAR protocol.
-Install it with
+
+Install `near-syn` with
 
 ```sh
 cargo install near-syn
@@ -73,3 +163,5 @@ Then
 yarn ts
 yarn md
 ```
+
+This command creates `ito.ts` and `ITO.md`.
