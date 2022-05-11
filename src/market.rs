@@ -17,7 +17,7 @@ impl Contract {
 
         let max_supply = token_series.supply.total;
         let mut circulating_supply = token_series.supply.circulating;
-        /// 10 (max) > 1 (circulating) = true
+        // 10 (max) > 1 (circulating) = true
         assert!(
             max_supply > circulating_supply || max_supply == circulating_supply,
             "Campground: No more minting allowed"
@@ -87,21 +87,21 @@ impl Contract {
             "Campground: Attached deposit is less than minimum buying fee"
         );
 
-        let mut for_treasury: u128 = trail_series.campground_fee_near.into();
+        let for_treasury: u128 = trail_series.campground_fee_near.into();
 
         // If for_treasury <= campground_minimum_fee_yocto_near, the buyer pays the fees
         // Otherwise, the seller pays the fee (price - for_treasury)
         let price_deducted = if for_treasury <= campground_minimum_fee_yocto_near {
             price
         } else {
+            // No negative values should be allowed
+            assert!(
+                price >= for_treasury,
+                "Campground: Buying operation is invalid"
+            );
             price - for_treasury
         };
 
-        // No negative values should be allowed
-        assert!(
-            price_deducted >= 0,
-            "Campground: Buying operation is invalid"
-        );
         assert!(for_treasury > 0, "Campground: a fee needs to be paid");
 
         let trail_id_with_copy: TrailIdAndCopyNumber =
@@ -119,11 +119,7 @@ impl Contract {
     }
 
     #[payable]
-    pub fn nft_mint(
-        &mut self,
-        token_id: TrailId,
-        receiver_id: AccountId,
-    ) -> TrailIdAndCopyNumber {
+    pub fn nft_mint(&mut self, token_id: TrailId, receiver_id: AccountId) -> TrailIdAndCopyNumber {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
