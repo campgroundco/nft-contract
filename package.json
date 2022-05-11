@@ -2,7 +2,9 @@
     "private": true,
     "scripts": {
         "build": "cargo build --target wasm32-unknown-unknown --release",
-        "test": "ava",
+        "test:sandbox": "ava -- sandbox",
+        "test:testnet": "ava -- testnet",
+        "clean": "rm -r .neardev/",
         "ts": "near-syn ts src/*.rs > ito.ts",
         "md": "near-syn md src/*.rs > ITO.md"
     },
