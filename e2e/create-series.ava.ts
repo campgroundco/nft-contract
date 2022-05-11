@@ -21,22 +21,22 @@ const createTrail = async (account: ITOContract, price?: any) => {
         tickets_amount: 10,
         resources: [
             {
-                media: "http://arweave.net/image.png"
+                media: 'http://arweave.net/image.png'
             }
         ],
-        campground_id: "123"
+        campground_id: '123'
     };
 
     return await account.create_trail_series({
         args: {
             metadata: trailMetadata,
-            price: price || "10000000000000000000000000" // One Near
+            price: price || '10000000000000000000000000' // One Near
         },
-        amount: "5780000000000000000000"
+        amount: '5780000000000000000000'
     } as any);
 }
 
-test.only("contract should create trail serie", async t => {
+test('contract should create trail serie', async t => {
     const createIto = await createTrail(alice);
     const address = alice.account.accountId;
     console.log(alice.account.accountId);
@@ -67,25 +67,28 @@ test("contract should panic when buying series with less than price", async t =>
     t.regex((err as any)?.kind?.ExecutionError, /Smart contract panicked: panicked at 'Campground: Attached deposit is less than price/);
 });
 
-// test("Buy series", async () => {
-//     const createIto = await createTrail("5000000000000000000000000");
-//     const getCampgroundBalance = async () => await campground.account.getAccountBalance();
-//     const getLuisBalance = async () => await luis.account.getAccountBalance();
-//     const beforeBuying = await getCampgroundBalance();
-//     const luisBeforeBuying = await getLuisBalance();
-//     await luis.nft_buy_series({
-//         args: {
-//             trail_series_id: createIto.token_id,
-//             receiver_id: `${luisName}.test.near`
-//         },
-//         amount: "5007940000000001000000000"
-//     });
-//     const afterBuying = await getCampgroundBalance();
-//     const luisAfterBuying = await getLuisBalance();
-//     expect(Number(beforeBuying.total)).toBeLessThan(Number(afterBuying.total));
-//     expect(Number(luisBeforeBuying.total)).toBeGreaterThan(Number(luisAfterBuying.total));
-//     const approximateCampgroundRevenue = Number(5000000000000000000000000) * 0.1;
-//     expect(Number(afterBuying.total)).toBeGreaterThanOrEqual(approximateCampgroundRevenue);
-//     expect(Number(luisAfterBuying.total)).toBeGreaterThan(4.98e+24)
-//     expect(Number(luisAfterBuying.total)).toBeLessThan(5.0e+24)
-// });
+test.skip('contract should be able to allow account to buy series (last assert not working)', async t => {
+    const createIto = await createTrail(carol, "5000000000000000000000000");
+    const getCampgroundBalance = () => owner.account.getAccountBalance();
+    const getLuisBalance = () => bob.account.getAccountBalance();
+    const beforeBuying = await getCampgroundBalance();
+    const luisBeforeBuying = await getLuisBalance();
+    await bob.nft_buy_series({
+        args: {
+            trail_series_id: createIto.token_id,
+            receiver_id: bob.account.accountId,
+        },
+        amount: "5007940000000001000000000"
+    } as any);
+    const afterBuying = await getCampgroundBalance();
+    const luisAfterBuying = await getLuisBalance();
+
+    t.assert(Number(beforeBuying.total) < Number(afterBuying.total));
+    t.assert(Number(luisBeforeBuying.total) > Number(luisAfterBuying.total));
+    const approximateCampgroundRevenue = Number(5000000000000000000000000) * 0.1;
+    t.assert(Number(afterBuying.total) >= approximateCampgroundRevenue);
+    t.assert(Number(luisAfterBuying.total) > 4.98e+24);
+
+    console.log(luisAfterBuying.total);
+    t.assert(Number(luisAfterBuying.total) < 5.0e+24);
+});
