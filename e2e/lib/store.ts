@@ -12,6 +12,8 @@ const generateUniqueAccountId = (name: string) => `${name}-${Date.now()}-${Math.
 
 const accountPath = (name: string, networkId: string) => `${STORE_PATH}/${networkId}/${name}.account`;
 
+const STORE = process.env.STORE;
+
 export async function createAccount(
     name: string,
     near: Near,
@@ -28,7 +30,9 @@ export async function createAccount(
 
     await config.keyStore!.setKey(config.networkId, accountId, newKeyPair);
 
-    // writeFileSync(accountPath(name, config.networkId), accountId);
+    if (STORE) {
+        writeFileSync(accountPath(name, config.networkId), accountId);
+    }
 
     return accountId;
 };
@@ -41,7 +45,7 @@ export async function getAccount(name: string, near: Near): Promise<Account> {
     const networkId = near.connection.networkId;
 
     let accountId;
-    if (accountExists(name, networkId)) {
+    if (STORE && accountExists(name, networkId)) {
         accountId = readFileSync(accountPath(name, networkId)).toString();
         console.log(`Account '${accountId}' for network '${networkId}' cached`);
     } else {
