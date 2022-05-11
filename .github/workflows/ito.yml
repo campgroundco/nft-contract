@@ -39,6 +39,9 @@ jobs:
     - run: rustup target add wasm32-unknown-unknown
     - run: cargo build --target wasm32-unknown-unknown --release
 
+    # Monitor conract size
+    - run: ls -lh target/wasm32-unknown-unknown/release/ito_contract.wasm
+
   unit-test:
     runs-on: ubuntu-latest
     steps:
