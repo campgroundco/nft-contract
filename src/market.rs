@@ -119,7 +119,7 @@ impl Contract {
     }
 
     #[payable]
-    pub(crate) fn nft_mint(
+    pub fn nft_mint(
         &mut self,
         token_id: TrailId,
         receiver_id: AccountId,
