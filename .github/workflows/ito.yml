@@ -59,6 +59,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: |
+          ~/.cargo/bin
           ~/.cargo/registry/cache
           ~/.cargo/registry/index
           target
@@ -73,6 +74,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: |
+          ~/.cargo/bin
           ~/.cargo/registry/cache
           ~/.cargo/registry/index
           target
