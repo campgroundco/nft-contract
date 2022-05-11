@@ -28,7 +28,7 @@ export async function createAccount(
 
     await config.keyStore!.setKey(config.networkId, accountId, newKeyPair);
 
-    writeFileSync(accountPath(name, config.networkId), accountId);
+    // writeFileSync(accountPath(name, config.networkId), accountId);
 
     return accountId;
 };
