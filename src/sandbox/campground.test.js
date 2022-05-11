@@ -71,7 +71,7 @@ describe("Campground <> Near Tests", () => {
 
     test("Get minimum fee", async () => {
         const current_fee = await andres.get_current_fee();
-        expect(current_fee).toBe(10000000000000000000000000 * 0.1);
+        expect(current_fee).toBe("1000000000000000117440512");
     });
 
     test("Get fee percentage", async () => {
