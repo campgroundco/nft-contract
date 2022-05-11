@@ -128,7 +128,7 @@ impl Contract {
             ),
             campground_fee: 5,
             campground_treasury_address: treasury_id,
-            campground_minimum_fee_yocto_near: calculate_yocto_near(0.1),
+            campground_minimum_fee_yocto_near: ONE_NEAR / 10,
             trails_series_by_creator: LookupMap::new(
                 StorageKey::TokenPerCreator.try_to_vec().unwrap(),
             ),

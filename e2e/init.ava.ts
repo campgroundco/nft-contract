@@ -36,7 +36,7 @@ test('contract should return campground treasury account id', async t => {
     t.is(contractOwner, owner.account.accountId);
 });
 
-test.skip('contract should return minimum fee', async t => {
+test('contract should return minimum fee', async t => {
     const current_fee = await alice.get_current_fee();
     t.is(current_fee, parseNearAmount('0.1')!);
 });

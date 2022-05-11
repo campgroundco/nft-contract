@@ -9,8 +9,8 @@
         "test:sandbox": "ava -- sandbox",
         "test:testnet": "ava -- testnet",
         "clean": "rm -r .neardev/",
-        "ts": "near-syn ts src/*.rs > ito.ts",
-        "md": "near-syn md src/*.rs > ITO.md"
+        "ts": "near-syn ts --no-now src/*.rs > ito.ts",
+        "md": "near-syn md --no-now src/*.rs > ITO.md"
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.0",
