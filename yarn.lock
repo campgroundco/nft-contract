@@ -55,6 +55,18 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@types/bn.js@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.0.tgz#32c5d271503a12653c62cf4d2b45e6eab8cebc68"
+  integrity sha512-QSSVYj7pYFN49kW77o2s9xTCwZ8F2xLbjLLSEVh8D2F4JUhZtPAGOFLTD+ffqksBx/u4cE/KImFjyhqCjn/LIA==
+  dependencies:
+    "@types/node" "*"
+
+"@types/node@*":
+  version "17.0.32"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.32.tgz#51d59d7a90ef2d0ae961791e0900cad2393a0149"
+  integrity sha512-eAIcfAvhf/BkHcf4pkLJ7ECpBAhh9kcxRBpip9cTiO+hf+aJrsxYxBeS6OXvOd9WqNAJmavXVpZvY1rBjNsXmw==
+
 acorn-walk@^8.1.1, acorn-walk@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"
@@ -206,6 +218,11 @@ base-x@^3.0.2:
   dependencies:
     safe-buffer "^5.0.1"
 
+base-x@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/base-x/-/base-x-4.0.0.tgz#d0e3b7753450c73f8ad2389b5c018a4af7b2224a"
+  integrity sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==
+
 binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
@@ -251,6 +268,13 @@ bs58@^4.0.0:
   integrity sha1-vhYedsNU9veIrkBx9j806MTwpCo=
   dependencies:
     base-x "^3.0.2"
+
+bs58@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/bs58/-/bs58-5.0.0.tgz#865575b4d13c09ea2a84622df6c8cbeb54ffc279"
+  integrity sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==
+  dependencies:
+    base-x "^4.0.0"
 
 callsites@^4.0.0:
   version "4.0.0"
