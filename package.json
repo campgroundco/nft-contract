@@ -1,5 +1,8 @@
 {
-    "version": "0.0.1",
+    "name": "ito-contract",
+    "version": "0.1.0",
+    "description": "TypeScript bindings for the ITO Smart Contract",
+    "author": "Campground <team@campground.co>",
     "private": true,
     "scripts": {
         "build": "cargo build --target wasm32-unknown-unknown --release",
