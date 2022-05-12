@@ -149,23 +149,6 @@ mod tests {
     }
 
     #[test]
-    fn nft_burn() {
-        let owner_id = "bob".to_string();
-        let token_ids = make_tokens(vec!["0", "1"]);
-        let log = NearEvent::nft_burn(vec![NftBurnData {
-            owner_id,
-            authorized_id: None,
-            token_ids,
-            memo: None,
-        }])
-            .to_json_string();
-        assert_eq!(
-            log,
-            r#"{"standard":"nep171","version":"1.0.0","event":"nft_burn","data":[{"owner_id":"bob","token_ids":["0","1"]}]}"#
-        );
-    }
-
-    #[test]
     fn nft_transfer() {
         let old_owner_id = "bob".to_string();
         let new_owner_id = "alice".to_string();
