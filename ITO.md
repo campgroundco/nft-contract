@@ -355,4 +355,4 @@ References
 
 ---
 
-_This documentation was generated with **near-syn v0.4.0** <https://github.com/acuarica/near-syn>_
+_This documentation was generated with **near-syn v0.4.2** <https://github.com/acuarica/near-syn>_
