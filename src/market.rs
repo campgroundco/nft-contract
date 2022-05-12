@@ -1,5 +1,6 @@
 use crate::bridge::SeriesBridge;
 use crate::*;
+use crate::event::NearEvent;
 
 #[near_bindgen]
 impl Contract {
@@ -36,7 +37,7 @@ impl Contract {
             format!("{}{}{}", series_id, TRAIL_DELIMETER, circulating_supply);
 
         let token = TrailBusiness {
-            owner_id: receiver_id,
+            owner_id: receiver_id.clone(),
             token_id: series_id.to_owned(),
             partial_metadata: partial_metadata_from_trail_series(&token_series),
         };
@@ -56,6 +57,15 @@ impl Contract {
 
         //call the internal method for adding the token to the owner
         self.internal_add_trail_to_owner(&token.owner_id, &ownership_id);
+
+        let price = &token_series.price.clone();
+
+        NearEvent::log_nft_mint(
+            receiver_id.to_string(),
+            vec![ownership_id.clone()],
+            Some(near_sdk::serde_json::json!({"price": &price}).to_string())
+        );
+
 
         ownership_id
     }
