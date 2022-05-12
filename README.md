@@ -78,6 +78,11 @@ Check [`.cargo/config.toml`](.cargo/config.toml) to review compiler options for 
 
 ## Testing
 
+These tests live under the `tests/` folder.
+Each file tests a different aspect of the ITO Smart Contract.
+Given that each test file creates a [separate crate](https://doc.rust-lang.org/book/ch11-03-test-organization.html#the-tests-directory),
+you can find common test setup in the `context` module.
+
 To run unit tests using the host target, run
 
 ```sh
@@ -86,9 +91,16 @@ cargo test
 
 ## End-to-End Testing
 
-### On `sandbox`
+These tests live under the [`e2e/`](e2e/) folder.
+They deploy the ITO Smart Contract to a live network
+and run TypeScript tests using the [`near-js-api`](https://docs.near.org/docs/api/javascript-library).
+The [`e2e/lib/`](e2e/lib/) folder contains common test setup and configuration shared across test suites.
 
-To run the e2e tests on a local sandbox, first you need to download it and compile it.
+Currently our End-to-End test support both a local `sandbox` or the public `testnet` networks.
+
+### On Local `sandbox`
+
+To run the End-to-End tests on a local sandbox, first you need to download it and compile it.
 
 ```sh
 yarn sandbox:clone
@@ -121,7 +133,7 @@ STORE=1 yarn test:sandbox
 For more details on Sandbox and End-to-End testing,
 see <https://docs.near.org/docs/develop/contracts/sandbox#start-and-stop-sandbox-node>.
 
-### On `testnet`
+### On Public `testnet`
 
 To run the same e2e tests mentioned above on but NEAR testnet, just run
 
