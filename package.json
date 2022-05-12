@@ -1,4 +1,8 @@
 {
+    "name": "ito-contract",
+    "version": "0.1.0",
+    "description": "TypeScript bindings for the ITO Smart Contract",
+    "author": "Campground <team@campground.co>",
     "private": true,
     "scripts": {
         "build": "cargo build --target wasm32-unknown-unknown --release",
@@ -10,7 +14,9 @@
         "test:testnet": "ava -- testnet",
         "clean": "rm -r .neardev/",
         "ts": "near-syn ts --no-now src/*.rs > ito.ts",
-        "md": "near-syn md --no-now src/*.rs > ITO.md"
+        "md": "yarn md:readme && yarn md:ito",
+        "md:readme": "near-syn md --no-now --readme README.md src/*.rs",
+        "md:ito": "near-syn md --no-now src/*.rs > ITO.md"
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.0",
