@@ -63,7 +63,7 @@ impl Contract {
         NearEvent::log_nft_mint(
             receiver_id.to_string(),
             vec![ownership_id.clone()],
-            Some(serde_json::json!({"price": &price}).to_string())
+            Some(near_sdk::serde_json::json!({"price": &price}).to_string())
         );
 
 
