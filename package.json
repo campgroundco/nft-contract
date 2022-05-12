@@ -14,7 +14,9 @@
         "test:testnet": "ava -- testnet",
         "clean": "rm -r .neardev/",
         "ts": "near-syn ts --no-now src/*.rs > ito.ts",
-        "md": "near-syn md --no-now --readme README.md src/*.rs"
+        "md": "yarn md:readme && yarn md:ito",
+        "md:readme": "near-syn md --no-now --readme README.md src/*.rs",
+        "md:ito": "near-syn md --no-now src/*.rs > ITO.md"
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.0",
