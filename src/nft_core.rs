@@ -1,5 +1,6 @@
 use crate::*;
 use near_sdk::{ext_contract, log, Gas, PromiseResult};
+use crate::event::NearEvent;
 
 const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(10_000_000_000_000);
 const GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER.0);
@@ -96,7 +97,15 @@ impl NonFungibleTokenCore for Contract {
         let sender_id = env::predecessor_account_id();
 
         let (new_token, previous_token) =
-            self.internal_transfer(&sender_id, &receiver_id, &token_id, None, memo);
+            self.internal_transfer(&sender_id, &receiver_id, &token_id, None, memo.clone());
+
+        NearEvent::log_nft_transfer(
+            previous_token.owner_id.to_string(),
+            receiver_id.to_string(),
+            vec![token_id],
+            memo,
+            None,
+        );
     }
 
     //implementation of the transfer call method. This will transfer the NFT and call a method on the reciver_id contract
@@ -138,7 +147,7 @@ impl NonFungibleTokenCore for Contract {
         }
 
         // Initiating receiver's call and the callback
-        ext_non_fungible_token_receiver::nft_on_transfer(
+        let call = ext_non_fungible_token_receiver::nft_on_transfer(
             sender_id,
             previous_token.owner_id.clone(),
             token_id.clone(),
@@ -150,16 +159,26 @@ impl NonFungibleTokenCore for Contract {
         //we then resolve the promise and call nft_resolve_transfer on our own contract
         .then(ext_self::nft_resolve_transfer(
             authorized_id, // we introduce an authorized ID so that we can log the transfer
-            previous_token.owner_id,
-            receiver_id,
-            token_id,
+            previous_token.owner_id.clone(),
+            receiver_id.clone(),
+            token_id.clone(),
             HashMap::new(),
-            memo,                      // we introduce a memo for logging in the events standard
+            memo.clone(),                      // we introduce a memo for logging in the events standard
             env::current_account_id(), //contract account to make the call to
             NO_DEPOSIT,                //attached deposit
             GAS_FOR_RESOLVE_TRANSFER,  //GAS attached to the call
         ))
-        .into()
+        .into();
+
+        NearEvent::log_nft_transfer(
+            previous_token.owner_id.to_string(),
+            receiver_id.to_string(),
+            vec![token_id],
+            memo,
+            None,
+        );
+
+        call
     }
 
     //get the information for a specific token ID
@@ -261,6 +280,15 @@ impl NonFungibleTokenResolver for Contract {
         // env::log_str(&nft_transfer_log.to_string());
 
         //return false
+
+        NearEvent::log_nft_transfer(
+            receiver_id.to_string(),
+            token.owner_id.to_string(),
+            vec![token_id],
+            memo,
+            None,
+        );
+
         false
     }
 }
