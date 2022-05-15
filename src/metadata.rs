@@ -117,6 +117,7 @@ pub struct TrailBusiness {
     pub owner_id: AccountId,
     pub token_id: TrailId,
     pub partial_metadata: TokenMetadata,
+    pub royalty: HashMap<AccountId, u32>,
 }
 
 /// The Json token is what will be returned from view calls.

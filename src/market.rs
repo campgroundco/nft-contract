@@ -40,6 +40,7 @@ impl Contract {
             owner_id: receiver_id.clone(),
             token_id: series_id.to_owned(),
             partial_metadata: partial_metadata_from_trail_series(&token_series),
+            royalty: HashMap::new()
         };
 
         //insert the token ID and token struct and make sure that the token doesn't exist
