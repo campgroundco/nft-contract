@@ -107,7 +107,8 @@ pub struct TrailSeries {
     pub supply: SeriesSupply,
     pub price: U128,
     pub campground_fee_near: U128,
-    pub creator_royalty_near: Option<U128>
+    pub creator_royalty_near: Option<U128>,
+    pub royalties: HashMap<AccountId, u32>
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
