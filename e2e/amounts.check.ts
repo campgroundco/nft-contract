@@ -4,7 +4,7 @@ import { formatNearAmount, parseNearAmount } from 'near-api-js/lib/utils/format'
 
 describe('amounts', () => {
 
-    it.only('should parse/format NEAR amounts', () => {
+    it('should parse/format NEAR amounts', () => {
         expect(formatNearAmount('1')).to.be.equal(`0.${'0'.repeat(23)}1`);
         expect(parseNearAmount('1')).to.be.equal('1' + '0'.repeat(24));
         expect(parseNearAmount('0.1')).to.be.equal('1' + '0'.repeat(23));
@@ -15,7 +15,71 @@ describe('amounts', () => {
         expect(formatNearAmount(new BN(10).pow(new BN(25)).toString())).to.be.equal('10');
     });
 
-    it.only('should ITO contract balance create_series', () => {
+    it('should check gas and balances for changing treasury address', () => {
+        const itoBalance = {
+            total: '500041220153317029000000000',
+            stateStaked: '3711050000000000000000000',
+            available: '496330170153317029000000000'
+        };
+        const ownerBalance = {
+            total: '500244653884533345000000000',
+            stateStaked: '1820000000000000000000',
+            available: '500242833884533345000000000'
+        };
+        const itoPostBalance = {
+            total: '500041379001378461000000000',
+            stateStaked: '3710810000000000000000000',
+            available: '496330569001378461000000000'
+        };
+        const ownerPostBalance = {
+            total: '500239268294098761000000000',
+            stateStaked: '1820000000000000000000',
+            available: '500237448294098761000000000'
+        };
+
+        const receipts = [
+            {
+                executor_id: 'ito-1652882749017-364470.test.near',
+                gas_burnt: 2957541986346,
+                tokens_burnt: '2957541986346000000000'
+            },
+            {
+                executor_id: 'owner-1652882752690-992540.test.near',
+                gas_burnt: 223182562500,
+                tokens_burnt: '0'
+            }
+        ];
+        const outcome = {
+            executor_id: 'owner-1652882752690-992540.test.near',
+            gas_burnt: 2428048448238,
+            tokens_burnt: '2428048448238000000000'
+        };
+
+        const ownerSpent = ownerBalance.total.bn().sub(ownerPostBalance.total.bn());
+        {
+            const ownerAvailableSpent = ownerBalance.available.bn().sub(ownerPostBalance.available.bn());
+            expect(ownerAvailableSpent.toString()).to.be.equal(ownerSpent.toString());
+        }
+
+        const gasBurnt = receipts[0].tokens_burnt.bn().add(outcome.tokens_burnt.bn());
+
+        expect(ownerSpent.toString()).to.be.equal(gasBurnt.toString());
+
+        const itoEarns = itoPostBalance.total.bn().sub(itoBalance.total.bn());
+        const itoEarns1 = itoBalance.stateStaked.bn().sub(itoPostBalance.stateStaked.bn());
+        const itoEarns2 = itoPostBalance.available.bn().sub(itoBalance.available.bn());
+
+        console.log(formatNearAmount(ownerSpent.toString()));
+        console.log(formatNearAmount(itoEarns.toString()));
+        console.log(formatNearAmount(itoEarns1.toString()));
+        console.log(formatNearAmount(itoEarns2.toString()));
+
+        console.log(formatNearAmount(gasBurnt.muln(3).divn(10).toString()));
+        console.log(formatNearAmount(outcome.tokens_burnt.bn().muln(3).divn(10).toString()));
+        console.log(formatNearAmount(receipts[0].tokens_burnt.bn().muln(3).divn(10).toString()));
+    });
+
+    it('should ITO contract balance create_series', () => {
         const attachedDeposit = '5780000000000000000000';
 
         const itoBalance = {

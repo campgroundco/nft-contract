@@ -18,7 +18,7 @@ describe('create-series', () => {
         [ito, owner, alice, bob, carol] = await setup();
     });
 
-    it.only('should create trail serie', async () => {
+    it('should create trail serie', async () => {
         const createIto = await createTrail(alice, ito);
 
         const address = alice.account.accountId;
