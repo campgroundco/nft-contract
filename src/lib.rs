@@ -15,14 +15,14 @@ pub use crate::approval::*;
 pub use crate::royalty::*;
 pub mod internal;
 mod approval;
-mod enumeration;
+pub mod enumeration;
 mod metadata;
 pub mod market;
 pub mod nft_core;
 mod royalty;
 pub mod create_serie;
 pub mod bridge;
-// mod test;
+
 pub mod admin;
 pub mod event;
 
