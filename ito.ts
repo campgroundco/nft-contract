@@ -54,16 +54,21 @@ export type ValidAccountId = string;
  * Provides admin operations to change different configurations of
  * the contract.
  * 
- * The contract owner is the only account allowed to perform these operations.
+ * The contract `owner` is the only account allowed to perform these operations.
+ * Otherwise, these operations panic.
  */
 export interface AdminBridge {
     /**
      * Changes Campground percentage `fee`.
+     * When a creator creates a trail series,
+     * the series takes this `fee` as a default `fee`.
      */
     change_campground_fee(args: { fee: number }, gas?: any): Promise<void>;
 
     /**
      * Changes treasury address to a new one.
+     * The treasury address receives the applied `fee` after an NFT
+     * has been bought.
      */
     change_campground_treasury_address(args: { addr: AccountId }, gas?: any): Promise<void>;
 
@@ -75,9 +80,21 @@ export interface AdminBridge {
 }
 
 /**
+ * Approval Management
  * NEP-178 interface definition.
  * 
- * See https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement.
+ * For more info,
+ * see https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement.
+ * 
+ * Trait used when it is desired to have a non-fungible token that has a traditional escrow or approval system.
+ * This allows Alice to allow Bob to take only the token with the unique identifier "19" but not others.
+ * 
+ * It should be noted that in the [core non-fungible token standard] there
+ * is a method to do _transfer and call_ which may be preferred over using
+ * an [approval management standard] in certain use cases.
+ * 
+ * [approval management standard]: https://nomicon.io/Standards/NonFungibleToken/ApprovalManagement.html
+ * [core non-fungible token standard]: https://nomicon.io/Standards/NonFungibleToken/Core.html
  */
 export interface NonFungibleTokenApproval {
     /**
@@ -188,7 +205,7 @@ export interface CreateTrailSeries {
  * 
  * See https://nomicon.io/Standards/Tokens/NonFungibleToken/Enumeration.
  */
-export interface Contract {
+export interface NonFungibleTokenEnumeration {
     /**
      * Query for the total supply of NFTs on the contract.
      */
@@ -196,10 +213,12 @@ export interface Contract {
 
     /**
      * Query for nft tokens on the contract regardless of the owner using pagination.
+     * Query for nft tokens on the contract regardless of the owner using pagination.
      */
     nft_tokens(args: { from_index: U128|null, limit: number|null }): Promise<JsonTrail[]>;
 
     /**
+     * Get the total supply of NFTs for a given owner.
      * Get the total supply of NFTs for a given owner.
      */
     nft_supply_for_owner(args: { account_id: AccountId }): Promise<U128>;
@@ -207,10 +226,13 @@ export interface Contract {
     /**
      * Query all tokens of an owner.
      * Similar to get_all_trails_by_owner with pagination.
+     * Query all tokens of an owner.
+     * Similar to get_all_trails_by_owner with pagination.
      */
     trail_tickets_for_owner(args: { account_id: AccountId, from_index: U128|null, limit: number|null }): Promise<JsonTrail[]>;
 
     /**
+     * Get list of all tokens owned by a given account
      * Get list of all tokens owned by a given account
      */
     nft_tokens_for_owner(args: { account_id: AccountId, from_index: U128|null, limit: number|null }): Promise<JsonTrail[]>;
@@ -666,7 +688,7 @@ export interface NonFungibleTokenPayouts {
 
 }
 
-export interface Contract extends AdminBridge, NonFungibleTokenApproval, SeriesBridge, CreateTrailSeries, NonFungibleTokenMetadata, NonFungibleTokenCore, NonFungibleTokenPayouts {}
+export interface Contract extends AdminBridge, NonFungibleTokenApproval, SeriesBridge, CreateTrailSeries, NonFungibleTokenEnumeration, NonFungibleTokenMetadata, NonFungibleTokenCore, NonFungibleTokenPayouts {}
 
 export const ContractMethods = {
     viewMethods: [

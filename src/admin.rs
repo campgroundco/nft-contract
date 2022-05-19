@@ -3,12 +3,17 @@ use crate::*;
 /// Provides admin operations to change different configurations of
 /// the contract.
 ///
-/// The contract owner is the only account allowed to perform these operations.
+/// The contract `owner` is the only account allowed to perform these operations.
+/// Otherwise, these operations panic.
 pub trait AdminBridge {
     /// Changes Campground percentage `fee`.
+    /// When a creator creates a trail series,
+    /// the series takes this `fee` as a default `fee`.
     fn change_campground_fee(&mut self, fee: u64);
 
     /// Changes treasury address to a new one.
+    /// The treasury address receives the applied `fee` after an NFT
+    /// has been bought.
     fn change_campground_treasury_address(&mut self, addr: AccountId);
 
     /// Changes campground minimum `fee`, in yoctoNEAR.

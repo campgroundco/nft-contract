@@ -1,8 +1,9 @@
 pub mod context;
 
 use ito_contract::{
-    bridge::SeriesBridge, create_serie::CreateTrailSeries, Contract, TrailResource,
-    TrailSeriesMetadata, ONE_NEAR,
+    bridge::SeriesBridge, create_serie::CreateTrailSeries,
+    enumeration::NonFungibleTokenEnumeration, Contract, TrailResource, TrailSeriesMetadata,
+    ONE_NEAR,
 };
 use near_sdk::{env, json_types::U128, testing_env};
 

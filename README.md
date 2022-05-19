@@ -29,10 +29,10 @@ This represents the ITO (Initial Trail Offering) Smart Contract system created f
 | :eyeglasses: `get_treasury_address` |  Returns the address where treasury funds are transferred to. | `AccountId` |
 | :eyeglasses: `is_caller_contract_owner` |  Whether caller is the owner of the contract. | `boolean` |
 | :eyeglasses: `nft_total_supply` |  Query for the total supply of NFTs on the contract. | `U128` |
-| :eyeglasses: `nft_tokens` |  Query for nft tokens on the contract regardless of the owner using pagination. | `JsonTrail[]` |
-| :eyeglasses: `nft_supply_for_owner` |  Get the total supply of NFTs for a given owner. | `U128` |
-| :eyeglasses: `trail_tickets_for_owner` |  Query all tokens of an owner.  Similar to get_all_trails_by_owner with pagination. | `JsonTrail[]` |
-| :eyeglasses: `nft_tokens_for_owner` |  Get list of all tokens owned by a given account | `JsonTrail[]` |
+| :eyeglasses: `nft_tokens` |  Query for nft tokens on the contract regardless of the owner using pagination.  Query for nft tokens on the contract regardless of the owner using pagination. | `JsonTrail[]` |
+| :eyeglasses: `nft_supply_for_owner` |  Get the total supply of NFTs for a given owner.  Get the total supply of NFTs for a given owner. | `U128` |
+| :eyeglasses: `trail_tickets_for_owner` |  Query all tokens of an owner.  Similar to get_all_trails_by_owner with pagination.  Query all tokens of an owner.  Similar to get_all_trails_by_owner with pagination. | `JsonTrail[]` |
+| :eyeglasses: `nft_tokens_for_owner` |  Get list of all tokens owned by a given account  Get list of all tokens owned by a given account | `JsonTrail[]` |
 | :eyeglasses: `nft_metadata` |  View call for returning the contract metadata | `NFTContractMetadata` |
 | :eyeglasses: `nft_token` |  | `JsonTrail\|null` |
 | :eyeglasses: `nft_payout` |  | `void` |
@@ -41,8 +41,8 @@ This represents the ITO (Initial Trail Offering) Smart Contract system created f
 
 | Method | Description | Return |
 | ------ | ----------- | ------ |
-| :writing_hand: `change_campground_fee` |  Changes Campground percentage `fee`. | `void` |
-| :writing_hand: `change_campground_treasury_address` |  Changes treasury address to a new one. | `void` |
+| :writing_hand: `change_campground_fee` |  Changes Campground percentage `fee`.  When a creator creates a trail series,  the series takes this `fee` as a default `fee`. | `void` |
+| :writing_hand: `change_campground_treasury_address` |  Changes treasury address to a new one.  The treasury address receives the applied `fee` after an NFT  has been bought. | `void` |
 | :writing_hand: `change_campground_minimum_fee` |  Changes campground minimum `fee`, in yoctoNEAR. | `void` |
 | &#x24C3; `nft_approve` |  Approve an account ID to transfer a token on your behalf. | `void` |
 | &#x24C3; `nft_revoke` |  Revoke a specific account from transferring the token on your behalf. | `void` |
