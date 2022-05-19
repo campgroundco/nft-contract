@@ -4,7 +4,7 @@ use near_sdk::ext_contract;
 /// NEP-178 interface definition.
 ///
 /// See https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement.
-pub trait NonFungibleTokenCore {
+pub trait NonFungibleTokenApproval {
     /// Approve an account ID to transfer a token on your behalf.
     fn nft_approve(&mut self, token_id: TrailId, account_id: AccountId, msg: Option<String>);
 
@@ -36,7 +36,7 @@ trait NonFungibleTokenApprovalsReceiver {
 }
 
 #[near_bindgen]
-impl NonFungibleTokenCore for Contract {
+impl NonFungibleTokenApproval for Contract {
     //allow a specific account ID to approve a token on your behalf
     #[payable]
     fn nft_approve(&mut self, token_id: TrailId, account_id: AccountId, msg: Option<String>) {
