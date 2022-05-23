@@ -77,7 +77,8 @@ impl CreateTrailSeries for Contract {
             },
             price: price.into(),
             campground_fee_near,
-            creator_royalty_near: creator_royalty
+            creator_royalty_near: creator_royalty,
+            royalties: HashMap::new()
         };
 
         self.trails_metadata_by_id
