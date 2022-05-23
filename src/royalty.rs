@@ -1,6 +1,6 @@
 use crate::*;
 
-pub trait NonFungibleTokenCore {
+pub trait NonFungibleTokenPayouts {
     //calculates the payout for a token given the passed in balance. This is a view method
     fn nft_payout(&self, token_id: TrailId, balance: U128, max_len_payout: u32);
 
@@ -17,7 +17,7 @@ pub trait NonFungibleTokenCore {
 }
 
 #[near_bindgen]
-impl NonFungibleTokenCore for Contract {
+impl NonFungibleTokenPayouts for Contract {
     //calculates the payout for a token given the passed in balance. This is a view method
     fn nft_payout(&self, token_id: TrailId, balance: U128, max_len_payout: u32) {
         /*

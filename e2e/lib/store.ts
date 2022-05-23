@@ -12,7 +12,7 @@ const generateUniqueAccountId = (name: string) => `${name}-${Date.now()}-${Math.
 
 const accountPath = (name: string, networkId: string) => `${STORE_PATH}/${networkId}/${name}.account`;
 
-const STORE = process.env.STORE;
+const STORE = process.env['STORE'];
 
 export async function createAccount(
     name: string,

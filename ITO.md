@@ -12,7 +12,7 @@
 
 | Method | Description | Return |
 | ------ | ----------- | ------ |
-| :eyeglasses: `nft_is_approved` |  | `void` |
+| :eyeglasses: `nft_is_approved` |  Check if the passed in account has access to approve the token ID | `void` |
 | :eyeglasses: `series_exists` |  Returns whether a trail is available in the smart contract. | `boolean` |
 | :eyeglasses: `get_owner` |  Returns the owner of the smart contract | `AccountId` |
 | :eyeglasses: `get_trail_by_id_optional` |  Returns a trail by trail ID if any, `null` otherwise. | `TrailSeries\|null` |
@@ -27,10 +27,10 @@
 | :eyeglasses: `get_treasury_address` |  Returns the address where treasury funds are transferred to. | `AccountId` |
 | :eyeglasses: `is_caller_contract_owner` |  Whether caller is the owner of the contract. | `boolean` |
 | :eyeglasses: `nft_total_supply` |  Query for the total supply of NFTs on the contract. | `U128` |
-| :eyeglasses: `nft_tokens` |  Query for nft tokens on the contract regardless of the owner using pagination. | `JsonTrail[]` |
-| :eyeglasses: `nft_supply_for_owner` |  Get the total supply of NFTs for a given owner. | `U128` |
-| :eyeglasses: `trail_tickets_for_owner` |  Query all tokens of an owner.  Similar to get_all_trails_by_owner with pagination. | `JsonTrail[]` |
-| :eyeglasses: `nft_tokens_for_owner` |  Get list of all tokens owned by a given account | `JsonTrail[]` |
+| :eyeglasses: `nft_tokens` |  Query for nft tokens on the contract regardless of the owner using pagination.  Query for nft tokens on the contract regardless of the owner using pagination. | `JsonTrail[]` |
+| :eyeglasses: `nft_supply_for_owner` |  Get the total supply of NFTs for a given owner.  Get the total supply of NFTs for a given owner. | `U128` |
+| :eyeglasses: `trail_tickets_for_owner` |  Query all tokens of an owner.  Similar to get_all_trails_by_owner with pagination.  Query all tokens of an owner.  Similar to get_all_trails_by_owner with pagination. | `JsonTrail[]` |
+| :eyeglasses: `nft_tokens_for_owner` |  Get list of all tokens owned by a given account  Get list of all tokens owned by a given account | `JsonTrail[]` |
 | :eyeglasses: `nft_metadata` |  View call for returning the contract metadata | `NFTContractMetadata` |
 | :eyeglasses: `nft_token` |  | `JsonTrail\|null` |
 | :eyeglasses: `nft_payout` |  | `void` |
@@ -39,17 +39,17 @@
 
 | Method | Description | Return |
 | ------ | ----------- | ------ |
-| :writing_hand: `change_campground_fee` |  Changes Campground percentage `fee`. | `void` |
-| :writing_hand: `change_campground_treasury_address` |  Changes treasury address to a new one. | `void` |
+| :writing_hand: `change_campground_fee` |  Changes Campground percentage `fee`.  When a creator creates a trail series,  the series takes this `fee` as a default `fee`. | `void` |
+| :writing_hand: `change_campground_treasury_address` |  Changes treasury address to a new one.  The treasury address receives the applied `fee` after an NFT  has been bought. | `void` |
 | :writing_hand: `change_campground_minimum_fee` |  Changes campground minimum `fee`, in yoctoNEAR. | `void` |
-| &#x24C3; `nft_approve` |  | `void` |
-| &#x24C3; `nft_revoke` |  | `void` |
-| &#x24C3; `nft_revoke_all` |  | `void` |
+| &#x24C3; `nft_approve` |  Approve an account ID to transfer a token on your behalf. | `void` |
+| &#x24C3; `nft_revoke` |  Revoke a specific account from transferring the token on your behalf. | `void` |
+| &#x24C3; `nft_revoke_all` |  Revoke all accounts from transferring the token on your behalf. | `void` |
 | &#x24C3; `create_trail_series` |  Creates a series (trail) inside the smart contract. | `JsonTrail` |
 | &#x24C3; `nft_buy_series` |  Buys a trail series if still available given a price and attached deposit. | `TrailIdAndCopyNumber` |
 | &#x24C3; `nft_mint` |  | `TrailIdAndCopyNumber` |
 | &#x24C3; `nft_transfer` |  | `void` |
-| &#x24C3; `nft_transfer_call` |  | `void` |
+| &#x24C3; `nft_transfer_call` |  Returns `true` if the token was transferred from the sender's account. | `void` |
 | &#x24C3; `nft_transfer_payout` |  | `void` |
 
 
@@ -62,6 +62,8 @@ change_campground_fee(args: { fee: number }, gas?: any): Promise<void>;
 ```
 
 Changes Campground percentage `fee`.
+When a creator creates a trail series,
+the series takes this `fee` as a default `fee`.
 
 ### :writing_hand: `change_campground_treasury_address`
 
@@ -70,6 +72,8 @@ change_campground_treasury_address(args: { addr: AccountId }, gas?: any): Promis
 ```
 
 Changes treasury address to a new one.
+The treasury address receives the applied `fee` after an NFT
+has been bought.
 
 ### :writing_hand: `change_campground_minimum_fee`
 
@@ -79,7 +83,7 @@ change_campground_minimum_fee(args: { fee: Balance }, gas?: any): Promise<void>;
 
 Changes campground minimum `fee`, in yoctoNEAR.
 
-## Methods for `NonFungibleTokenCore` interface
+## Methods for `NonFungibleTokenApproval` interface
 
 ### &#x24C3; `nft_approve`
 
@@ -87,6 +91,7 @@ Changes campground minimum `fee`, in yoctoNEAR.
 nft_approve(args: { token_id: TrailId, account_id: AccountId, msg: string|null }, gas?: any, amount?: any): Promise<void>;
 ```
 
+Approve an account ID to transfer a token on your behalf.
 
 ### :eyeglasses: `nft_is_approved`
 
@@ -94,6 +99,7 @@ nft_approve(args: { token_id: TrailId, account_id: AccountId, msg: string|null }
 nft_is_approved(args: { token_id: TrailId, approved_account_id: AccountId, approval_id: number|null }): Promise<void>;
 ```
 
+Check if the passed in account has access to approve the token ID
 
 ### &#x24C3; `nft_revoke`
 
@@ -101,6 +107,7 @@ nft_is_approved(args: { token_id: TrailId, approved_account_id: AccountId, appro
 nft_revoke(args: { token_id: TrailId, account_id: AccountId }, gas?: any, amount?: any): Promise<void>;
 ```
 
+Revoke a specific account from transferring the token on your behalf.
 
 ### &#x24C3; `nft_revoke_all`
 
@@ -108,6 +115,7 @@ nft_revoke(args: { token_id: TrailId, account_id: AccountId }, gas?: any, amount
 nft_revoke_all(args: { token_id: TrailId }, gas?: any, amount?: any): Promise<void>;
 ```
 
+Revoke all accounts from transferring the token on your behalf.
 
 ## Methods for `SeriesBridge` interface
 
@@ -225,7 +233,7 @@ create_trail_series(args: { metadata: TrailSeriesMetadata, price: U128|null, cre
 
 Creates a series (trail) inside the smart contract.
 
-## Methods for Contract
+## Methods for `NonFungibleTokenEnumeration` interface
 
 ### :eyeglasses: `nft_total_supply`
 
@@ -242,6 +250,7 @@ nft_tokens(args: { from_index: U128|null, limit: number|null }): Promise<JsonTra
 ```
 
 Query for nft tokens on the contract regardless of the owner using pagination.
+Query for nft tokens on the contract regardless of the owner using pagination.
 
 ### :eyeglasses: `nft_supply_for_owner`
 
@@ -249,6 +258,7 @@ Query for nft tokens on the contract regardless of the owner using pagination.
 nft_supply_for_owner(args: { account_id: AccountId }): Promise<U128>;
 ```
 
+Get the total supply of NFTs for a given owner.
 Get the total supply of NFTs for a given owner.
 
 ### :eyeglasses: `trail_tickets_for_owner`
@@ -259,6 +269,8 @@ trail_tickets_for_owner(args: { account_id: AccountId, from_index: U128|null, li
 
 Query all tokens of an owner.
 Similar to get_all_trails_by_owner with pagination.
+Query all tokens of an owner.
+Similar to get_all_trails_by_owner with pagination.
 
 ### :eyeglasses: `nft_tokens_for_owner`
 
@@ -266,6 +278,7 @@ Similar to get_all_trails_by_owner with pagination.
 nft_tokens_for_owner(args: { account_id: AccountId, from_index: U128|null, limit: number|null }): Promise<JsonTrail[]>;
 ```
 
+Get list of all tokens owned by a given account
 Get list of all tokens owned by a given account
 
 ## Methods for Contract
@@ -332,6 +345,7 @@ nft_transfer(args: { receiver_id: AccountId, token_id: TrailIdAndCopyNumber, mem
 nft_transfer_call(args: { receiver_id: AccountId, token_id: TrailId, memo: string|null, msg: string }, gas?: any, amount?: any): Promise<void>;
 ```
 
+Returns `true` if the token was transferred from the sender's account.
 
 ### :eyeglasses: `nft_token`
 
@@ -340,7 +354,7 @@ nft_token(args: { token_id: TrailIdAndCopyNumber }): Promise<JsonTrail|null>;
 ```
 
 
-## Methods for `NonFungibleTokenCore` interface
+## Methods for `NonFungibleTokenPayouts` interface
 
 ### :eyeglasses: `nft_payout`
 
@@ -367,4 +381,4 @@ References
 
 ---
 
-_This documentation was generated with **near-syn v0.5.0** <https://github.com/acuarica/near-syn>_
+_This documentation was generated with **near-syn v0.5.1** <https://github.com/acuarica/near-syn>_

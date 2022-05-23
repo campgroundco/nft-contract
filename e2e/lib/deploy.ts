@@ -28,7 +28,7 @@ export const getState = async (account: Account, prefix: string): Promise<Accoun
     return { ...state, ...balance };
 };
 
-export async function deployContract(near: Near, contractPrefix: string, wasmPath: string): Promise<Account> {
+export async function deployContract(near: Near, contractPrefix: string, wasmPath: string): Promise<[Account, boolean]> {
     const contractAccount = await getAccount(contractPrefix, near);
     const contract = await getState(contractAccount, contractPrefix);
 
@@ -38,16 +38,19 @@ export async function deployContract(near: Near, contractPrefix: string, wasmPat
 
     console.log(`Contract ${basename(wasmPath)} sha256/base58:${wasmBase64}`);
 
+    let alreadyDeployed;
     if (contract.code_hash !== wasmBase64) {
         console.log('  ... deploying\n');
 
         await contractAccount.deployContract(wasmData);
         await getState(contractAccount, contractPrefix);
+        alreadyDeployed = false;
     } else {
         console.log('  ... up to date\n');
+        alreadyDeployed = true;
     }
 
-    return contractAccount;
+    return [contractAccount, alreadyDeployed];
 };
 
 export async function initContract<T, S extends keyof T & string>(

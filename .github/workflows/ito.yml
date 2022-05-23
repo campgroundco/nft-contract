@@ -33,7 +33,7 @@ jobs:
       with:
         path: ~/.cargo
         key: ${{ runner.os }}-cargo-check-${{ hashFiles('Cargo.lock') }}
-    - run: cargo install near-syn --version 0.4.2
+    - run: cargo install near-syn --version 0.5.1
     - run: yarn ts
     - run: git --no-pager diff --exit-code ito.ts
 

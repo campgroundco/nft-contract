@@ -1,7 +1,11 @@
 pub mod context;
 
-use ito_contract::{bridge::SeriesBridge, Contract, ONE_NEAR};
-use near_sdk::{json_types::U128, testing_env};
+use ito_contract::{
+    bridge::SeriesBridge, create_serie::CreateTrailSeries,
+    enumeration::NonFungibleTokenEnumeration, Contract, TrailResource, TrailSeriesMetadata,
+    ONE_NEAR,
+};
+use near_sdk::{env, json_types::U128, testing_env};
 
 use context::{alice, bob, carol, create_series, setup_contract, STORAGE_FOR_CREATE_SERIES};
 
@@ -194,4 +198,53 @@ fn contract_should_return_nft_tokens_enumeration_after_buying() {
     );
     assert_eq!(enumeration_unwrap.owner_id, bob());
     assert_eq!(enumeration_unwrap.series.creator_id, alice());
+}
+
+#[test]
+fn estimate_create_series_storage_usage() {
+    fn measure_create_series(contract: &mut Contract, usage_estimate: u64) {
+        let usage = env::storage_usage();
+        contract.create_trail_series(
+            TrailSeriesMetadata {
+                title: "My Trail".to_owned(),
+                description: "Some description".to_owned(),
+                tickets_amount: 10,
+                media: None,
+                data: None,
+                resources: vec![TrailResource {
+                    title: None,
+                    description: None,
+                    media: "http://arweave.net/image.png".to_owned(),
+                    extra: None,
+                    reference: None,
+                }],
+                starts_at: None,
+                expires_at: None,
+                reference: None,
+                campground_id: "123".to_owned(),
+            },
+            Some(10000000000000000000000000.into()),
+            None,
+            None,
+        );
+
+        let usage = env::storage_usage() - usage;
+
+        println!("{}", usage);
+        assert_eq!(usage, usage_estimate);
+    }
+
+    let (mut context, mut contract) = setup_contract();
+
+    testing_env!(context
+        .predecessor_account_id(alice())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    measure_create_series(&mut contract, 499);
+
+    for i in 2..200 {
+        let token_id_len_extra = (i.to_string().len() - 1) * 4;
+        measure_create_series(&mut contract, 429 + token_id_len_extra as u64);
+    }
 }
