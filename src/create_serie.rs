@@ -11,10 +11,30 @@ pub trait CreateTrailSeries {
         creator: Option<AccountId>,
         creator_royalty: Option<U128>
     ) -> JsonTrail;
+
+    fn create_trail_series_estimated(
+        &self,
+        metadata: TrailSeriesMetadata,
+        price: Option<U128>,
+        creator: Option<AccountId>,
+        creator_royalty: Option<U128>
+    ) -> usize;
 }
 
 #[near_bindgen]
 impl CreateTrailSeries for Contract {
+
+    fn create_trail_series_estimated(
+        &self,
+        metadata: TrailSeriesMetadata,
+        price: Option<U128>,
+        creator_id: Option<AccountId>,
+        creator_royalty: Option<U128>
+    ) -> usize {
+        let input_bytes = env::input().unwrap_or(vec![]).len();
+        input_bytes
+    }
+
     #[payable]
     fn create_trail_series(
         &mut self,
