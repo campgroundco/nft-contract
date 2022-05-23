@@ -1,5 +1,6 @@
 use crate::bridge::SeriesBridge;
 use crate::*;
+use std::convert::TryFrom;
 
 /// Provides operations to deal with trail series.
 pub trait CreateTrailSeries {
@@ -11,10 +12,36 @@ pub trait CreateTrailSeries {
         creator: Option<AccountId>,
         creator_royalty: Option<U128>
     ) -> JsonTrail;
+
+    fn create_trail_series_estimated(
+        &self,
+        metadata: TrailSeriesMetadata,
+        price: Option<U128>,
+        creator: Option<AccountId>,
+        creator_royalty: Option<U128>
+    ) -> Option<U128>;
 }
 
 #[near_bindgen]
 impl CreateTrailSeries for Contract {
+
+    fn create_trail_series_estimated(
+        &self,
+        metadata: TrailSeriesMetadata,
+        price: Option<U128>,
+        creator_id: Option<AccountId>,
+        creator_royalty: Option<U128>
+    ) -> Option<U128> {
+        let input_bytes = env::input().unwrap_or(vec![]).len();
+        let high_approximate = input_bytes + 500;
+        let usize_to_u128 = u128::try_from(high_approximate);
+        if usize_to_u128.is_ok() {
+            Some(U128((usize_to_u128.unwrap() * env::storage_byte_cost()).into()))
+        } else {
+            None
+        }
+    }
+
     #[payable]
     fn create_trail_series(
         &mut self,
