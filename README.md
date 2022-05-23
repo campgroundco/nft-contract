@@ -28,6 +28,7 @@ This represents the ITO (Initial Trail Offering) Smart Contract system created f
 | :eyeglasses: `get_fee_percentage` |  Returns the percentage amount Campground takes from each buy order if higher than minimum fee. | `number` |
 | :eyeglasses: `get_treasury_address` |  Returns the address where treasury funds are transferred to. | `AccountId` |
 | :eyeglasses: `is_caller_contract_owner` |  Whether caller is the owner of the contract. | `boolean` |
+| :eyeglasses: `create_trail_series_estimated` |  | `U128\|null` |
 | :eyeglasses: `nft_total_supply` |  Query for the total supply of NFTs on the contract. | `U128` |
 | :eyeglasses: `nft_tokens` |  Query for nft tokens on the contract regardless of the owner using pagination.  Query for nft tokens on the contract regardless of the owner using pagination. | `JsonTrail[]` |
 | :eyeglasses: `nft_supply_for_owner` |  Get the total supply of NFTs for a given owner.  Get the total supply of NFTs for a given owner. | `U128` |
