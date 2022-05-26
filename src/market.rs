@@ -1,6 +1,6 @@
 use crate::bridge::SeriesBridge;
-use crate::*;
 use crate::event::NearEvent;
+use crate::*;
 
 #[near_bindgen]
 impl Contract {
@@ -63,9 +63,8 @@ impl Contract {
         NearEvent::log_nft_mint(
             receiver_id.to_string(),
             vec![ownership_id.clone()],
-            Some(near_sdk::serde_json::json!({"price": &price}).to_string())
+            Some(near_sdk::serde_json::json!({ "price": &price }).to_string()),
         );
-
 
         ownership_id
     }
@@ -77,8 +76,6 @@ impl Contract {
         trail_series_id: TrailId,
         receiver_id: AccountId,
     ) -> TrailIdAndCopyNumber {
-        let initial_storage_usage = env::storage_usage();
-
         let trail_series = self
             .trails_metadata_by_id
             .get(&trail_series_id)
@@ -88,9 +85,9 @@ impl Contract {
         let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
         println!("{} >= {}", attached_deposit, price);
-        assert!(
-            attached_deposit >= price,
-            "Campground: Attached deposit is less than price"
+        assert_eq!(
+            attached_deposit, price,
+            "Campground: Attached deposit needs to be equal to ITO price"
         );
         assert!(
             attached_deposit >= campground_minimum_fee_yocto_near,
@@ -122,8 +119,6 @@ impl Contract {
         }
 
         Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury.into());
-
-        refund_deposit(env::storage_usage() - initial_storage_usage, price);
 
         trail_id_with_copy
     }

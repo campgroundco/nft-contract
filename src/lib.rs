@@ -7,21 +7,21 @@ use near_sdk::{
 };
 use std::collections::HashMap;
 
-use crate::internal::*;
-pub use crate::metadata::*;
-pub use crate::market::*;
-pub use crate::nft_core::*;
 pub use crate::approval::*;
+use crate::internal::*;
+pub use crate::market::*;
+pub use crate::metadata::*;
+pub use crate::nft_core::*;
 pub use crate::royalty::*;
-pub mod internal;
 mod approval;
+pub mod bridge;
+pub mod create_serie;
 pub mod enumeration;
-mod metadata;
+pub mod internal;
 pub mod market;
+mod metadata;
 pub mod nft_core;
 mod royalty;
-pub mod create_serie;
-pub mod bridge;
 
 pub mod admin;
 pub mod event;
@@ -35,7 +35,6 @@ pub const MAX_PRICE: Balance = 1_000_000_000 * 10u128.pow(24);
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
-
     /// Represents the owner of the contract.
     pub owner_id: AccountId,
 
@@ -83,7 +82,6 @@ pub enum StorageKey {
 
 #[near_bindgen]
 impl Contract {
-
     /// Initialization function (can only be called once).
     /// This initializes the contract with default metadata so the
     /// user doesn't have to manually type metadata.
