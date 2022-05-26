@@ -135,7 +135,7 @@ fn contract_should_reject_minting_when_tickets_are_sold_out() {
     contract.nft_mint("1".into(), bob());
 }
 
-fn test_copies_and_buys_internal() -> Contract {
+fn test_copies_and_buys_internal(price: u128, attached_deposit: u128) -> Contract {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
         .predecessor_account_id(alice())
@@ -147,7 +147,7 @@ fn test_copies_and_buys_internal() -> Contract {
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some(1000.into()),
+        Some(price.into()),
         Some(10),
         None,
     );
@@ -156,7 +156,7 @@ fn test_copies_and_buys_internal() -> Contract {
 
     testing_env!(context
         .predecessor_account_id(bob())
-        .attached_deposit(STORAGE_FOR_CREATE_SERIES + ONE_NEAR / 10)
+        .attached_deposit(attached_deposit.into())
         .build());
 
     // Panics
@@ -177,18 +177,18 @@ fn test_copies_and_buys_internal() -> Contract {
 
 #[test]
 fn contract_should_allow_account_to_buy_and_mint() {
-    test_copies_and_buys_internal();
+    test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR);
 }
 
 #[test]
 fn contract_should_return_nft_tokens_total_after_buying() {
-    let contract = test_copies_and_buys_internal();
+    let contract = test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR);
     assert_eq!(contract.nft_total_supply(), 2.into());
 }
 
 #[test]
 fn contract_should_return_nft_tokens_enumeration_after_buying() {
-    let contract = test_copies_and_buys_internal();
+    let contract = test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR);
     let enumeration = contract.nft_tokens(None, None);
     let enumeration_unwrap = enumeration.get(0).unwrap();
     assert_eq!(enumeration_unwrap.token_id, "1:1");
@@ -247,4 +247,10 @@ fn estimate_create_series_storage_usage() {
         let token_id_len_extra = (i.to_string().len() - 1) * 4;
         measure_create_series(&mut contract, 429 + token_id_len_extra as u64);
     }
+}
+
+#[test]
+#[should_panic(expected = "Campground: Attached deposit needs to be equal to ITO price")]
+fn contract_should_fail_because_it_has_more_near_attached_than_the_price() {
+    let contract = test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR + 1);
 }
