@@ -1,6 +1,6 @@
+use crate::event::NearEvent;
 use crate::*;
 use near_sdk::{ext_contract, log, Gas, PromiseResult};
-use crate::event::NearEvent;
 
 const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(10_000_000_000_000);
 const GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER.0);
@@ -163,10 +163,10 @@ impl NonFungibleTokenCore for Contract {
             receiver_id.clone(),
             token_id.clone(),
             HashMap::new(),
-            memo.clone(),                      // we introduce a memo for logging in the events standard
+            memo.clone(), // we introduce a memo for logging in the events standard
             env::current_account_id(), //contract account to make the call to
-            NO_DEPOSIT,                //attached deposit
-            GAS_FOR_RESOLVE_TRANSFER,  //GAS attached to the call
+            NO_DEPOSIT,   //attached deposit
+            GAS_FOR_RESOLVE_TRANSFER, //GAS attached to the call
         ))
         .into();
 

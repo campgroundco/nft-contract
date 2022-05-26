@@ -1,6 +1,6 @@
 use crate::bridge::SeriesBridge;
-use crate::*;
 use crate::event::NearEvent;
+use crate::*;
 
 #[near_bindgen]
 impl Contract {
@@ -63,9 +63,8 @@ impl Contract {
         NearEvent::log_nft_mint(
             receiver_id.to_string(),
             vec![ownership_id.clone()],
-            Some(near_sdk::serde_json::json!({"price": &price}).to_string())
+            Some(near_sdk::serde_json::json!({ "price": &price }).to_string()),
         );
-
 
         ownership_id
     }
@@ -86,7 +85,10 @@ impl Contract {
         let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
         println!("{} >= {}", attached_deposit, price);
-        assert_eq!(attached_deposit, price, "Campground: Attached deposit needs to be equal to ITO price");
+        assert_eq!(
+            attached_deposit, price,
+            "Campground: Attached deposit needs to be equal to ITO price"
+        );
         assert!(
             attached_deposit >= campground_minimum_fee_yocto_near,
             "Campground: Attached deposit is less than minimum buying fee"

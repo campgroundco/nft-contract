@@ -6,10 +6,10 @@ use near_sdk::ext_contract;
 ///
 /// For more info,
 /// see https://nomicon.io/Standards/Tokens/NonFungibleToken/ApprovalManagement.
-/// 
+///
 /// Trait used when it is desired to have a non-fungible token that has a traditional escrow or approval system.
 /// This allows Alice to allow Bob to take only the token with the unique identifier "19" but not others.
-/// 
+///
 /// It should be noted that in the [core non-fungible token standard] there
 /// is a method to do _transfer and call_ which may be preferred over using
 /// an [approval management standard] in certain use cases.

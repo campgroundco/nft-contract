@@ -57,7 +57,10 @@ impl Display for NearEvent {
 
 impl NearEvent {
     pub fn new_171(version: String, event_kind: Nep171EventKind) -> Self {
-        NearEvent::Nep171(Nep171Event { version, event_kind })
+        NearEvent::Nep171(Nep171Event {
+            version,
+            event_kind,
+        })
     }
 
     pub fn new_171_v1(event_kind: Nep171EventKind) -> Self {
@@ -81,7 +84,11 @@ impl NearEvent {
     }
 
     pub fn log_nft_mint(owner_id: String, token_ids: Vec<String>, memo: Option<String>) {
-        NearEvent::log_nft_mints(vec![NftMintData { owner_id, token_ids, memo }]);
+        NearEvent::log_nft_mints(vec![NftMintData {
+            owner_id,
+            token_ids,
+            memo,
+        }]);
     }
 
     pub fn log_nft_mints(data: Vec<NftMintData>) {
@@ -121,7 +128,11 @@ mod tests {
     fn nft_mint() {
         let owner_id = "bob".to_string();
         let token_ids = make_tokens(vec!["0", "1"]);
-        let mint_log = NftMintData { owner_id, token_ids, memo: None };
+        let mint_log = NftMintData {
+            owner_id,
+            token_ids,
+            memo: None,
+        };
         let event_log = NearEvent::nft_mint(vec![mint_log]);
         assert_eq!(
             serde_json::to_string(&event_log).unwrap(),
@@ -133,7 +144,11 @@ mod tests {
     fn nft_mints() {
         let owner_id = "bob".to_string();
         let token_ids = make_tokens(vec!["0", "1"]);
-        let mint_log = NftMintData { owner_id, token_ids, memo: None };
+        let mint_log = NftMintData {
+            owner_id,
+            token_ids,
+            memo: None,
+        };
         let event_log = NearEvent::nft_mint(vec![
             mint_log,
             NftMintData {
@@ -160,7 +175,7 @@ mod tests {
             token_ids,
             memo: None,
         }])
-            .to_json_string();
+        .to_json_string();
         assert_eq!(
             log,
             r#"{"standard":"nep171","version":"1.0.0","event":"nft_transfer","data":[{"old_owner_id":"bob","new_owner_id":"alice","token_ids":["0","1"]}]}"#
@@ -188,7 +203,7 @@ mod tests {
                 memo: None,
             },
         ])
-            .to_json_string();
+        .to_json_string();
         assert_eq!(
             log,
             r#"{"standard":"nep171","version":"1.0.0","event":"nft_transfer","data":[{"authorized_id":"4","old_owner_id":"alice","new_owner_id":"bob","token_ids":["2","3"],"memo":"has memo"},{"old_owner_id":"bob","new_owner_id":"alice","token_ids":["0","1"]}]}"#
