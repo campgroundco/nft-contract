@@ -63,6 +63,8 @@ pub struct Contract {
     pub campground_treasury_address: AccountId,
 
     pub campground_minimum_fee_yocto_near: Balance,
+
+    pub settings: UnorderedMap<String, String>
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -78,6 +80,11 @@ pub enum StorageKey {
     TokensPerType,
     TokensPerTypeInner { token_type_hash: CryptoHash },
     TokenTypesLocked,
+}
+
+#[derive(BorshSerialize)]
+pub enum StorageKeysV2 {
+    Settings
 }
 
 #[near_bindgen]
@@ -131,9 +138,49 @@ impl Contract {
             trails_series_by_creator: LookupMap::new(
                 StorageKey::TokenPerCreator.try_to_vec().unwrap(),
             ),
+            settings: UnorderedMap::new(
+                StorageKeysV2::Settings.try_to_vec().unwrap()
+            )
         };
 
         //return the Contract object
         this
+    }
+
+    #[private]
+    #[init(ignore_state)]
+    pub fn migrate_v1_to_v2() -> Self {
+        #[derive(BorshDeserialize)]
+        pub struct CampgroundContractV1 {
+            pub owner_id: AccountId,
+            pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
+            pub tokens_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
+            pub token_metadata_by_id: UnorderedMap<TrailIdAndCopyNumber, TrailId>,
+            pub trails_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
+            pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
+            pub metadata: LazyOption<NFTContractMetadata>,
+            pub campground_fee: u64,
+            pub campground_treasury_address: AccountId,
+            pub campground_minimum_fee_yocto_near: Balance,
+        }
+
+        let state: CampgroundContractV1 = env::state_read().unwrap();
+
+        Self {
+            owner_id: state.owner_id,
+            tokens_per_owner: state.tokens_per_owner,
+            tokens_by_id: state.tokens_by_id,
+            token_metadata_by_id: state.token_metadata_by_id,
+            trails_metadata_by_id: state.trails_metadata_by_id,
+            trails_series_by_creator: state.trails_series_by_creator,
+            metadata: state.metadata,
+            campground_fee: state.campground_fee,
+            campground_treasury_address: state.campground_treasury_address,
+            campground_minimum_fee_yocto_near: state.campground_minimum_fee_yocto_near,
+            settings: UnorderedMap::new(
+                StorageKeysV2::Settings.try_to_vec().unwrap()
+            )
+        }
+
     }
 }
