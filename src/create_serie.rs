@@ -24,6 +24,7 @@ pub trait CreateTrailSeries {
 
 #[near_bindgen]
 impl CreateTrailSeries for Contract {
+    #[allow(unused_variables)]
     fn create_trail_series_estimated(
         &self,
         metadata: TrailSeriesMetadata,

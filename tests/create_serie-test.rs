@@ -241,16 +241,16 @@ fn estimate_create_series_storage_usage() {
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
-    measure_create_series(&mut contract, 499);
+    measure_create_series(&mut contract, 503);
 
     for i in 2..200 {
         let token_id_len_extra = (i.to_string().len() - 1) * 4;
-        measure_create_series(&mut contract, 429 + token_id_len_extra as u64);
+        measure_create_series(&mut contract, 433 + token_id_len_extra as u64);
     }
 }
 
 #[test]
 #[should_panic(expected = "Campground: Attached deposit needs to be equal to ITO price")]
 fn contract_should_fail_because_it_has_more_near_attached_than_the_price() {
-    let contract = test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR + 1);
+    test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR + 1);
 }

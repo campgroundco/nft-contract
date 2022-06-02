@@ -1,12 +1,12 @@
 pub mod context;
 
-use ito_contract::{admin::AdminBridge, bridge::SeriesBridge, BUY_STORAGE, ONE_NEAR};
+use ito_contract::{admin::AdminBridge, bridge::SeriesBridge, ONE_NEAR};
 use near_sdk::testing_env;
 
 use context::{alice, bob, carol, create_series, owner, setup_contract, STORAGE_FOR_CREATE_SERIES};
 
 #[test]
-#[should_panic(expected = "Campground: Attached deposit is less than price")]
+#[should_panic(expected = "Campground: Attached deposit needs to be equal to ITO price")]
 fn contract_should_reject_buying_with_invalid_amount() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
@@ -41,12 +41,13 @@ fn contract_should_reject_when_buying_with_invalid_fee() {
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
+    let min_fee = contract.campground_minimum_fee_yocto_near;
     create_series(
         &mut contract,
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some((ONE_NEAR / 100).into()),
+        Some((min_fee - 1).into()),
         Some(10),
         None,
     );
@@ -66,18 +67,19 @@ fn contract_should_allow_account_to_buy_with_just_enough_fee() {
         .attached_deposit(STORAGE_FOR_CREATE_SERIES)
         .build());
 
+    let min_fee = contract.campground_minimum_fee_yocto_near;
     create_series(
         &mut contract,
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some((ONE_NEAR / 100).into()),
+        Some(min_fee.into()),
         Some(10),
         None,
     );
     testing_env!(context
         .predecessor_account_id(bob())
-        .attached_deposit(contract.campground_minimum_fee_yocto_near)
+        .attached_deposit(min_fee)
         .build());
 
     contract.nft_buy_series(String::from("1"), carol());
@@ -102,14 +104,14 @@ fn contract_should_allow_account_to_buy_with_one_near() {
     );
     testing_env!(context
         .predecessor_account_id(bob())
-        .attached_deposit(ONE_NEAR + BUY_STORAGE)
+        .attached_deposit(ONE_NEAR)
         .build());
 
     contract.nft_buy_series("1".into(), carol());
 
     testing_env!(context
         .predecessor_account_id(carol())
-        .attached_deposit(ONE_NEAR + BUY_STORAGE)
+        .attached_deposit(ONE_NEAR)
         .build());
 
     contract.nft_buy_series("1".into(), carol());
@@ -160,13 +162,47 @@ fn contract_should_reject_when_buying_with_campground_fee_greater_than_100() {
         "CampgroundTest",
         Some(1647109675),
         Some(1647216000),
-        Some(1000.into()),
+        Some(ONE_NEAR.into()),
         Some(10),
         None,
     );
     testing_env!(context
         .predecessor_account_id(bob())
-        .attached_deposit(ONE_NEAR + BUY_STORAGE)
+        .attached_deposit(ONE_NEAR)
+        .build());
+
+    contract.nft_buy_series("1".to_string(), carol());
+}
+
+#[test]
+#[should_panic(expected = "Campground: a fee needs to be paid")]
+fn contract_should_reject_when_campground_fee_is_missing() {
+    let (mut context, mut contract) = setup_contract();
+
+    testing_env!(context
+        .predecessor_account_id(owner())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+    contract.change_campground_minimum_fee(0);
+    contract.change_campground_fee(0);
+
+    testing_env!(context
+        .predecessor_account_id(alice())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    create_series(
+        &mut contract,
+        "CampgroundTest",
+        Some(1647109675),
+        Some(1647216000),
+        Some(ONE_NEAR.into()),
+        Some(10),
+        None,
+    );
+    testing_env!(context
+        .predecessor_account_id(bob())
+        .attached_deposit(ONE_NEAR)
         .build());
 
     contract.nft_buy_series("1".to_string(), carol());

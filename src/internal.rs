@@ -214,8 +214,8 @@ impl Contract {
         receiver_id: &AccountId,
         trail_id: &TrailIdAndCopyNumber,
         //we introduce an approval ID so that people with that approval ID can transfer the token
-        approval_id: Option<u64>,
-        memo: Option<String>,
+        _approval_id: Option<u64>,
+        _memo: Option<String>,
     ) -> (TrailBusiness, TrailBusiness) {
         let trail = self
             .tokens_by_id

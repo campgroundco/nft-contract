@@ -29,7 +29,7 @@ fn contract_should_return_nft_token_info() {
 
     testing_env!(context
         .predecessor_account_id(alice())
-        .attached_deposit(ONE_NEAR + BUY_STORAGE)
+        .attached_deposit(ONE_NEAR)
         .build());
 
     let token_id = contract.nft_buy_series(trail.token_id.clone(), carol());
@@ -59,7 +59,7 @@ fn contract_should_transfer_nft_to_receiver() {
 
     testing_env!(context
         .predecessor_account_id(alice())
-        .attached_deposit(ONE_NEAR + BUY_STORAGE)
+        .attached_deposit(ONE_NEAR)
         .build());
 
     let token_id = contract.nft_buy_series(trail.token_id.clone(), bob());

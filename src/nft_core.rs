@@ -1,6 +1,6 @@
 use crate::event::NearEvent;
 use crate::*;
-use near_sdk::{ext_contract, log, Gas, PromiseResult};
+use near_sdk::{ext_contract, Gas, PromiseResult};
 
 const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(10_000_000_000_000);
 const GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER.0);
@@ -96,7 +96,7 @@ impl NonFungibleTokenCore for Contract {
     ) {
         let sender_id = env::predecessor_account_id();
 
-        let (new_token, previous_token) =
+        let (_new_token, previous_token) =
             self.internal_transfer(&sender_id, &receiver_id, &token_id, None, memo.clone());
 
         NearEvent::log_nft_transfer(
@@ -136,7 +136,7 @@ impl NonFungibleTokenCore for Contract {
         let sender_id = env::predecessor_account_id();
 
         //transfer the token and get the previous token object
-        let (new_token, previous_token) =
+        let (_new_token, previous_token) =
             self.internal_transfer(&sender_id, &receiver_id, &token_id, None, memo.clone());
 
         //default the authorized_id to none
@@ -216,12 +216,12 @@ impl NonFungibleTokenResolver for Contract {
     fn nft_resolve_transfer(
         &mut self,
         //we introduce an authorized ID for logging the transfer event
-        authorized_id: Option<String>,
+        _authorized_id: Option<String>,
         owner_id: AccountId,
         receiver_id: AccountId,
         token_id: TrailIdAndCopyNumber,
         //we introduce the approval map so we can keep track of what the approvals were before the transfer
-        approved_account_ids: HashMap<AccountId, u64>,
+        _approved_account_ids: HashMap<AccountId, u64>,
         //we introduce a memo for logging the transfer event
         memo: Option<String>,
     ) -> bool {
