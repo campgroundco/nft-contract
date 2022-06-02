@@ -18,6 +18,9 @@ pub trait AdminBridge {
 
     /// Changes campground minimum `fee`, in yoctoNEAR.
     fn change_campground_minimum_fee(&mut self, fee: Balance);
+
+    /// Adds a setting key-val to the map
+    fn add_setting(&mut self, key: String, value: String);
 }
 
 #[near_bindgen]
@@ -35,5 +38,10 @@ impl AdminBridge for Contract {
     fn change_campground_minimum_fee(&mut self, fee: Balance) {
         self.panic_if_not_owner();
         self.campground_minimum_fee_yocto_near = fee
+    }
+
+    fn add_setting(&mut self, key: String, value: String) {
+        self.panic_if_not_owner();
+        self.settings.insert(&key, &value);
     }
 }
