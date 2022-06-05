@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
+use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet, LookupSet};
 use near_sdk::json_types::{Base64VecU8, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
@@ -53,6 +53,8 @@ pub struct Contract {
     /// Keeps track of the token created by creator, represented by `AccountId`.
     pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
 
+    pub nonmintable_trails: LookupSet<TrailId>,
+
     /// Represents the metadata for the contract.
     pub metadata: LazyOption<NFTContractMetadata>,
 
@@ -86,6 +88,12 @@ pub enum StorageKey {
 pub enum StorageKeysV2 {
     Settings
 }
+
+#[derive(BorshSerialize)]
+pub enum StorageKeysV3 {
+    NonMintableTrails
+}
+
 
 #[near_bindgen]
 impl Contract {
@@ -140,7 +148,8 @@ impl Contract {
             ),
             settings: UnorderedMap::new(
                 StorageKeysV2::Settings.try_to_vec().unwrap()
-            )
+            ),
+            nonmintable_trails: LookupSet::new(StorageKeysV3::NonMintableTrails.try_to_vec().unwrap())
         };
 
         //return the Contract object
@@ -179,7 +188,45 @@ impl Contract {
             campground_minimum_fee_yocto_near: state.campground_minimum_fee_yocto_near,
             settings: UnorderedMap::new(
                 StorageKeysV2::Settings.try_to_vec().unwrap()
-            )
+            ),
+            nonmintable_trails: LookupSet::new(StorageKeysV3::NonMintableTrails.try_to_vec().unwrap())
+        }
+
+    }
+
+    #[private]
+    #[init(ignore_state)]
+    pub fn migrate_v2_to_v3() -> Self {
+        #[derive(BorshDeserialize)]
+        pub struct CampgroundContractV2 {
+            pub owner_id: AccountId,
+            pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TrailIdAndCopyNumber>>,
+            pub tokens_by_id: LookupMap<TrailIdAndCopyNumber, TrailBusiness>,
+            pub token_metadata_by_id: UnorderedMap<TrailIdAndCopyNumber, TrailId>,
+            pub trails_metadata_by_id: UnorderedMap<TrailId, TrailSeries>,
+            pub trails_series_by_creator: LookupMap<AccountId, UnorderedSet<TrailId>>,
+            pub metadata: LazyOption<NFTContractMetadata>,
+            pub campground_fee: u64,
+            pub campground_treasury_address: AccountId,
+            pub campground_minimum_fee_yocto_near: Balance,
+            pub settings: UnorderedMap<String, String>
+        }
+
+        let state: CampgroundContractV2 = env::state_read().unwrap();
+
+        Self {
+            owner_id: state.owner_id,
+            tokens_per_owner: state.tokens_per_owner,
+            tokens_by_id: state.tokens_by_id,
+            token_metadata_by_id: state.token_metadata_by_id,
+            trails_metadata_by_id: state.trails_metadata_by_id,
+            trails_series_by_creator: state.trails_series_by_creator,
+            metadata: state.metadata,
+            campground_fee: state.campground_fee,
+            campground_treasury_address: state.campground_treasury_address,
+            campground_minimum_fee_yocto_near: state.campground_minimum_fee_yocto_near,
+            settings: state.settings,
+            nonmintable_trails: LookupSet::new(StorageKeysV3::NonMintableTrails.try_to_vec().unwrap())
         }
 
     }

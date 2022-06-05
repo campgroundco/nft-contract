@@ -244,6 +244,10 @@ impl Contract {
             panic!("Campground: Only contract owner can execute")
         }
     }
+
+    pub(crate) fn add_nonmintable_trail(&mut self, trail_id: &TrailId) {
+        self.nonmintable_trails.insert(trail_id);
+    }
 }
 
 #[cfg(test)]

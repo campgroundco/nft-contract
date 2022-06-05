@@ -22,6 +22,7 @@ fn contract_should_reject_buying_with_invalid_amount() {
         Some(1000.into()),
         Some(10),
         None,
+        None
     );
     testing_env!(context
         .predecessor_account_id(bob())
@@ -50,6 +51,7 @@ fn contract_should_reject_when_buying_with_invalid_fee() {
         Some((min_fee - 1).into()),
         Some(10),
         None,
+        None
     );
     testing_env!(context
         .predecessor_account_id(bob())
@@ -76,6 +78,7 @@ fn contract_should_allow_account_to_buy_with_just_enough_fee() {
         Some(min_fee.into()),
         Some(10),
         None,
+        None
     );
     testing_env!(context
         .predecessor_account_id(bob())
@@ -101,6 +104,7 @@ fn contract_should_allow_account_to_buy_with_one_near() {
         Some(ONE_NEAR.into()),
         Some(10),
         None,
+        None
     );
     testing_env!(context
         .predecessor_account_id(bob())
@@ -165,6 +169,7 @@ fn contract_should_reject_when_buying_with_campground_fee_greater_than_100() {
         Some(ONE_NEAR.into()),
         Some(10),
         None,
+        None
     );
     testing_env!(context
         .predecessor_account_id(bob())
@@ -199,6 +204,35 @@ fn contract_should_reject_when_campground_fee_is_missing() {
         Some(ONE_NEAR.into()),
         Some(10),
         None,
+        None
+    );
+    testing_env!(context
+        .predecessor_account_id(bob())
+        .attached_deposit(ONE_NEAR)
+        .build());
+
+    contract.nft_buy_series("1".to_string(), carol());
+}
+
+#[test]
+#[should_panic(expected = "Campground: Trail is not allowed to be minted by user")]
+fn contract_should_reject_when_trail_is_not_mintable() {
+    let (mut context, mut contract) = setup_contract();
+
+    testing_env!(context
+        .predecessor_account_id(owner())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    create_series(
+        &mut contract,
+        "CampgroundTest",
+        Some(1647109675),
+        Some(1647216000),
+        Some(ONE_NEAR.into()),
+        Some(10),
+        None,
+        Some(false)
     );
     testing_env!(context
         .predecessor_account_id(bob())

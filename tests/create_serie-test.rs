@@ -26,6 +26,7 @@ fn contract_should_allow_account_to_create_trail_series() {
         Some((1 * 10u128.pow(24)).into()),
         None,
         None,
+        None,
     );
 
     let trail_by_id = contract.get_trail_by_id(&String::from("1"));
@@ -62,6 +63,7 @@ fn contract_should_reject_creating_trail_series_with_invalid_price() {
         Some(U128::from(1_000_000_001 * 10u128.pow(24))),
         None,
         None,
+        None,
     );
 }
 
@@ -82,6 +84,7 @@ fn contract_should_reject_creating_trail_series_with_invalid_ticket_amount() {
         Some(U128::from(1 * 10u128.pow(24))),
         Some(0 as u64),
         None,
+        None
     );
 }
 
@@ -102,6 +105,7 @@ fn contract_should_reject_creating_trail_series_with_invalid_resources_amount() 
         Some(U128::from(1 * 10u128.pow(24))),
         Some(1 as u64),
         Some(vec![]),
+        None
     );
 }
 
@@ -122,6 +126,7 @@ fn contract_should_reject_minting_when_tickets_are_sold_out() {
         Some(U128::from(1 * 10u128.pow(24))),
         Some(1),
         None,
+        None
     );
     let trail_by_id = contract.get_trail_by_id(&"1".into());
     assert_eq!(trail_by_id.is_mintable, true);
@@ -150,6 +155,7 @@ fn test_copies_and_buys_internal(price: u128, attached_deposit: u128) -> Contrac
         Some(price.into()),
         Some(10),
         None,
+        None
     );
     let nft_mint_1 = contract.nft_mint("1".into(), bob());
     assert_eq!(nft_mint_1, "1:1");
@@ -226,6 +232,7 @@ fn estimate_create_series_storage_usage() {
             Some(10000000000000000000000000.into()),
             None,
             None,
+            None
         );
 
         let usage = env::storage_usage() - usage;
@@ -254,3 +261,48 @@ fn estimate_create_series_storage_usage() {
 fn contract_should_fail_because_it_has_more_near_attached_than_the_price() {
     test_copies_and_buys_internal(ONE_NEAR, ONE_NEAR + 1);
 }
+
+#[test]
+fn should_create_a_mintable_trail() {
+    let (mut context, mut contract) = setup_contract();
+    testing_env!(context
+        .predecessor_account_id(alice())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    let create = create_series(
+        &mut contract,
+        "CampgroundTest",
+        Some(1647109675),
+        Some(1647216000),
+        Some(0.into()),
+        Some(10),
+        None,
+        None
+    );
+
+    assert!(contract.is_trail_mintable(&create.token_id));
+}
+
+#[test]
+fn should_create_a_non_mintable_trail() {
+    let (mut context, mut contract) = setup_contract();
+    testing_env!(context
+        .predecessor_account_id(alice())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    let create = create_series(
+        &mut contract,
+        "CampgroundTest",
+        Some(1647109675),
+        Some(1647216000),
+        Some(0.into()),
+        Some(10),
+        None,
+        Some(false)
+    );
+
+    assert!(!contract.is_trail_mintable(&create.token_id));
+}
+

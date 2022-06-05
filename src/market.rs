@@ -84,6 +84,8 @@ impl Contract {
         let attached_deposit = env::attached_deposit();
         let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
+        // TODO: Refunds ?
+        assert!(self.is_trail_mintable(&trail_series_id), "Campground: Trail is not allowed to be minted by user");
         println!("{} >= {}", attached_deposit, price);
         assert_eq!(
             attached_deposit, price,
