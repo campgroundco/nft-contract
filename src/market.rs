@@ -69,6 +69,16 @@ impl Contract {
         ownership_id
     }
 
+    /// Returns the price of the given `trail_series_id`.
+    /// The price is the final amount to be payed to buy the nft.
+    pub fn nft_get_series_price(&self, trail_series_id: TrailId) -> U128 {
+        let trail_series = self
+            .trails_metadata_by_id
+            .get(&trail_series_id)
+            .expect("Campground: Trail series does not exist");
+        U128(get_price_and_fee(&trail_series).0)
+    }
+
     /// Buys a trail series if still available given a price and attached deposit.
     #[payable]
     pub fn nft_buy_series(
@@ -80,47 +90,29 @@ impl Contract {
             .trails_metadata_by_id
             .get(&trail_series_id)
             .expect("Campground: Trail series does not exist");
-        let price = trail_series.price.into();
+        let (price, fee) = get_price_and_fee(&trail_series);
         let attached_deposit = env::attached_deposit();
-        let campground_minimum_fee_yocto_near = self.campground_minimum_fee_yocto_near;
 
         // TODO: Refunds ?
         assert!(self.is_trail_mintable(&trail_series_id), "Campground: Trail is not allowed to be minted by user");
-        println!("{} >= {}", attached_deposit, price);
+
         assert_eq!(
             attached_deposit, price,
-            "Campground: Attached deposit needs to be equal to ITO price"
+            "Campground: Attached deposit needs to be equal to ITO price or Campground Fee"
         );
-        assert!(
-            attached_deposit >= campground_minimum_fee_yocto_near,
-            "Campground: Attached deposit is less than minimum buying fee"
-        );
-
-        let for_treasury: u128 = trail_series.campground_fee_near.into();
 
         // If for_treasury <= campground_minimum_fee_yocto_near, the buyer pays the fees
         // Otherwise, the seller pays the fee (price - for_treasury)
-        let price_deducted = if for_treasury <= campground_minimum_fee_yocto_near {
-            price
-        } else {
-            // No negative values should be allowed
-            assert!(
-                price >= for_treasury,
-                "Campground: Buying operation is invalid"
-            );
-            price - for_treasury
-        };
-
-        assert!(for_treasury > 0, "Campground: a fee needs to be paid");
+        let price_after_fee = price - fee;
 
         let trail_id_with_copy: TrailIdAndCopyNumber =
             self.nft_internal_mint_series(trail_series_id, receiver_id);
 
-        if price_deducted > 0 {
-            Promise::new(trail_series.creator_id).transfer(price_deducted);
+        if price_after_fee > 0 {
+            Promise::new(trail_series.creator_id).transfer(price_after_fee);
         }
 
-        Promise::new(self.campground_treasury_address.clone()).transfer(for_treasury.into());
+        Promise::new(self.campground_treasury_address.clone()).transfer(fee);
 
         trail_id_with_copy
     }
@@ -147,5 +139,20 @@ impl Contract {
         refund_deposit(required_storage_in_bytes, 0);
 
         trail_mint_id
+    }
+}
+
+/// Returns both the price and the corresponding Campground fee
+/// of the given `trail_series`.
+/// The first component represents the price to be payed to buy the nft.
+/// The second components represents the Campground fee.
+fn get_price_and_fee(trail_series: &TrailSeries) -> (u128, u128) {
+    if trail_series.price.0 > trail_series.campground_fee_near.0 {
+        (trail_series.price.0, trail_series.campground_fee_near.0)
+    } else {
+        (
+            trail_series.campground_fee_near.0,
+            trail_series.campground_fee_near.0,
+        )
     }
 }

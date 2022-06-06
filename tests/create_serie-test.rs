@@ -237,7 +237,6 @@ fn estimate_create_series_storage_usage() {
 
         let usage = env::storage_usage() - usage;
 
-        println!("{}", usage);
         assert_eq!(usage, usage_estimate);
     }
 
