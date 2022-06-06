@@ -40,6 +40,9 @@ pub trait SeriesBridge {
 
     /// Whether caller is the owner of the contract.
     fn is_caller_contract_owner(&self) -> bool;
+
+    /// Whether a trail can be minted by the user or not (for fiat/near purposes)
+    fn is_trail_mintable(&self, trail_id: &TrailId) -> bool;
 }
 
 #[near_bindgen]
@@ -151,5 +154,9 @@ impl SeriesBridge for Contract {
     fn is_caller_contract_owner(&self) -> bool {
         let caller = env::predecessor_account_id();
         self.owner_id.eq(&caller)
+    }
+
+    fn is_trail_mintable(&self, trail_id: &TrailId) -> bool {
+        !self.nonmintable_trails.contains(trail_id)
     }
 }

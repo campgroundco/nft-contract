@@ -53,6 +53,7 @@ pub fn create_series(
     price: Option<U128>,
     tickets: Option<u64>,
     resources: Option<Vec<TrailResource>>,
+    allow_user_minting: Option<bool>
 ) -> JsonTrail {
     contract.create_trail_series(
         TrailSeriesMetadata {
@@ -76,5 +77,6 @@ pub fn create_series(
         price,
         None,
         None,
+        allow_user_minting
     )
 }

@@ -93,6 +93,9 @@ impl Contract {
         let (price, fee) = get_price_and_fee(&trail_series);
         let attached_deposit = env::attached_deposit();
 
+        // TODO: Refunds ?
+        assert!(self.is_trail_mintable(&trail_series_id), "Campground: Trail is not allowed to be minted by user");
+
         assert_eq!(
             attached_deposit, price,
             "Campground: Attached deposit needs to be equal to ITO price or Campground Fee"

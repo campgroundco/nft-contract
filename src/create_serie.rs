@@ -11,6 +11,7 @@ pub trait CreateTrailSeries {
         price: Option<U128>,
         creator: Option<AccountId>,
         creator_royalty: Option<U128>,
+        allow_user_minting: Option<bool>
     ) -> JsonTrail;
 
     fn create_trail_series_estimated(
@@ -19,6 +20,7 @@ pub trait CreateTrailSeries {
         price: Option<U128>,
         creator: Option<AccountId>,
         creator_royalty: Option<U128>,
+        allow_user_minting: Option<bool>
     ) -> Option<U128>;
 }
 
@@ -31,6 +33,7 @@ impl CreateTrailSeries for Contract {
         price: Option<U128>,
         creator_id: Option<AccountId>,
         creator_royalty: Option<U128>,
+        allow_user_minting: Option<bool>
     ) -> Option<U128> {
         let input_bytes = env::input().unwrap_or(vec![]).len();
         let high_approximate = input_bytes + 500;
@@ -51,6 +54,7 @@ impl CreateTrailSeries for Contract {
         price: Option<U128>,
         creator_id: Option<AccountId>,
         creator_royalty: Option<U128>,
+        allow_user_minting: Option<bool>
     ) -> JsonTrail {
         let initial_storage_usage = env::storage_usage();
         let creator_id = creator_id.unwrap_or(env::predecessor_account_id());
@@ -117,6 +121,12 @@ impl CreateTrailSeries for Contract {
         self.trails_metadata_by_id
             .insert(&token_series_id, &trail_series);
         self.internal_add_trail_to_creator(&creator_id, &token_series_id);
+
+        let is_mintable = allow_user_minting.unwrap_or(true);
+
+        if !is_mintable {
+            self.add_nonmintable_trail(&token_series_id);
+        }
 
         refund_deposit(env::storage_usage() - initial_storage_usage, 0);
 
