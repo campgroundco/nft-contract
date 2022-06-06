@@ -192,6 +192,11 @@ export interface SeriesBridge {
      */
     is_caller_contract_owner(): Promise<boolean>;
 
+    /**
+     * Whether a trail can be minted by the user or not (for fiat/near purposes)
+     */
+    is_trail_mintable(args: { trail_id: TrailId }): Promise<boolean>;
+
 }
 
 /**
@@ -200,12 +205,12 @@ export interface SeriesBridge {
 export interface CreateTrailSeries {
     /**
      */
-    create_trail_series_estimated(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null }): Promise<U128|null>;
+    create_trail_series_estimated(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null, allow_user_minting: boolean|null }): Promise<U128|null>;
 
     /**
      * Creates a series (trail) inside the smart contract.
      */
-    create_trail_series(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null }, gas?: any, amount?: any): Promise<JsonTrail>;
+    create_trail_series(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null, allow_user_minting: boolean|null }, gas?: any, amount?: any): Promise<JsonTrail>;
 
 }
 
@@ -725,6 +730,7 @@ export const ContractMethods = {
         "get_fee_percentage",
         "get_treasury_address",
         "is_caller_contract_owner",
+        "is_trail_mintable",
         "create_trail_series_estimated",
         "nft_total_supply",
         "nft_tokens",

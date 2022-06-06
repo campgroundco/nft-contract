@@ -26,6 +26,7 @@
 | :eyeglasses: `get_fee_percentage` |  Returns the percentage amount Campground takes from each buy order if higher than minimum fee. | `number` |
 | :eyeglasses: `get_treasury_address` |  Returns the address where treasury funds are transferred to. | `AccountId` |
 | :eyeglasses: `is_caller_contract_owner` |  Whether caller is the owner of the contract. | `boolean` |
+| :eyeglasses: `is_trail_mintable` |  Whether a trail can be minted by the user or not (for fiat/near purposes) | `boolean` |
 | :eyeglasses: `create_trail_series_estimated` |  | `U128\|null` |
 | :eyeglasses: `nft_total_supply` |  Query for the total supply of NFTs on the contract. | `U128` |
 | :eyeglasses: `nft_tokens` |  Query for nft tokens on the contract regardless of the owner using pagination.  Query for nft tokens on the contract regardless of the owner using pagination. | `JsonTrail[]` |
@@ -234,19 +235,27 @@ is_caller_contract_owner(): Promise<boolean>;
 
 Whether caller is the owner of the contract.
 
+### :eyeglasses: `is_trail_mintable`
+
+```typescript
+is_trail_mintable(args: { trail_id: TrailId }): Promise<boolean>;
+```
+
+Whether a trail can be minted by the user or not (for fiat/near purposes)
+
 ## Methods for `CreateTrailSeries` interface
 
 ### :eyeglasses: `create_trail_series_estimated`
 
 ```typescript
-create_trail_series_estimated(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null }): Promise<U128|null>;
+create_trail_series_estimated(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null, allow_user_minting: boolean|null }): Promise<U128|null>;
 ```
 
 
 ### &#x24C3; `create_trail_series`
 
 ```typescript
-create_trail_series(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null }, gas?: any, amount?: any): Promise<JsonTrail>;
+create_trail_series(args: { metadata: TrailSeriesMetadata, price: U128|null, creator_id: AccountId|null, creator_royalty: U128|null, allow_user_minting: boolean|null }, gas?: any, amount?: any): Promise<JsonTrail>;
 ```
 
 Creates a series (trail) inside the smart contract.
