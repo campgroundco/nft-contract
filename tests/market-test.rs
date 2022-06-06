@@ -6,7 +6,9 @@ use near_sdk::testing_env;
 use context::{alice, bob, carol, create_series, owner, setup_contract, STORAGE_FOR_CREATE_SERIES};
 
 #[test]
-#[should_panic(expected = "Campground: Attached deposit needs to be equal to ITO price")]
+#[should_panic(
+    expected = "Campground: Attached deposit needs to be equal to ITO price or Campground Fee"
+)]
 fn contract_should_reject_buying_with_invalid_amount() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
@@ -33,7 +35,9 @@ fn contract_should_reject_buying_with_invalid_amount() {
 }
 
 #[test]
-#[should_panic(expected = "Campground: Attached deposit is less than minimum buying fee")]
+#[should_panic(
+    expected = "Campground: Attached deposit needs to be equal to ITO price or Campground Fee"
+)]
 fn contract_should_reject_when_buying_with_invalid_fee() {
     let (mut context, mut contract) = setup_contract();
     testing_env!(context
@@ -141,8 +145,7 @@ fn contract_should_allow_account_to_buy_with_one_near() {
 }
 
 #[test]
-#[should_panic(expected = "Campground: Buying operation is invalid")]
-fn contract_should_reject_when_buying_with_campground_fee_greater_than_100() {
+fn contract_should_accept_when_buying_with_campground_fee_greater_than_100() {
     let (mut context, mut contract) = setup_contract();
 
     testing_env!(context
@@ -168,15 +171,14 @@ fn contract_should_reject_when_buying_with_campground_fee_greater_than_100() {
     );
     testing_env!(context
         .predecessor_account_id(bob())
-        .attached_deposit(ONE_NEAR)
+        .attached_deposit(ONE_NEAR + ONE_NEAR / 5)
         .build());
 
     contract.nft_buy_series("1".to_string(), carol());
 }
 
 #[test]
-#[should_panic(expected = "Campground: a fee needs to be paid")]
-fn contract_should_reject_when_campground_fee_is_missing() {
+fn contract_should_accepts_when_campground_fee_is_zero() {
     let (mut context, mut contract) = setup_contract();
 
     testing_env!(context

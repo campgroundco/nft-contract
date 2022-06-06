@@ -77,6 +77,11 @@ export interface AdminBridge {
      */
     change_campground_minimum_fee(args: { fee: Balance }, gas?: any): Promise<void>;
 
+    /**
+     * Adds a setting key-val to the map
+     */
+    add_setting(args: { key: string, value: string }, gas?: any): Promise<void>;
+
 }
 
 /**
@@ -342,6 +347,12 @@ export interface Contract {
 /**
  */
 export interface Contract {
+    /**
+     * Returns the price of the given `trail_series_id`.
+     * The price is the final amount to be payed to buy the nft.
+     */
+    nft_get_series_price(args: { trail_series_id: TrailId }): Promise<U128>;
+
     /**
      * Buys a trail series if still available given a price and attached deposit.
      */
@@ -720,6 +731,7 @@ export const ContractMethods = {
         "nft_supply_for_owner",
         "trail_tickets_for_owner",
         "nft_tokens_for_owner",
+        "nft_get_series_price",
         "nft_metadata",
         "nft_token",
         "nft_payout",
@@ -728,6 +740,7 @@ export const ContractMethods = {
         "change_campground_fee",
         "change_campground_treasury_address",
         "change_campground_minimum_fee",
+        "add_setting",
         "nft_approve",
         "nft_revoke",
         "nft_revoke_all",
