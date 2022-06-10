@@ -197,6 +197,16 @@ export interface SeriesBridge {
      */
     is_trail_mintable(args: { trail_id: TrailId }): Promise<boolean>;
 
+    /**
+     * Verifies there is a whitelisted address
+     */
+    is_there_whitelisted_address(): Promise<boolean>;
+
+    /**
+     * Gets the address of a whitelisted address
+     */
+    get_whitelisted_address(): Promise<AccountId>;
+
 }
 
 /**
@@ -731,6 +741,8 @@ export const ContractMethods = {
         "get_treasury_address",
         "is_caller_contract_owner",
         "is_trail_mintable",
+        "is_there_whitelisted_address",
+        "get_whitelisted_address",
         "create_trail_series_estimated",
         "nft_total_supply",
         "nft_tokens",
