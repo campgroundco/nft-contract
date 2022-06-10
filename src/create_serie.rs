@@ -11,7 +11,7 @@ pub trait CreateTrailSeries {
         price: Option<U128>,
         creator: Option<AccountId>,
         creator_royalty: Option<U128>,
-        allow_user_minting: Option<bool>
+        allow_user_minting: Option<bool>,
     ) -> JsonTrail;
 
     fn create_trail_series_estimated(
@@ -20,7 +20,7 @@ pub trait CreateTrailSeries {
         price: Option<U128>,
         creator: Option<AccountId>,
         creator_royalty: Option<U128>,
-        allow_user_minting: Option<bool>
+        allow_user_minting: Option<bool>,
     ) -> Option<U128>;
 }
 
@@ -33,7 +33,7 @@ impl CreateTrailSeries for Contract {
         price: Option<U128>,
         creator_id: Option<AccountId>,
         creator_royalty: Option<U128>,
-        allow_user_minting: Option<bool>
+        allow_user_minting: Option<bool>,
     ) -> Option<U128> {
         let input_bytes = env::input().unwrap_or(vec![]).len();
         let high_approximate = input_bytes + 500;
@@ -54,7 +54,7 @@ impl CreateTrailSeries for Contract {
         price: Option<U128>,
         creator_id: Option<AccountId>,
         creator_royalty: Option<U128>,
-        allow_user_minting: Option<bool>
+        allow_user_minting: Option<bool>,
     ) -> JsonTrail {
         let initial_storage_usage = env::storage_usage();
         let creator_id = creator_id.unwrap_or(env::predecessor_account_id());

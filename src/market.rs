@@ -94,7 +94,10 @@ impl Contract {
         let attached_deposit = env::attached_deposit();
 
         // TODO: Refunds ?
-        assert!(self.is_trail_mintable(&trail_series_id), "Campground: Trail is not allowed to be minted by user");
+        assert!(
+            self.is_trail_mintable(&trail_series_id),
+            "Campground: Trail is not allowed to be minted by user"
+        );
 
         assert_eq!(
             attached_deposit, price,
@@ -124,9 +127,12 @@ impl Contract {
 
         let token_series = self.get_trail_by_id(&token_id);
 
-        assert_eq!(
-            env::predecessor_account_id(),
-            token_series.creator_id,
+        let predecessor = env::predecessor_account_id();
+
+        assert!(
+            predecessor == token_series.creator_id
+                || self.is_there_whitelisted_address()
+                    && predecessor == self.get_whitelisted_address(),
             "Campground: Only Trail creator can directly mint"
         );
 

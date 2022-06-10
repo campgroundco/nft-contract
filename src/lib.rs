@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet, LookupSet};
+use near_sdk::collections::{LazyOption, LookupMap, LookupSet, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::{Base64VecU8, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
@@ -25,6 +25,7 @@ pub mod nft_core;
 
 pub mod admin;
 pub mod event;
+pub mod vars;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 1000000000000000000000000;
@@ -66,7 +67,7 @@ pub struct Contract {
 
     pub campground_minimum_fee_yocto_near: Balance,
 
-    pub settings: UnorderedMap<String, String>
+    pub settings: UnorderedMap<String, String>,
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -86,14 +87,13 @@ pub enum StorageKey {
 
 #[derive(BorshSerialize)]
 pub enum StorageKeysV2 {
-    Settings
+    Settings,
 }
 
 #[derive(BorshSerialize)]
 pub enum StorageKeysV3 {
-    NonMintableTrails
+    NonMintableTrails,
 }
-
 
 #[near_bindgen]
 impl Contract {
@@ -146,10 +146,10 @@ impl Contract {
             trails_series_by_creator: LookupMap::new(
                 StorageKey::TokenPerCreator.try_to_vec().unwrap(),
             ),
-            settings: UnorderedMap::new(
-                StorageKeysV2::Settings.try_to_vec().unwrap()
+            settings: UnorderedMap::new(StorageKeysV2::Settings.try_to_vec().unwrap()),
+            nonmintable_trails: LookupSet::new(
+                StorageKeysV3::NonMintableTrails.try_to_vec().unwrap(),
             ),
-            nonmintable_trails: LookupSet::new(StorageKeysV3::NonMintableTrails.try_to_vec().unwrap())
         };
 
         //return the Contract object
@@ -186,12 +186,11 @@ impl Contract {
             campground_fee: state.campground_fee,
             campground_treasury_address: state.campground_treasury_address,
             campground_minimum_fee_yocto_near: state.campground_minimum_fee_yocto_near,
-            settings: UnorderedMap::new(
-                StorageKeysV2::Settings.try_to_vec().unwrap()
+            settings: UnorderedMap::new(StorageKeysV2::Settings.try_to_vec().unwrap()),
+            nonmintable_trails: LookupSet::new(
+                StorageKeysV3::NonMintableTrails.try_to_vec().unwrap(),
             ),
-            nonmintable_trails: LookupSet::new(StorageKeysV3::NonMintableTrails.try_to_vec().unwrap())
         }
-
     }
 
     #[private]
@@ -209,7 +208,7 @@ impl Contract {
             pub campground_fee: u64,
             pub campground_treasury_address: AccountId,
             pub campground_minimum_fee_yocto_near: Balance,
-            pub settings: UnorderedMap<String, String>
+            pub settings: UnorderedMap<String, String>,
         }
 
         let state: CampgroundContractV2 = env::state_read().unwrap();
@@ -226,8 +225,9 @@ impl Contract {
             campground_treasury_address: state.campground_treasury_address,
             campground_minimum_fee_yocto_near: state.campground_minimum_fee_yocto_near,
             settings: state.settings,
-            nonmintable_trails: LookupSet::new(StorageKeysV3::NonMintableTrails.try_to_vec().unwrap())
+            nonmintable_trails: LookupSet::new(
+                StorageKeysV3::NonMintableTrails.try_to_vec().unwrap(),
+            ),
         }
-
     }
 }

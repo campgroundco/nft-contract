@@ -25,7 +25,7 @@ fn contract_should_return_nft_token_info() {
         Some(ONE_NEAR.into()),
         Some(10),
         None,
-        None
+        None,
     );
 
     testing_env!(context
@@ -56,7 +56,7 @@ fn contract_should_transfer_nft_to_receiver() {
         Some(ONE_NEAR.into()),
         Some(10),
         None,
-        None
+        None,
     );
 
     testing_env!(context

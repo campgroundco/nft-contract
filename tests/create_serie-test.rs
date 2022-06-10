@@ -84,7 +84,7 @@ fn contract_should_reject_creating_trail_series_with_invalid_ticket_amount() {
         Some(U128::from(1 * 10u128.pow(24))),
         Some(0 as u64),
         None,
-        None
+        None,
     );
 }
 
@@ -105,7 +105,7 @@ fn contract_should_reject_creating_trail_series_with_invalid_resources_amount() 
         Some(U128::from(1 * 10u128.pow(24))),
         Some(1 as u64),
         Some(vec![]),
-        None
+        None,
     );
 }
 
@@ -126,7 +126,7 @@ fn contract_should_reject_minting_when_tickets_are_sold_out() {
         Some(U128::from(1 * 10u128.pow(24))),
         Some(1),
         None,
-        None
+        None,
     );
     let trail_by_id = contract.get_trail_by_id(&"1".into());
     assert_eq!(trail_by_id.is_mintable, true);
@@ -137,6 +137,59 @@ fn contract_should_reject_minting_when_tickets_are_sold_out() {
     println!("{}", track_by_owner.get(0).unwrap().series.is_mintable);
 
     // Panics
+    contract.nft_mint("1".into(), bob());
+}
+
+#[test]
+#[should_panic(expected = "Campground: Only Trail creator can directly mint")]
+fn only_trail_creator_can_directly_mint_test() {
+    let (mut context, mut contract) = setup_contract();
+    testing_env!(context
+        .predecessor_account_id(alice())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    create_series(
+        &mut contract,
+        "CampgroundTest",
+        Some(1647109675),
+        Some(1647216000),
+        Some(U128::from(1 * 10u128.pow(24))),
+        Some(1),
+        None,
+        None,
+    );
+    let trail_by_id = contract.get_trail_by_id(&"1".into());
+    testing_env!(context
+        .predecessor_account_id(bob())
+        .attached_deposit(ONE_NEAR)
+        .build());
+    contract.nft_mint("1".into(), bob());
+}
+
+#[test]
+fn allow_trail_minting_by_whitelisted_address() {
+    let (mut context, mut contract) = setup_contract();
+    testing_env!(context
+        .predecessor_account_id(alice())
+        .attached_deposit(STORAGE_FOR_CREATE_SERIES)
+        .build());
+
+    create_series(
+        &mut contract,
+        "CampgroundTest",
+        Some(1647109675),
+        Some(1647216000),
+        Some(U128::from(1 * 10u128.pow(24))),
+        Some(1),
+        None,
+        None,
+    );
+    let trail_by_id = contract.get_trail_by_id(&"1".into());
+    testing_env!(context
+        .predecessor_account_id(carol())
+        .attached_deposit(ONE_NEAR)
+        .build());
     contract.nft_mint("1".into(), bob());
 }
 
@@ -155,7 +208,7 @@ fn test_copies_and_buys_internal(price: u128, attached_deposit: u128) -> Contrac
         Some(price.into()),
         Some(10),
         None,
-        None
+        None,
     );
     let nft_mint_1 = contract.nft_mint("1".into(), bob());
     assert_eq!(nft_mint_1, "1:1");
@@ -232,7 +285,7 @@ fn estimate_create_series_storage_usage() {
             Some(10000000000000000000000000.into()),
             None,
             None,
-            None
+            None,
         );
 
         let usage = env::storage_usage() - usage;
@@ -277,7 +330,7 @@ fn should_create_a_mintable_trail() {
         Some(0.into()),
         Some(10),
         None,
-        None
+        None,
     );
 
     assert!(contract.is_trail_mintable(&create.token_id));
@@ -299,9 +352,8 @@ fn should_create_a_non_mintable_trail() {
         Some(0.into()),
         Some(10),
         None,
-        Some(false)
+        Some(false),
     );
 
     assert!(!contract.is_trail_mintable(&create.token_id));
 }
-

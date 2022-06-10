@@ -1,4 +1,6 @@
+use crate::vars::WHITELISTED_ADDRESS_MINTING_KEY;
 use crate::*;
+use std::convert::TryFrom;
 
 pub trait SeriesBridge {
     /// Returns whether a trail is available in the smart contract.
@@ -43,6 +45,12 @@ pub trait SeriesBridge {
 
     /// Whether a trail can be minted by the user or not (for fiat/near purposes)
     fn is_trail_mintable(&self, trail_id: &TrailId) -> bool;
+
+    /// Gets the address of a whitelisted address
+    fn get_whitelisted_address(&self) -> AccountId;
+
+    /// Verifies there is a whitelisted address
+    fn is_there_whitelisted_address(&self) -> bool;
 }
 
 #[near_bindgen]
@@ -158,5 +166,17 @@ impl SeriesBridge for Contract {
 
     fn is_trail_mintable(&self, trail_id: &TrailId) -> bool {
         !self.nonmintable_trails.contains(trail_id)
+    }
+
+    fn is_there_whitelisted_address(&self) -> bool {
+        let key = String::from(WHITELISTED_ADDRESS_MINTING_KEY);
+        self.settings.get(&key).is_some()
+    }
+
+    fn get_whitelisted_address(&self) -> AccountId {
+        let key = String::from(WHITELISTED_ADDRESS_MINTING_KEY);
+        let value = self.settings.get(&key).unwrap_or_else(|| String::new());
+        let acct_id: AccountId = AccountId::try_from(value).unwrap();
+        acct_id
     }
 }
