@@ -1,3 +1,5 @@
+use ito_contract::admin::AdminBridge;
+use ito_contract::vars::WHITELISTED_ADDRESS_MINTING_KEY;
 use ito_contract::{
     create_serie::CreateTrailSeries, Contract, JsonTrail, TrailResource, TrailSeriesMetadata,
 };
@@ -41,7 +43,11 @@ pub fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
 pub fn setup_contract() -> (VMContextBuilder, Contract) {
     let mut context = VMContextBuilder::new();
     testing_env!(context.predecessor_account_id(owner()).build());
-    let contract = Contract::new_default_meta(owner(), treasury());
+    let mut contract = Contract::new_default_meta(owner(), treasury());
+    contract.add_setting(
+        String::from(WHITELISTED_ADDRESS_MINTING_KEY),
+        carol().to_string(),
+    );
     (context, contract)
 }
 
@@ -53,7 +59,7 @@ pub fn create_series(
     price: Option<U128>,
     tickets: Option<u64>,
     resources: Option<Vec<TrailResource>>,
-    allow_user_minting: Option<bool>
+    allow_user_minting: Option<bool>,
 ) -> JsonTrail {
     contract.create_trail_series(
         TrailSeriesMetadata {
@@ -77,6 +83,6 @@ pub fn create_series(
         price,
         None,
         None,
-        allow_user_minting
+        allow_user_minting,
     )
 }
