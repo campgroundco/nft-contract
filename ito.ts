@@ -722,7 +722,33 @@ export interface NonFungibleTokenPayouts {
 
 }
 
-export interface Contract extends AdminBridge, NonFungibleTokenApproval, SeriesBridge, CreateTrailSeries, NonFungibleTokenEnumeration, NonFungibleTokenMetadata, NonFungibleTokenCore, NonFungibleTokenPayouts {}
+/**
+ * This trait complies with functions that can only be accessed by settings.SUB_ADMIN_ADDRESS
+ */
+export interface SubAdminBridge {
+    /**
+     * Remove a trail from nonmintable_trails so that it can be minted by users again
+     */
+    remove_trail_from_nonmintable_list(args: { trail_id: TrailId }, gas?: any): Promise<boolean>;
+
+    /**
+     * Includes a trail in the list of non-user mintable
+     */
+    insert_trail_from_nonmintable_list(args: { trail_id: TrailId }, gas?: any): Promise<boolean>;
+
+    /**
+     * Verifies whether caller is subadmin
+     */
+    is_caller_subadmin(): Promise<boolean>;
+
+    /**
+     * Gets accountId of sub admin
+     */
+    get_subadmin(): Promise<AccountId>;
+
+}
+
+export interface Contract extends AdminBridge, NonFungibleTokenApproval, SeriesBridge, CreateTrailSeries, NonFungibleTokenEnumeration, NonFungibleTokenMetadata, NonFungibleTokenCore, NonFungibleTokenPayouts, SubAdminBridge {}
 
 export const ContractMethods = {
     viewMethods: [
@@ -753,6 +779,8 @@ export const ContractMethods = {
         "nft_metadata",
         "nft_token",
         "nft_payout",
+        "is_caller_subadmin",
+        "get_subadmin",
     ],
     changeMethods: [
         "change_campground_fee",
@@ -768,5 +796,7 @@ export const ContractMethods = {
         "nft_transfer",
         "nft_transfer_call",
         "nft_transfer_payout",
+        "remove_trail_from_nonmintable_list",
+        "insert_trail_from_nonmintable_list",
     ],
 };

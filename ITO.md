@@ -39,6 +39,8 @@
 | :eyeglasses: `nft_metadata` |  View call for returning the contract metadata | `NFTContractMetadata` |
 | :eyeglasses: `nft_token` |  | `JsonTrail\|null` |
 | :eyeglasses: `nft_payout` |  | `void` |
+| :eyeglasses: `is_caller_subadmin` |  Verifies whether caller is subadmin | `boolean` |
+| :eyeglasses: `get_subadmin` |  Gets accountId of sub admin | `AccountId` |
 
 > **Change Methods**
 
@@ -57,6 +59,8 @@
 | &#x24C3; `nft_transfer` |  | `void` |
 | &#x24C3; `nft_transfer_call` |  Returns `true` if the token was transferred from the sender's account. | `void` |
 | &#x24C3; `nft_transfer_payout` |  | `void` |
+| :writing_hand: `remove_trail_from_nonmintable_list` |  Remove a trail from nonmintable_trails so that it can be minted by users again | `boolean` |
+| :writing_hand: `insert_trail_from_nonmintable_list` |  Includes a trail in the list of non-user mintable | `boolean` |
 
 
 ## Methods for `AdminBridge` interface
@@ -423,6 +427,40 @@ nft_payout(args: { token_id: TrailId, balance: U128, max_len_payout: number }): 
 nft_transfer_payout(args: { receiver_id: AccountId, token_id: TrailId, approval_id: number, memo: string, balance: U128, max_len_payout: number }, gas?: any, amount?: any): Promise<void>;
 ```
 
+
+## Methods for `SubAdminBridge` interface
+
+### :writing_hand: `remove_trail_from_nonmintable_list`
+
+```typescript
+remove_trail_from_nonmintable_list(args: { trail_id: TrailId }, gas?: any): Promise<boolean>;
+```
+
+Remove a trail from nonmintable_trails so that it can be minted by users again
+
+### :writing_hand: `insert_trail_from_nonmintable_list`
+
+```typescript
+insert_trail_from_nonmintable_list(args: { trail_id: TrailId }, gas?: any): Promise<boolean>;
+```
+
+Includes a trail in the list of non-user mintable
+
+### :eyeglasses: `is_caller_subadmin`
+
+```typescript
+is_caller_subadmin(): Promise<boolean>;
+```
+
+Verifies whether caller is subadmin
+
+### :eyeglasses: `get_subadmin`
+
+```typescript
+get_subadmin(): Promise<AccountId>;
+```
+
+Gets accountId of sub admin
 
 ---
 

@@ -26,6 +26,7 @@ pub mod nft_core;
 pub mod admin;
 pub mod event;
 pub mod vars;
+pub mod sub_admin;
 
 pub const TRAIL_DELIMETER: char = ':';
 pub const ONE_NEAR: Balance = 1000000000000000000000000;
