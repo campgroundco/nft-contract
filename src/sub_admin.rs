@@ -11,6 +11,9 @@ pub trait SubAdminBridge {
 
     /// Gets accountId of sub admin
     fn get_subadmin(&self) -> AccountId;
+
+    /// Includes a trail in the list of non-user mintable
+    fn insert_trail_from_nonmintable_list(&mut self, trail_id: TrailId) -> bool;
 }
 
 #[near_bindgen]
@@ -18,6 +21,11 @@ impl SubAdminBridge for Contract {
     fn remove_trail_from_nonmintable_list(&mut self, trail_id: TrailId) -> bool {
         self.panic_if_not_subadmin();
         self.nonmintable_trails.remove(&trail_id)
+    }
+
+    fn insert_trail_from_nonmintable_list(&mut self, trail_id: TrailId) -> bool {
+        self.panic_if_not_subadmin();
+        self.nonmintable_trails.insert(&trail_id)
     }
 
     fn is_caller_subadmin(&self) -> bool {
