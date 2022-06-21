@@ -2,6 +2,7 @@ use crate::bridge::SeriesBridge;
 use crate::*;
 use near_sdk::CryptoHash;
 use std::mem::size_of;
+use crate::sub_admin::SubAdminBridge;
 
 //used to generate a unique prefix in our storage collections (this is to avoid data collisions)
 pub(crate) fn hash_account_id(account_id: &AccountId) -> CryptoHash {
@@ -242,6 +243,12 @@ impl Contract {
     pub(crate) fn panic_if_not_owner(&self) {
         if !self.is_caller_contract_owner() {
             panic!("Campground: Only contract owner can execute")
+        }
+    }
+
+    pub(crate) fn panic_if_not_subadmin(&self) {
+        if !self.is_caller_subadmin() {
+            panic!("Campground: Only Sub-admin can execute")
         }
     }
 
