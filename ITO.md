@@ -39,6 +39,7 @@
 | :eyeglasses: `nft_metadata` |  View call for returning the contract metadata | `NFTContractMetadata` |
 | :eyeglasses: `nft_token` |  | `JsonTrail\|null` |
 | :eyeglasses: `nft_payout` |  | `void` |
+| :eyeglasses: `verify_toggle_minting_caller` |  Panic if caller is not able to toggle | `void` |
 | :eyeglasses: `is_caller_subadmin` |  Verifies whether caller is subadmin | `boolean` |
 | :eyeglasses: `get_subadmin` |  Gets accountId of sub admin | `AccountId` |
 
@@ -61,6 +62,7 @@
 | &#x24C3; `nft_transfer_payout` |  | `void` |
 | :writing_hand: `remove_trail_from_nonmintable_list` |  Remove a trail from nonmintable_trails so that it can be minted by users again | `boolean` |
 | :writing_hand: `insert_trail_from_nonmintable_list` |  Includes a trail in the list of non-user mintable | `boolean` |
+| :writing_hand: `toggle_for_all` |  Toggle minting for all trails  enable_minting must be true to make all trails accept public minting (nft_buy_series)  Or false to lock them all | `void` |
 
 
 ## Methods for `AdminBridge` interface
@@ -445,6 +447,24 @@ insert_trail_from_nonmintable_list(args: { trail_id: TrailId }, gas?: any): Prom
 ```
 
 Includes a trail in the list of non-user mintable
+
+### :eyeglasses: `verify_toggle_minting_caller`
+
+```typescript
+verify_toggle_minting_caller(args: { trail_id: TrailId }): Promise<void>;
+```
+
+Panic if caller is not able to toggle
+
+### :writing_hand: `toggle_for_all`
+
+```typescript
+toggle_for_all(args: { enable_minting: boolean }, gas?: any): Promise<void>;
+```
+
+Toggle minting for all trails
+enable_minting must be true to make all trails accept public minting (nft_buy_series)
+Or false to lock them all
 
 ### :eyeglasses: `is_caller_subadmin`
 

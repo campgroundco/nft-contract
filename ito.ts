@@ -737,6 +737,18 @@ export interface SubAdminBridge {
     insert_trail_from_nonmintable_list(args: { trail_id: TrailId }, gas?: any): Promise<boolean>;
 
     /**
+     * Panic if caller is not able to toggle
+     */
+    verify_toggle_minting_caller(args: { trail_id: TrailId }): Promise<void>;
+
+    /**
+     * Toggle minting for all trails
+     * enable_minting must be true to make all trails accept public minting (nft_buy_series)
+     * Or false to lock them all
+     */
+    toggle_for_all(args: { enable_minting: boolean }, gas?: any): Promise<void>;
+
+    /**
      * Verifies whether caller is subadmin
      */
     is_caller_subadmin(): Promise<boolean>;
@@ -779,6 +791,7 @@ export const ContractMethods = {
         "nft_metadata",
         "nft_token",
         "nft_payout",
+        "verify_toggle_minting_caller",
         "is_caller_subadmin",
         "get_subadmin",
     ],
@@ -798,5 +811,6 @@ export const ContractMethods = {
         "nft_transfer_payout",
         "remove_trail_from_nonmintable_list",
         "insert_trail_from_nonmintable_list",
+        "toggle_for_all",
     ],
 };
